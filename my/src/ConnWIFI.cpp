@@ -4,7 +4,6 @@
 #include "ConnWIFI.h"
 #include "CONFIG.h" 
 
-
 void getOnline(){
   Serial.println("Attempting to getOnline()");
   WiFiManager wifiManager;
