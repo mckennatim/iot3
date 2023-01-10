@@ -1,17 +1,45 @@
 #include <Arduino.h>
+#include <EEPROM.h>
+#include <TimeLib.h>
+#include <TimeAlarms.h>
+#include "ConnWIFI.h" //getOnline()
+#include "CONFIG.h"
 
-// the setup function runs once when you press reset or power the board
+AlarmId id;
+
+void initShit(){
+ 
+}
+
+void dailyAlarm(){
+  Serial.print("in dailyAlarm() haywifi: ");
+  Serial.println(haywifi);
+  if(haywifi==0){
+    haywifi=1;
+    getOnline();
+  }
+  Serial.println("in daily alarm");
+  Serial.print("assume haywifi: ");
+  Serial.println(haywifi);
+  Serial.println(devid);
+  int minu = (10*((int)devid[6]-'0')+(int)devid[7]-'0')%16;
+  Serial.print(hour());
+  Serial.print(':');
+  Serial.println(minute());
+  //Alarm.alarmRepeat(0,minu,0, getTime);
+}
+
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
-  pinMode(LED_BUILTIN, OUTPUT);
+  Serial.begin(115200);
+  EEPROM.begin(512);
+  initShit();
+  setTime(8,29,0,1,1,11); 
+  Alarm.timerOnce(10, dailyAlarm);
+  // getOnline();//config.cpp
+  // Serial.println("Back in setup(), onto dailyAlarm");
+  // Alarm.timerOnce(10, dailyAlarm);
 }
 
-// the loop function runs over and over again forever
 void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);   // Arduino: turn the LED on (HIGH)
-                                     // D1 Mini: turns the LED *off*
-  delay(1000);                       // wait for a second
-  digitalWrite(LED_BUILTIN, LOW);    // Arduino: turn the LED off (LOW)
-                                     // D1 Mini: turns the LED *on*
-  delay(1000);                       // wait for a second
-}
+  Alarm.delay(1000); //needed so timealarms work
+}  
