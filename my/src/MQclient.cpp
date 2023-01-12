@@ -40,8 +40,7 @@ void MQclient::reconn(PubSubClient& client) {
       client.subscribe(topic);
       //Serial.println(topic);     
     }
-    // delay(5000);
-    char dd []= "the time is being requesrd";
+    char dd []= "in mq.reconn->devid/time, <-/prg&/devtime";
     Serial.println(dd);
     char time[20];
     strcpy(time,cdevid);

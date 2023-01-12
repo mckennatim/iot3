@@ -9,19 +9,20 @@ void getOnline(){
   WiFiManager wifiManager;
   /*to solve blocking problem if wifi is down add portalTimeout*/
   wifiManager.setConfigPortalTimeout(120);
-  Serial.print("haywifi: ");
-  Serial.println(haywifi);
+  Serial.print("f.hayWIFI: ");
+  Serial.println(f.hayWIFI);
   //wifiManager.resetSettings();
   if (!wifiManager.autoConnect("connectEspAP")) {
     //this code runs on portal timout and drops through and out of autoconnect
     Serial.println("failed to connect and hit timeout");
     // ESP.reset();
     delay(5000);
-    haywifi=0;
-    Serial.print("haywifi: ");
-    Serial.println(haywifi);
-    Serial.println("5 sec later: dropping out of autoconnect no haywifi");
+    f.hayWIFI=0;
+    Serial.print("f.hayWIFI: ");
+    Serial.println(f.hayWIFI);
+    Serial.println("5 sec later: dropping out of autoconnect no f.hayWIFI");
   } else{
+    f.hayWIFI=1;
     Serial.println("connected...yeey :)");
   }
   Serial.println("out of getOnline()");
