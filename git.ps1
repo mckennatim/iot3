@@ -1,7 +1,7 @@
-param ($param1)
-write-host $param1
+param ($tag)
+write-host $tag
 git add . -A
-git commit -m"$param1"
+git commit -m"$tag"
 git tag $tag
 git push
 git push --tags
