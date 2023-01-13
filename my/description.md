@@ -64,7 +64,7 @@ Loop watches for HAYsTATEcNG, runs pubState() if it is >0.
 
 `set`
 
-dog
+dogmom
 
 # scratchpad
 
