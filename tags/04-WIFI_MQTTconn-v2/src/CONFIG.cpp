@@ -19,12 +19,10 @@ CONFIG extern structures (initial values, changeable)*/
 state of relays and sensors */ 
 srs_t srs {
   5,//numsr
-  1,//sumse {sr,eading,rec,isnew}
+  2,//sumse
   {{3,0,1,0},{4,1,1,0}},
-  1,//numcs {sr,reading,onoff,hi,lo,rec,isnew}
-  {
-    {0,0,0,0,0,0,0,0}
-  },
+  0,//numcs
+  {},
   3,//numti
   { //{sr,onoff,rec,isnew}
     {0,0,1,0},{1,0,1,0},{2,0,1,0}

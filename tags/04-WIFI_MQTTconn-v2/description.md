@@ -64,8 +64,6 @@ Loop watches for HAYsTATEcNG, runs pubState() if it is >0.
 
 `set`
 
-dog
-
 # scratchpad
 
 ### every day if it is not connected to WIFI
