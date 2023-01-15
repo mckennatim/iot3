@@ -23,7 +23,7 @@ srs_t srs {
   {{3,0,1,0},{4,1,1,0}},
   1,//numcs {sr,reading,onoff,hi,lo,rec,isnew}
   {
-    {0,0,0,0,0,0,0,0}
+    {0,0,0,0,0,0,0}
   },
   3,//numti
   { //{sr,onoff,rec,isnew}

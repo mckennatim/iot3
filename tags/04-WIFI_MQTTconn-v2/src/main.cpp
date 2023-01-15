@@ -51,4 +51,7 @@ void loop() {
         f.cONNectd = f.hayWIFI & f.hayMQTT;
     }
   }
+  if(f.cONNectd){
+    client.loop();
+  }
 }  
