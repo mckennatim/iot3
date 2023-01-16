@@ -1,5 +1,16 @@
 #include "CONFIG.h"
 
+void customInit(){
+  if(0==1){
+    int dog =3;
+  }
+};
+void customLoop() {
+  if(0==1){
+    int dog =3;
+  }
+};
+
 bool haywifi=true;
 char devid[9]="CYURD127";
 char owner[254]="mckenna.tim@gmail.com";
@@ -8,7 +19,7 @@ char mqtt_server[60]="sitebuilt.net";
 char mqtt_port[6]="1884";
 
 /*INCOMING const mqtt topics*/
-const topics_t TPC {
+const topics_t tpcsSub {
   5,
   {"devtime", "cmd", "prg", "req", "set"}
 };

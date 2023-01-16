@@ -31,6 +31,7 @@ MQclient::MQclient(char* devid, char* owner, char* pwd){
 void MQclient::reconn(PubSubClient& client) {
   Serial.print("Attempting remo MQTT connection...");
   if (client.connect(cdevid, sowner, spwd)) {
+    f.hayMQTT =1;
     Serial.println("connected");
     for (int i=0;i<TPC.numtopics;i++){
       char topic[25];

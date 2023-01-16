@@ -139,6 +139,7 @@ If that works then `haywifi=1` again.
         }
 
         if (cONNectd){
+            client.loop();
             if(NEW_MAIL){
                 Serial.println("hay NEW_MAIL");
                 req.processInc();

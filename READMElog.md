@@ -2,6 +2,9 @@
 
 ## log
 
+### 05-processInc_deseriTime
+Basic arduinojson 6 works
+
 ### 04-WIFI_MQTTconn-v2
 Part of the process of keeping a default loop running even without connection. No more alarm every day. Every 6 hours, if !f.cONNectd, getOnline and mq.reconn run, setting hayWIFI and hayMQTT. By setting the lckconn= -every6hrs the timer gets set off to run at startup. If both hayWIFI and hayMQTT are true then f.cONNectd get set true. This flag is used to define default and connected operation.
 

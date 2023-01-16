@@ -5,6 +5,9 @@
 #include <TimeAlarms.h>
 #include <ESP8266WebServer.h>
 
+void customInit();
+void customLoop();
+
 /*dev */
 extern bool haywifi;
 extern char devid[9];
@@ -18,7 +21,7 @@ struct topics_t {
     int numtopics;
     char scribedTo[6][8]; 
 };
-extern const topics_t TPC ;
+extern const topics_t tpcsSub ;
 
 /*srs data structure declarations*/ 
 struct se_t {//sensors

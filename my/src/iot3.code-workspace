@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"name": "04-WIFI_MQTTconn-v2",
+			"path": "../../tags/04-WIFI_MQTTconn-v2"
+		},
+		{
+			"name": "my",
+			"path": ".."
+		},
+		{
+			"name": "03-getOnline_mq.reconn",
+			"path": "../../tags/03-getOnline_mq.reconn"
+		}
+	],
+	"settings": {
+		"powershell.cwd": "e:\\fs\\iot3"
+	}
+}

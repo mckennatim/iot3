@@ -55,5 +55,15 @@ void loop() {
         req.processInc();
         NEW_MAIL=0;
     }
+    if (inow - lcksens > every2sec) {
+        lcksens = inow;
+        //readSensors();
+        if(f.HAYsTATEcNG>0){
+            if(cONNectd) req.pubState(f.HAYsTATEcNG);
+            f.HAYsTATEcNG=0;
+        }
+        customLoop();
+        // diffCtrl();  
+    }    
   }  
 } 

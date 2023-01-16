@@ -57,3 +57,21 @@ It will listen for changes in the mag contact.
 - assign new ports and srs and see if it will flash
 - pare down the code to only do what the app needs
 
+### maybe it should be better
+
+The doorbells should work. Just fix the old system. 
+
+The real improvement would be to have the doorbell press turn the camera on and send the video to that unit's app holders.
+
+[notifications would need to work](https://onesignal.com/blog/how-to-integrate-push-notifications-in-react/)
+
+* 5 doorbell inputs
+* 1 video output
+* 1 door open input
+* 3 light outputs
+* 1 strike output
+
+#### refs
+
+* [ESP32-CAM Video Streaming Web Server](https://randomnerdtutorials.com/esp32-cam-video-streaming-web-server-camera-home-assistant/)
+
