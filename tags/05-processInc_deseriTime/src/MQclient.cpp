@@ -45,8 +45,7 @@ void MQclient::reconn(PubSubClient& client) {
     Serial.println(dd);
     char time[20];
     strcpy(time,cdevid);
-    strcat(time,"/time");
-    printf("client is connected %d\n", client.connected());  
+    strcat(time,"/time");  
     client.publish(time, dd, true);    
     return;
   } else {

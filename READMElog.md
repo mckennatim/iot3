@@ -2,6 +2,12 @@
 
 ## log
 
+### 06-req_changes-passing _client_in_pubstate
+No longer is the req class instantiated with client. Client is passed as needed. `clpub` is removed, seems unnecesary. 
+
+      if(f.cONNectd) req.pubState(f.HAYsTATEcNG, client);
+
+
 ### 05-processInc_deseriTime
 Basic arduinojson 6 works
 

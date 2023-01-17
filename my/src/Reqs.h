@@ -4,18 +4,17 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "CONFIG.h"
-
+ 
+// void pubState2(int hc, PubSubClient& client);
 
 class Reqs{
 public:
-  Reqs(char* devid, PubSubClient& client);
-  PubSubClient cclient;
+  Reqs(char* devid);
   char* cdevid;
-  void stime();
 	void pubFlags();
 	void pubTimr();
 	void pubPrg(int ck);
-	void pubState(int hc);
+	void pubState(int hc, PubSubClient& client);
 	void processInc(); 
 	void deseriReq(); 
 	void deseriCmd(); 
@@ -24,7 +23,7 @@ public:
 private:	
 	bool dog;
 	void creaJson(prg_t & p, char* astr);
-	void clpub(char status[20], char astr[200]);
+	void clpub(char topic[20], char payload[200]);
 };
 
 

@@ -67,7 +67,7 @@ struct srs_t {
     int numti;
     ti_t ti[3];/*MODIFY*/
     int numdi;
-    di_t di[0];/*MODIFY*/
+    di_t di[];/*MODIFY*/
 };
 extern srs_t srs;
 /*srs data structure declarations*/  

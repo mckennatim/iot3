@@ -2,12 +2,12 @@
 
 void customInit(){
   if(0==1){
-    int dog =3;
+    ;
   }
 };
 void customLoop() {
   if(0==1){
-    int dog =3;
+    ;
   }
 };
 

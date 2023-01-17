@@ -10,9 +10,28 @@ Sched sched;
 extern char itopic[40];
 extern char ipayload[250];
 
-Reqs::Reqs(char* devid, PubSubClient& client ){
+
+// int getStoredReading2(int srid){
+//   for (int i=0; i<srs.numse;i++){
+//     if(srs.se[i].sr==srid){
+//       return srs.se[i].reading;
+//     }
+//   }
+//   for (int j=0; j<srs.numcs;j++){
+//     if(srs.cs[j].sr==srid){
+//       return srs.cs[j].reading;
+//     }
+//   }
+//   return -4;
+// }
+
+bool isNewRec (bool rec, bool isnew){
+  return(rec && isnew) ? true : false;
+}
+
+
+Reqs::Reqs(char* devid){
   cdevid = devid;
-  cclient = client;
 }
 
 void Reqs::processInc(){
@@ -46,5 +65,69 @@ void Reqs::processInc(){
           break;           
       }
     }
+  }
+}
+
+int Reqs::getStoredReading(int srid){
+  for (int i=0; i<srs.numse;i++){
+    if(srs.se[i].sr==srid){
+      return srs.se[i].reading;
+    }
+  }
+  for (int j=0; j<srs.numcs;j++){
+    if(srs.cs[j].sr==srid){
+      return srs.cs[j].reading;
+    }
+  }
+  return -4;
+}
+
+void Reqs::pubState(int hc, PubSubClient& client){
+  Serial.println(hc);
+  char devtopic[20];
+  strcpy(devtopic,cdevid);
+  strcat(devtopic,"/srstate");  
+  char payload[200];
+  bool shouldrec = 0;
+  for (int i=0; i<srs.numse; i++){
+    shouldrec = isNewRec(srs.se[i].rec, srs.se[i].isnew);
+    sprintf(payload, "{\"id\":%d, \"darr\":[%d], \"new\":%d}", srs.se[i].sr, srs.se[i].reading, shouldrec);
+    srs.se[i].isnew=0;
+    int bit =pow(2,srs.se[i].sr);
+    if((hc&bit)==bit){
+      client.publish(devtopic, payload, true);
+    }
+  }
+  for (int i=0; i<srs.numcs; i++){
+    shouldrec = isNewRec(srs.cs[i].rec, srs.cs[i].isnew);
+    // printf("i = %d srs.cs[i].hilimit = %d \n",i,srs.cs[i].hilimit);
+    sprintf(payload, "{\"id\":%d, \"darr\":[%d, %d, %d, %d], \"new\":%d}", srs.cs[i].sr, srs.cs[i].reading, srs.cs[i].onoff, srs.cs[i].hilimit, srs.cs[i].lolimit, shouldrec);  
+    srs.cs[i].isnew=0; 
+    // int bit =pow(2,i);
+    // if((hc&bit)==bit){
+      client.publish(devtopic, payload, true);
+    // } 
+  }
+  for (int i=0; i<srs.numti; i++){
+    shouldrec = isNewRec(srs.ti[i].rec, srs.ti[i].isnew);
+    sprintf(payload, "{\"id\":%d, \"darr\":[%d], \"new\":%d}", srs.ti[i].sr, srs.ti[i].onoff, shouldrec);
+    srs.ti[i].isnew=0;
+    int bit =pow(2,i);
+    if((hc&bit)==bit){
+      client.publish(devtopic, payload, true);
+    }
+  }
+  for (int i=0; i<srs.numdi; i++){
+    shouldrec = isNewRec(srs.di[i].rec, srs.di[i].isnew);
+    int saidx = srs.di[i].sa;
+    int sbidx = srs.di[i].sb;
+    int don = srs.di[i].don;
+    int doff = srs.di[i].doff;
+    int onoff = srs.di[i].onoff;
+    int saread = getStoredReading(saidx);
+    int sbread = getStoredReading(sbidx);
+    sprintf(payload, "{\"sa\":%d, \"sb\":%d, \"darr\":[%d,%d,%d,%d,%d], \"new\":%d}", saidx, sbidx, saread, sbread, don, doff, onoff,shouldrec);  
+    srs.di[i].isnew=0; 
+    client.publish(devtopic, payload, true);
   }
 }

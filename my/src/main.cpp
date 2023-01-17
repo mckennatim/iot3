@@ -14,14 +14,13 @@ const long every5sec = 5000;
 const long every2sec = 2000;
 
 signed long lckconn = -every6hrs;
-signed long lcktimr = 0;
 signed long lcksens = 0;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 Console console(devid, client);
 MQclient mq(devid, owner, pwd);
-Reqs req(devid, client);
+Reqs req(devid);
 
 void initShit(){
 }
@@ -55,15 +54,15 @@ void loop() {
         req.processInc();
         NEW_MAIL=0;
     }
-    if (inow - lcksens > every2sec) {
-        lcksens = inow;
-        //readSensors();
-        if(f.HAYsTATEcNG>0){
-            if(cONNectd) req.pubState(f.HAYsTATEcNG);
-            f.HAYsTATEcNG=0;
-        }
-        customLoop();
-        // diffCtrl();  
-    }    
-  }  
+  }
+  if (inow - lcksens > every2sec) {
+      lcksens = inow;
+      //readSensors();
+      if(f.HAYsTATEcNG>0){
+          if(f.cONNectd) req.pubState(f.HAYsTATEcNG, client);
+          f.HAYsTATEcNG=0;
+      }
+      customLoop();
+      // diffCtrl();  
+  }    
 } 
