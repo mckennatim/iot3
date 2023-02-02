@@ -1,6 +1,16 @@
 # READMElog
 
 ## log
+### 08-fix_srs_prgs_ports
+Design work in [description.md](descriptiom.md) 
+- to fix data structures. 
+- To not require progs  in order for relays to work, 
+- srs.ti to srs.rel, 
+- create a new ports data structure
+- to slim down srs to contain only data on the state of the device
+- rewrite ckRelays() to use the ne ports data structure
+
+TODO slowly implement a little, compile and run. repeat
 ### 07-doorStrike-md-js-config
 Steps neeeded to set up a project. Also decribed in `gitinfo/wiki/fullstackIOT.md` 
 

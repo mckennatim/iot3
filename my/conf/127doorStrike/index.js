@@ -1,6 +1,10 @@
 import{ devs, zones, initialState, devinfo, apploc} from './doorStrike.js'
 import fs from 'fs'
 
+const sql = fs.createWriteStream('./doorStrike.sql', { flags: 'a' });
+const inst = fs.createWriteStream('./doorStrike.js', { flags: 'a' });
+const cfgh = fs.createWriteStream('./doorStrike.sql', { flags: 'a' });
+const cfgc = fs.createWriteStream('./doorStrike.sql', { flags: 'a' });
 
 console.log('devs: ', devs);
 

@@ -16,11 +16,11 @@ srs
   - {sr, reading...}
 - cs: relays controlled by sensors. The sr ID is the same as the prg sr ID. The relay's port is listed in prg. A prg with 1 event with [hr,min,hilimit,lolimit] = [0,0,hilimit,lolimit] runs that all day
   - {sr, reading, onoff, hilimit, lolimit...} these are the default hilimit & lolimit.
-- ti: relays controlled by timers. The sr ID is the same as the prg sr ID. The relay's port is listed in prg. 
+- rel: relays. Can be controlled by <s>timers</s> prgs. The sr ID is the same as the prg sr ID. ```The relay's port is listed in prg. THIS IS STUPID``` 
   - {sr, onoff...}
 - di: difference controller  
 
-Since both cs a ti's have an associated program, why do they need hilimit/lolimit or onoff in the srs structure?
+Since both cs a rel's can have an associated program, why do they need hilimit/lolimit or onoff in the srs structure?
 
 Because it is the place that stores the the current and default values. 
 
@@ -28,9 +28,176 @@ Because it is the place that stores the the current and default values.
 
 During the loop a message could come in from the outside. Or there could be a change in one of the sensor values. Or a running timer can display its progress or could reach the end of its run. Or it might be time to change a program. Or check the difference controller or custom code.
 
-Sensors are read every loop. readSensors() calls setIfDif() which sets HAYsTATEcNG. 
+### things wrong with putting relay ports in prgs
+Sensors are read every loop. `readSensors()` calls `setIfDif()` which sets HAYsTATEcNG to allow state to be published. More importantly, if it is a sensor that controls a relay (cs), sched.adjRelay(csidx, cs[idx]) is called. `sched.adjRelays()` does not actually adjust relays, just sets the f.ISrELAYoN flag. The loop triggers `sched.ckRelays()` every second.
 
-Loop watches for HAYsTATEcNG, runs pubState() if it is >0.
+A relay may not need a prg. Right now you have to set up a fake prg just to get to the relay.
+
+`ckRelays()` cycles through all the prgs.sr's, and, gets the `onoff` value from either cs or rel. If their stored onoff value is different then what `digitalRead(port) says it writes new srs value to the relay with dgitalWrite(port, value)
+
+### the fix for relay ports
+OK, so you are checking relays every couple of seconds in loop(). Why not just cycle through the port list for outputs, digitalRead(port) then go through the cs and rel srs records and change if different.
+
+    def.ckRelays(){ 
+      for (int j=0; j<srs.numcs;j++){
+        iscsidx_t ici = getTypeIdx(j); 
+        int sr = srs.cs[ici.idx].sr
+        int onoff = srs.cs[ici.idx].onoff
+        int ponoff = digitalRead(ports[sr],output)
+        if(onoff ! =ponoff){
+          digitalWrite(sr, onoff)
+        }
+      }
+      for (int j=0; j<srs.numrel;j++){
+        iscsidx_t ici = getTypeIdx(j); 
+        sr = srs.rel[ici.idx].sr
+        onoff = srs.rel[ici.idx].onoff
+        ponoff = digitalRead(ports[sr].output)
+        if(onoff ! =ponoff){
+          digitalWrite(sr, onoff)
+        }
+      }
+    }
+    
+### OK so what happens with onewire devices? 
+How does it work now? 
+
+### proposed modified data structures 
+    /*SE constant declarations*/  
+    const sen_t SE {
+      3,//numtypes of different sensor types
+      5,//numsens of sensors(numsens)
+      { // {nums,{sr,sr},type,model}
+        {1, {0}, "light", "BH1750"},//assumes SCL is D1(5) and SDA is D2(4)
+        {2, {1,2}, "temp", "DS18B20a"},  
+        {2, {3,4}, "temp-hum", "DHT11"},
+        {1, {8}, "onoff" "contact"}
+        /* not used
+        {1, {5}, "hygrometer", "ANALOG"}
+        {1, {6}, "thermoco", "MAX31855"}//not used
+        {2, {3,4}, "temp", "DS18B20b"},  *?
+      }
+      
+     /*ports for input and output
+      {sr, in, out, rec, isnew} */
+    const ports_t ports {
+      {0, D4, -9, 1, 0},// se single sensor controlling nothing
+      {1, D0, D6, 1, 0},// onewireA controlling relay
+      {2, D0, D7, 1, 0},// onewireA controlling relay
+      {3, D1, -9, 1, 0},// dhtlike temp controlling nothing
+      {4, D1, D3, 1, 0},// dhtlike hum controlling relay
+      {5, -9, D2, 1, 0},// relay controlled by app default or timer
+      {6, -9, D4, 1, 0},// relay controlled by app default or timer
+      {7, -9, D4, 1, 0},// relay controlled by app default or timer
+      {8, D9, -9, 0 , 0},// contact sensor
+    }
+
+    /*srs_t the state of the machine, all the sensor values, relay states,
+    ho/lo limits, differences and maxvals*/ 
+    srs_t srs {
+      8,
+      2,//se{{sr,reading}} 
+      {
+        {0,45},
+        {3,45},
+      },
+      3,//cs{{sr,reading, onoff hi, lo}}
+      {
+        {1,44,0,63,61}, 
+        {2,44,0,80,84},
+        {4,44,0,63,61},
+      },
+      2,//rel {sr, onoff}
+      {
+        {5,0}
+        {6,0}
+        {7,0}
+      },
+      1,// di {sra,srb,diffon, diffoff, maxa, maxb, srrel, onoff} 
+      {
+        {1,3,6,9,200,200,5,0}
+      }
+    };
+
+    *prgs extern data structure initalization*/ 
+      prgs_t prgs{
+        2,//numprgs
+        { //prg: {sr,aid,ev,numdata,prg[[hr,min,max,min]],port,hms}
+          {1,255,1,2,{{0,0,80,78}},1504}, //ds18b
+          {4,255,1,2,{{0,0,80,78}},1504}, //hum
+          {6,255,1,2,{{0,0,0}},1503}  //timr1
+          {7,255,1,2,{{0,0,0},{6,15,1}},1503}  //timr2
+        }
+      };    
+
+#custom code for `doorsStrike` project usein the new data structures and ckRelay()
+
+    loop(){
+      ...
+      if (inow - lcksens > every2sec) {
+          lcksens = inow;
+          //readSensors();
+          if(f.HAYsTATEcNG>0){
+              if(f.cONNectd) req.pubState(f.HAYsTATEcNG, client);
+              f.HAYsTATEcNG=0;
+          }
+          customLoop();
+          // diffCtrl();  
+      }   
+    }
+
+CYURD002/cmd{id:sr, sra:[1] or sra:[69,67]}, processed by req.desirCmd() can be used to modify srs.rel onoff value which in the loop gets flagged by f.HAYsTATEcNG to publish the states that have changed and runs ckRelays iver all the cs and rel srs's.
+
+
+
+    void customLoop() {
+      // listening for doorStrike command or change in door contact
+      iscsidx_t str = getTypeIdx(0);
+      iscsidx_t con = getTypeIdx(1);
+      iscsidx_t red = getTypeIdx(2);
+      iscsidx_t gre = getTypeIdx(3);
+      iscsidx_t blu = getTypeIdx(4);
+      int bitr = pow(2,2);
+      int bitg = pow(2,3);
+      int bitb = pow(2,4);
+      int bits = pow(2,0);
+      int bitl = bitg + bitr + bitb;
+      read contact and strike from srs
+      int stro = srs.cs[str.idx].onoff 
+      int cono = srs.cs[con.idx].onoff 
+      if (cono == 1){
+        setlight blue
+        srs.cs[red.idx].onoff = 0
+        srs.cs[gre.idx].onoff = 0
+        srs.cs[blu.idx].onoff = 1
+        if (strike on){
+          turn strike off
+          srs.cs[str.idx].onoff = 0
+          /* mark strike relays for state change ->ckRelays()*/
+          f.HAYsTATEcNG=f.HAYsTATEcNG | bits;
+        }
+      }else{
+        if(st0 == 1 ){
+          turn light green
+            srs.cs[red.idx].onoff = 0
+            srs.cs[gre.idx].onoff = 1
+            srs.cs[blu.idx].onoff = 0
+        } else{
+          turn light red
+            srs.cs[red.idx].onoff = 1
+            srs.cs[gre.idx].onoff = 0
+            srs.cs[blu.idx].onoff = 0
+        }
+      }
+      /* mark led relays for state change->ckRelays()*/
+      f.HAYsTATEcNG=f.HAYsTATEcNG | bitl; 
+    }
+
+
+maybe everthing default on the chip like reading sensors and responding to ckRelays should be in Def.cpp    
+
+
+Loop watches for HAYsTATEcNG, runs reqs.pubState() if it is >0.
 
 ## topics of communication
 ### sent by device
@@ -195,12 +362,13 @@ doDefault
 * read sensors every 2 seconds
 * check schedules 
 * run schedules
+* react to state change f.HAYsTATEcHNG
 
 
 while connected
 
 * check MAIL
-* check f.HAYsTATEcNGG
+* check f.HAYsTATEcHNG
 
 
 ##  strike prototype using long PCB
