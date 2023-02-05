@@ -1,7 +1,11 @@
 # READMElog
 
 ## log
-### 08-fix_srs_prgs_ports
+### 2/5/23 10-128doorStrike1
+
+### 09-128_appbuild_upto_07
+
+### 2/2/23 08-fix_srs_prgs_ports DOES NOT COMPILE
 Design work in [description.md](descriptiom.md) 
 - to fix data structures. 
 - To not require progs  in order for relays to work, 
@@ -12,6 +16,10 @@ Design work in [description.md](descriptiom.md)
 
 TODO slowly implement a little, compile and run. repeat
 ### 07-doorStrike-md-js-config
+Aligns with /home/tim/www/react/v18/iot 
+
+wifi connects, mqtt connects, it get date time and the requests from app.
+
 Steps neeeded to set up a project. Also decribed in `gitinfo/wiki/fullstackIOT.md` 
 
 TODO -> index.js in conf/127doorStrike should create all the database, initState, CONFIG.cpp and CONFIG.h to bootstrap a project.

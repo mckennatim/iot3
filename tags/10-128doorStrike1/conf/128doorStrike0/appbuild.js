@@ -1,29 +1,16 @@
 /*this shouldn't change */
 
-import{ cfgdata, devinfo, apploc} from './appdata.js'
+import{ devs, zones, initialState, devinfo, apploc} from './appdata.js'
 import fs from 'fs'
 
 const{appid, locid} =apploc
-const devid = Object.keys(cfgdata)[0]
-const devobj = cfgdata[devid] 
-let numtypes = 0
-let numsr =devobj.length
-let numse =0
-let numcs=0
-let numrel=0
-let numdi=0
-let numprgs =0
-
-
-fs.mkdir(`${devid}`, (err)=>{
-  // console.log('err: ', err);
-})
+const devid = Object.keys(devs)[0]
+const devobj = devs[devid] 
 
 console.log("${devid}/CONFIG.cpp: ", `${devid}/CONFIG.cpp`);
 
 const sql = fs.createWriteStream(`${appid}.sql`);
-
-const appd = fs.createWriteStream(`${appid}.js`);
+const inst = fs.createWriteStream(`${appid}.md`, { flags: 'a' });
 const cfgh = fs.createWriteStream(`${devid}/CONFIG.h`);
 const cfgc = fs.createWriteStream(`${devid}/CONFIG.cpp`);
 
@@ -48,16 +35,16 @@ REPLACE INTO \`devs\` (\`devid\`, \`owner\`, \`devpwd\`, \`locid\`, \`descriptio
 console.log('insdev: ', insdev);  
 sql.write(insdev)
 
-// const al =`
-// REPLACE INTO \`app_loc\` (\`appid\`, \`locid\`, \`devs\`, \`zones\`) VALUES (
-//   '${appid}',
-//   '${locid}',
-//   '${JSON.stringify(devs)}', \
-//   '${JSON.stringify(zones)}'
-// );
-// `
-// console.log('al: ', al);  
-// sql.write(al)
+const al =`
+REPLACE INTO \`app_loc\` (\`appid\`, \`locid\`, \`devs\`, \`zones\`) VALUES (
+  '${appid}',
+  '${locid}',
+  '${JSON.stringify(devs)}',
+  '${JSON.stringify(zones)}'
+);
+`
+console.log('al: ', al);  
+sql.write(al)
 
 const alu =`
 REPLACE INTO \`app_loc_user\` (\`appid\`, \`userid\`, \`locid\`, \`role\`,\`auth\`) VALUES (
@@ -119,13 +106,6 @@ char pwd[24]="${devinfo.pwd}";
 char mqtt_server[60]="${devinfo.mqtt_server}";
 char mqtt_port[6]="${devinfo.mqtt_port}";
 
-/*SPECS
-CONFIG extern const device variables
-INCOMING const mqtt topics*/
-const topics_t TPC {
-  5,
-  {"devtime", "cmd", "prg", "req", "set"}
-};
 `
 return sdev
 }
@@ -135,16 +115,13 @@ cfgc.write(MKdev());
 const MKports = ()=>{
   let ports =`
 /*ports for input and output
- */
+{sr, in, out, rec, isnew} */
 const ports_t ports {
 `
-  ports += `  ${numsr}, //numsr
-  {//port:{sr, in, out, rec, isnew}\n`
-  cfgdata[devid].map((d)=>{
-    ports += `    {${d.sr}, ${d.hasOwnProperty('in') ? d.in : '-9'}, ${d.hasOwnProperty('out') ? d.out : '-9'}, ${d.rec}, 0},// ${d.label} \n`;
+  devs[devid].map((d)=>{
+    ports += `  {${d.sr}, ${d.hasOwnProperty('in') ? d.in : '-9'}, ${d.hasOwnProperty('out') ? d.out : '-9'}, ${d.rec}, 0},// ${d.label} \n`;
   })
-  ports += `  }
-}`
+  ports += `}`
   return ports
 }
 console.log(MKports());
@@ -162,10 +139,9 @@ const sen_t SE {
     return d.in
   })
   const pta = [...new Set(pts)]
-  numtypes =pta.length
-  sen += `  ${numtypes}, // numstypes \n`
+  sen += `  ${pta.length}, // numstypes \n`
   sen += `  ${sens.length}, // numsens \n`
-  if(numtypes==0){
+  if(pta.length==0){
     sen+= `  {} // stype:{nums,{sra,srb...},type,model}\n`
   }else{
     sen+= `  { // stype:{nums,{sra,srb...},type,model}\n`
@@ -182,7 +158,7 @@ const sen_t SE {
         sesrs += `${x}${i+1==nums?' ':','}`
       })
       sesrs += `}`
-      sen += `    { ${nums}, ${sesrs}, "${dups[0].senses}", "${dups[0].model}" }${j+1==numtypes?' ':','} \n`
+      sen += `    { ${nums}, ${sesrs}, "${dups[0].senses}", "${dups[0].model}" }${j+1==pta.length?' ':','} \n`
     })
     sen += `  }\n}`
   }
@@ -201,56 +177,52 @@ const srs_t srs {
   const se = devobj.filter(d=>{
     return d.type === "se"
   })
-  numse = se.length
-  srs += `  ${numse}, // numse \n `
-  if (numse==0){
+  srs += `  ${se.length}, // numse \n `
+  if (se.length==0){
     srs += ` {}, // se:{sr, reading,}\n`
   }else{  
     srs += ` { // se:{sr, reading} \n`
     se.map((d,i)=>{
-      srs += `    {${d.sr}, ${d.reading}}${i+1==numse?' ':','} // ${d.label}\n`
+      srs += `    {${d.sr}, ${d.reading}}${i+1==se.length?' ':','} // ${d.label}\n`
     })
     srs+= `  },\n`
   }
   const cs = devobj.filter(d=>{
     return d.type === "cs"
   })
-  numcs= cs.length
-  srs += `  ${numcs}, // numcs \n `
-  if (numcs==0){
+  srs += `  ${cs.length}, // numcs \n `
+  if (cs.length==0){
     srs += ` {}, // cs:{sr, reading, onoff, hi, lo}\n`
   }else{
     srs += ` { // cs:{sr, reading, onoff, hi, lo} \n`
     cs.map((d,i)=>{
-      srs += `    {${d.sr}, ${d.reading}, ${d.onoff}, ${d.hi}, ${d.lo}}${i+1==numcs?' ':','} // ${d.label}\n`
+      srs += `    {${d.sr}, ${d.reading}, ${d.onoff}, ${d.hi}, ${d.lo}}${i+1==cs.length?' ':','} // ${d.label}\n`
     })
     srs+= `  },\n`
   }
   const rel = devobj.filter(d=>{
     return d.type === "rel"
   })
-  numrel=rel.length
-  srs += `  ${numrel}, // numrel \n `
-  if (numrel==0){
+  srs += `  ${rel.length}, // numrel \n `
+  if (rel.length==0){
     srs += ` {}, // rel:{sr, onoff}\n`
   }else{
     srs += ` { // rel:{sr, onoff} \n`
     rel.map((d,i)=>{
-      srs += `    {${d.sr}, ${d.onoff}}${i+1==numrel?' ':','} // ${d.label}\n`
+      srs += `    {${d.sr}, ${d.onoff}}${i+1==rel.length?' ':','} // ${d.label}\n`
     })
     srs+= `  },\n`
   }
   const dif = devobj.filter(d=>{
     return d.type === "dif"
   })
-  numdi = dif.length
-  srs += `  ${numdi}, // numdi \n `
-  if (numdi==0){
+  srs += `  ${dif.length}, // numdif \n `
+  if (dif.length==0){
     srs += ` {}, // dif:{sr, onoff}\n`
   }else{
     srs += ` { // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
     dif.map((d,i)=>{
-      srs += `    {${d.sr}, ${d.sra}, ${d.srb}, ${d.difon}, ${d.difoff}, ${d.maxa}, ${d.maxb}, ${d.onoff}}${i+1==numdi?' ':','} // ${d.label}\n`
+      srs += `    {${d.sr}, ${d.sra}, ${d.srb}, ${d.difon}, ${d.difoff}, ${d.maxa}, ${d.maxb}, ${d.onoff}}${i+1==dif.length?' ':','} // ${d.label}\n`
     })
     srs+= `  },\n`
   }
@@ -271,24 +243,23 @@ prgs_t prgs{
       return d.hayprg===1
     }
   })
-  numprgs =prgs.length
-  pstr +=`  ${numprgs}, // numprgs \n`
-  if(numprgs == 0){
+  pstr +=`  ${prgs.length}, // numprgs \n`
+  if(prgs.length == 0){
     pstr += `  {}\n`
   }else{
     pstr += `  { // prg:{sr,aid,ev,numdata,prg[[]],hms} \n`
     prgs.map((e,i)=>{
       switch(e.type){
         case "cs":{
-          pstr += `    {${e.sr}, 255, 1, 2, {{0,0,${e.hi},${e.lo}}}, ${1500+2*i}}${i+1==numprgs?' ':','}  \n`
+          pstr += `    {${e.sr}, 255, 1, 2, {{0,0,${e.hi},${e.lo}}}, ${1500+2*i}}${i+1==prgs.length?' ':','}  \n`
           break;
         }
         case "rel":{
-          pstr += `    {${e.sr}, 255, 1, 1, {{0,0,${e.onoff},}}, ${1500+2*i}}${i+1==numprgs?' ':','}  \n`
+          pstr += `    {${e.sr}, 255, 1, 1, {{0,0,${e.onoff},}}, ${1500+2*i}}${i+1==prgs.length?' ':','}  \n`
           break;
         }
         case "dif":{
-          pstr += `    {${e.sr}, 255, 1, 2, {{0,0,${e.difon},${e.difoff}}}, ${1500+2*i}}${i+1==numprgs?' ':','}  \n`
+          pstr += `    {${e.sr}, 255, 1, 2, {{0,0,${e.difon},${e.difoff}}}, ${1500+2*i}}${i+1==prgs.length?' ':','}  \n`
           break;
         }
         default:{
@@ -321,142 +292,6 @@ flags_t f {
 `
 cfgc.write(flags)
 
-
-/*create CONFIG.h ----------------------------------------------- */
-const configha = 
-`
-#ifndef CONFIG_h
-#define CONFIG_h
-
-#include <TimeLib.h>
-#include <TimeAlarms.h>
-#include <ESP8266WebServer.h>
-
-void customInit();
-void customLoop();
-
-/*dev */
-extern bool haywifi;
-extern char devid[9];
-extern char owner[254];
-extern char pwd[24];
-extern char mqtt_server[60];
-extern char mqtt_port[6];
-
-
-/*INCOMING topics*/
-struct topics_t {
-    int numtopics;
-    char scribedTo[6][8]; 
-};
-extern const topics_t TPC ;
-
-
-struct port_t {
-  int sr;
-  int in;
-  int out;
-  int rec;
-  int isnew;
-}
-struct ports_t {
-  int numports;
-  port_t port[${numsr}]; /*MODIFY*/
-}
-/*PORT*/
-
-/*SE constant declarations*/  
-struct senso_t{
-  int nums;
-  int ids[6]; //srs/portin
-  char type[12];
-  char model[12];
-};
-struct sen_t {
-  int numtypes;
-  int numsens;
-  senso_t stype[${numtypes}];
-};
-extern const sen_t SE;
-/*SE constant declarations*/ 
-
-/*srs data structure declarations*/ 
-struct se_t {//sensors
-    int sr;
-    int reading;
-    bool rec;
-    bool isnew;
-};
-struct cs_t {//controlled sensors
-    int sr;
-    int reading;
-    bool onoff;
-    int hilimit;
-    int lolimit;
-    bool rec;
-    bool isnew;   
-};
-struct rel_t {//timers
-    int sr;
-    bool onoff;
-    bool rec; 
-    bool isnew;  
-};
-struct di_t {//diff control
-    int sa;
-    int sb; 
-    int don;
-    int doff;
-    int maxa;
-    int maxb;
-    int port;
-    bool onoff;
-    bool rec;
-    bool isnew;
-};
-
-struct srs_t {
-  int numsr;
-  int numse;
-  se_t se[${numse}];/*MODIFY*/
-  int numcs;
-  cs_t cs[${numcs}];/*MODIFY*/
-  int numrel;
-  rel_t rel[${numrel}];/*MODIFY*/
-  int numdi;
-  di_t di[${numdi}];/*MODIFY*/
-};
-
-struct prgs_t{
-  int numprgs;
-  prg_t prg[${numprgs}];/*MODIFY*/
-};
-extern prgs_t prgs;
-/*prg data structure declarations*/  
-
-/*flags*/
-struct flags_t{
-  bool aUTOMA;
-  bool fORCErESET;  
-  int cREMENT;
-  int HAStIMR; //11100(28) 4,8, and 16 have timers not temp
-  int IStIMERoN;//11100 assume some time left, timers with tleft>0 
-  int HAYpROG;// = senrels with events>1
-  int HAYsTATEcNG; //11111(31 force report) some state change int or ext
-  int CKaLARM; //11111 assume alarm is set at start
-  int ISrELAYoN;// = summary of relay states  
-  int tIMElEFT[10];// =[0,0,56,0,0] timeleft in timrs
-};
-extern flags_t f;
-
-struct iscsidx_t {
-  int srtype;
-  int idx;
-};
-`
-
-cfgh.write(configha)
-
 /*app intiState --------------------------------------------------------*/
 
 const MKinitState =()=>{
@@ -473,10 +308,11 @@ const initialState = {//pro must start at 0,0
   if(devobj.length == 0){
     ini += `  {}\n`
   }else{
+    ini += `  { // prg:{sr,aid,ev,numdata,prg[[]],hms} \n`
     devobj.map((e,i)=>{
       switch(e.type){
         case "se":{
-          ini += `  ${e.label}: {darr:[${e.reading}]}${i+1==devobj.length?' ':','}  \n`
+          ini += `    ${e.label}: {darr:[${e.reading}]}${i+1==devobj.length?' ':','}  \n`
           break; 
         }
         case "cs":{
@@ -484,7 +320,7 @@ const initialState = {//pro must start at 0,0
           if(e.hayprg){
             prg= `, pro:[[0,0,${e.hi},${e.lo}]], timeleft:0`
           }
-          ini += `  ${e.label}: {darr:[${e.reading}, ${e.onoff}, ${e.hi}, ${e.lo}]${prg}}${i+1==devobj.length?' ':','}  \n`
+          ini += `    ${e.label}: {darr:[${e.reading}, ${e.onoff}, ${e.hi}, ${e.lo}]${prg}}${i+1==devobj.length?' ':','}  \n`
           break;
         }
         case "rel":{
@@ -492,7 +328,7 @@ const initialState = {//pro must start at 0,0
           if(e.hayprg){
             prg= `, pro:[[0,0,${e.onoff}]], timeleft:0`
           }
-          ini += `  ${e.label}: {darr:[${e.onoff}]${prg}}${i+1==devobj.length?' ':','}  \n`
+          ini += `    ${e.label}: {darr:[${e.onoff}]${prg}}${i+1==devobj.length?' ':','}  \n`
           break;
         }
         case "dif":{
@@ -503,25 +339,14 @@ const initialState = {//pro must start at 0,0
         }
       }
     })
-    ini += `}\n`
+    ini += `  }\n`
   }
+  ini += `}\n`
   return ini
 }
 console.log(MKinitState())
-appd.write(MKinitState())
-
-const md = `
-# ${appid}
-
-
-## ${devid}
-`
-if(!fs.existsSync(`${appid}.md`)){
-  const inst = fs.createWriteStream(`${appid}.md`);
-  inst.write(md)
-  inst.end()
-}
+  
 sql.end()
-appd.end()
+inst.end()
 cfgc.end()
 cfgh.end()

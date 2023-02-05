@@ -67,7 +67,7 @@ How does it work now?
     const sen_t SE {
       3,//numtypes of different sensor types
       5,//numsens of sensors(numsens)
-      { // {nums,{sr,sr},type,model}
+      { // {nums,{sr,sr},senses,model}
         {1, {0}, "light", "BH1750"},//assumes SCL is D1(5) and SDA is D2(4)
         {2, {1,2}, "temp", "DS18B20a"},  
         {2, {3,4}, "temp-hum", "DHT11"},
@@ -89,7 +89,8 @@ How does it work now?
       {5, -9, D2, 1, 0},// relay controlled by app default or timer
       {6, -9, D4, 1, 0},// relay controlled by app default or timer
       {7, -9, D4, 1, 0},// relay controlled by app default or timer
-      {8, D9, -9, 0 , 0},// contact sensor
+      {8, D9, -9, 0, 0},// contact sensor9,
+      {9, -9, D0, 1, 0}
     }
 
     /*srs_t the state of the machine, all the sensor values, relay states,
@@ -113,9 +114,9 @@ How does it work now?
         {6,0}
         {7,0}
       },
-      1,// di {sra,srb,diffon, diffoff, maxa, maxb, srrel, onoff} 
+      1,// di {sr, sra,srb,diffon, diffoff, maxa, maxb, onoff} 
       {
-        {1,3,6,9,200,200,5,0}
+        {9,3,6,9,200,200,0}
       }
     };
 
@@ -198,6 +199,54 @@ maybe everthing default on the chip like reading sensors and responding to ckRel
 
 
 Loop watches for HAYsTATEcNG, runs reqs.pubState() if it is >0.
+
+### 128doorStrike0 version -code should generate
+    /*SE constant declarations*/  
+    const sen_t SE {
+      1,//numtypes 
+      1,//numsens of sensors
+      { // {nums,{sr,sr},type,model}
+        {1, {0}, "contact", "NCcontact"},
+      }
+    }
+
+    /*ports for input and output
+      {sr, in, out, rec, isnew} */
+    const ports_t ports {
+      {0, D5, -9, 1, 0},// contact
+      {1, -9, D1, 1, 0},// strike
+      {2, -9, D8, 1, 0},// ledRed
+      {3, -9, D7, 1, 0},// ledGreen
+      {4, -9, D6, 1, 0},// ledBlue
+    }
+
+    /*srs_t the state of the machine, all the sensor values, relay states,
+    ho/lo limits, differences and maxvals*/ 
+    srs_t srs {
+      5,
+      1,//se{{sr,reading}} 
+      {
+        {0,1}, //contact
+      },
+      0,//cs{{sr,reading, onoff hi, lo}}
+      {},
+      4,//rel {sr, onoff}
+      {
+        {1,0}, //strike
+        {2,1}, //ledRed
+        {3,0}, //ledGreen
+        {4,0}, //ledBlue
+      },
+      0,// di {sra,srb,diffon, diffoff, maxa, maxb, srrel, onoff} 
+      {}
+    };    
+
+    *prgs extern data structure initalization*/ 
+      prgs_t prgs{
+        0,//numprgs
+        {} //prg: {sr,aid,ev,numdata,prg[[hr,min,max,min]],port,hms}  
+      }
+        
 
 ## topics of communication
 ### sent by device
