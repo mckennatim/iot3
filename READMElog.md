@@ -1,6 +1,9 @@
 # READMElog
 
 ## log
+### 2/5/23 11-128_create_conf
+TODO: Create a copy file to move CONFIG.h and .cpp to back to my
+
 ### 2/5/23 10-128doorStrike1
 
 ### 09-128_appbuild_upto_07

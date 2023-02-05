@@ -17,12 +17,42 @@ extern char pwd[24];
 extern char mqtt_server[60];
 extern char mqtt_port[6];
 
+
 /*INCOMING topics*/
 struct topics_t {
     int numtopics;
     char scribedTo[6][8]; 
 };
-extern const topics_t tpcsSub ;
+extern const topics_t TPC ;
+
+
+struct port_t {
+  int sr;
+  int in;
+  int out;
+  int rec;
+  int isnew;
+}
+struct ports_t {
+  int numports;
+  port_t port[7]; /*MODIFY*/
+}
+/*PORT*/
+
+/*SE constant declarations*/  
+struct senso_t{
+  int nums;
+  int ids[6]; //srs/portin
+  char type[12];
+  char model[12];
+};
+struct sen_t {
+  int numtypes;
+  int numsens;
+  senso_t stype[2];
+};
+extern const sen_t SE;
+/*SE constant declarations*/ 
 
 /*srs data structure declarations*/ 
 struct se_t {//sensors
@@ -57,4 +87,43 @@ struct di_t {//diff control
     bool onoff;
     bool rec;
     bool isnew;
+};
+
+struct srs_t {
+  int numsr;
+  int numse;
+  se_t se[1];/*MODIFY*/
+  int numcs;
+  cs_t cs[2];/*MODIFY*/
+  int numrel;
+  rel_t rel[4];/*MODIFY*/
+  int numdi;
+  di_t di[0];/*MODIFY*/
+};
+
+struct prgs_t{
+  int numprgs;
+  prg_t prg[3];/*MODIFY*/
+};
+extern prgs_t prgs;
+/*prg data structure declarations*/  
+
+/*flags*/
+struct flags_t{
+  bool aUTOMA;
+  bool fORCErESET;  
+  int cREMENT;
+  int HAStIMR; //11100(28) 4,8, and 16 have timers not temp
+  int IStIMERoN;//11100 assume some time left, timers with tleft>0 
+  int HAYpROG;// = senrels with events>1
+  int HAYsTATEcNG; //11111(31 force report) some state change int or ext
+  int CKaLARM; //11111 assume alarm is set at start
+  int ISrELAYoN;// = summary of relay states  
+  int tIMElEFT[10];// =[0,0,56,0,0] timeleft in timrs
+};
+extern flags_t f;
+
+struct iscsidx_t {
+  int srtype;
+  int idx;
 };
