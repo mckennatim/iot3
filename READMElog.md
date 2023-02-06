@@ -1,6 +1,7 @@
 # READMElog
 
 ## log
+### 2/6/23 12-127_appCreate_build_copyCONF_compile-run
 ### 2/5/23 11-128_create_conf
 TODO: Create a copy file to move CONFIG.h and .cpp to back to my
 

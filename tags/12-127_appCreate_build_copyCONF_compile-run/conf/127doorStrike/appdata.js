@@ -1,25 +1,6 @@
-/*Project Creations Script. Creates:
-* A generic project data file. with devs, devinfo and apploc 
-* Copies appbuild.js to the project conf/129projctname
-
-Modify the four items noted as MODIFY then run> node appCreate.js
-
-Then in the new project directory modify appata.js for your project particlulars
-*/
-
-import fs from 'fs'
-const devid = "CYURD127" /*MODIFY*/
-const appid = "doorStrike" /*MODIFY*/
-const locid = "255ChestnutAve" /*MODIFY*/
-const user = "mckenna.tim@gmail.com" /*MODIFY*/
-
-const folder =devid.substring(5)+appid
-const devdir = `conf/${folder}/${devid}`
-
 const cfgdata =
-`const cfgdata =
 {
-  "${devid}": [
+  "CYURD127": [
     {
       "sr": 0,
       "label": "contact",
@@ -127,7 +108,7 @@ const cfgdata =
 }
 
 const devinfo = {
-  "devid": "${devid}",
+  "devid": "CYURD127",
   "owner": "tim@sitebuilt.net",
   "pwd": "geniot",
   "mqtt_server": "sitebuilt.net",
@@ -135,69 +116,10 @@ const devinfo = {
 }
 
 const apploc ={
-  "appid": "${appid}",
-  "locid": "${locid}",
-  "user": "${user}",
+  "appid": "doorStrike",
+  "locid": "255ChestnutAve",
+  "user": "mckenna.tim@gmail.com",
   "descr": ""
 }
 
 export {cfgdata, devinfo, apploc}
-`
-
-console.log('cfgdata: ', cfgdata);
-
-const datafile = `conf/${folder}/appdata.js`
-fs.mkdir(`conf/${folder}`, (err)=>{
-  console.log('err: ', err);
-  console.log('folder: ', folder);
-  if(!fs.existsSync(datafile)){
-    console.log('appdata.js doesnt exist: ');
-    const jsf= fs.createWriteStream(datafile,{ overwrite: false })
-    jsf.write(cfgdata)
-    jsf.end()
-  }
-  // fs.open(`conf/${folder}/${appid}.js`,"w+" ,()=>{})
-})
-
-
-
-const buildfile = `conf/${folder}/appbuild.js`
-if(!fs.existsSync(buildfile)){
-  console.log('appbuild doesnot exist: ');
-  fs.copyFile('appbuild.js',buildfile,(err)=>{
-    if (err){
-      console.log('err: ', err);
-    }
-    console.log('appbuild.js created ');
-  })
-}else{
-  console.log('appbuild.js already exists: ');
-}
-
-const cpcode = `
-import fs from 'fs'
-
-const dest= '../../../src'
-
-fs.copyFile('CONFIG.h', \`\${dest}/CONFIG.h\`,(err)=>{
-  if (err){
-    console.log('err: ', err);
-  }
-  console.log('CONFIG.h is copied to my/src ');
-})
-
-fs.copyFile('CONFIG.cpp', \`\${dest}/CONFIG.cpp\`,(err)=>{
-  if (err){
-    console.log('err: ', err);
-  }
-  console.log('CONFIG.cpp is copied to my/src ');
-})
-
-`
-
-fs.mkdir(devdir, (err)=>{
-  console.log(err)
-  const cfgcp= fs.createWriteStream(`${devdir}/copyCONFIG.js`)
-  cfgcp.write(cpcode)
-  cfgcp.end()
-})

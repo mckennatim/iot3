@@ -35,8 +35,8 @@ Reqs::Reqs(char* devid){
 }
 
 void Reqs::processInc(){
-  for (int i=0;i<tpcsSub.numtopics;i++){
-    if(strcmp(tpcsSub.scribedTo[i], itopic)==0){
+  for (int i=0;i<TPC.numtopics;i++){
+    if(strcmp(TPC.scribedTo[i], itopic)==0){
     	switch (i){
         case 0:
           Serial.println("case 0 is what devtime?");
