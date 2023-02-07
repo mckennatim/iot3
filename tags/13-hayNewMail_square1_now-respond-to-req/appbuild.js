@@ -15,10 +15,6 @@ let numdi=0
 let numprgs =0
 
 
-fs.mkdir(`${devid}`, (err)=>{
-  // console.log('err: ', err);
-})
-
 console.log("${devid}/CONFIG.cpp: ", `${devid}/CONFIG.cpp`);
 
 const sql = fs.createWriteStream(`${appid}.sql`);
@@ -31,15 +27,19 @@ let ddd = {}
 let dbz = `
 [
 `
+let numzon=0
 const keys = Object.keys(cfgdata)
 const z = keys.map((devid,i)=>{
-  const dd =cfgdata[devid].map((f)=>{
-    dbz += `  {"id": ${f.label}, "name":${f.descr}, "img": ${f.label}.png },\n`
-    return {"sr": f.sr, "label":f.label }
+  numzon += cfgdata[devid].length
+  const dd =cfgdata[devid].map((f,j)=>{
+    dbz += `  {"id": "${f.label}", "name": "${f.descr}", "img": "${f.label}.png" },\n`
+    return {"sr": f.sr, "label": f.label }
   })
   ddd[devid]=dd
 })
-dbz += `]`
+dbz = dbz.slice(0,-2)
+dbz += `
+]`
 
 console.log('dbz: ', dbz);
 const devs = JSON.stringify(ddd,null,2);
@@ -54,12 +54,15 @@ console.log(de);
 
 
 const insdev = `
-REPLACE INTO \`devs\` (\`devid\`, \`owner\`, \`devpwd\`, \`locid\`, \`description\`) VALUES ( 
+REPLACE INTO \`devs\` (\`devid\`, \`owner\`, \`devpwd\`, \`locid\`, \`description\`, \`server\`, \`specs\`) VALUES ( 
   '${devid}', 
   '${devinfo.owner}',
   '${devinfo.pwd}',
   '${locid}',
-  '${apploc.descr}'
+  '${apploc.descr}',
+  '{"mqtt_server": "${devinfo.mqtt_server}", "mqtt_port": "${devinfo.mqtt_port}"}',
+  '{"HAStIMER":28,"notTimerTags":["temp","onoff","hilimit","lolimit"],"sr":[{"id":0,"hayrelay":0,"sensor":{"senses":"temp","model":"DSP18b20"}}]}'
+
 );
 `
 console.log('insdev: ', insdev);  
@@ -157,11 +160,11 @@ const ports_t ports {
 `
   ports += `  ${numsr}, //numsr
   {//port:{sr, in, out, rec, isnew}\n`
-  cfgdata[devid].map((d)=>{
-    ports += `    {${d.sr}, ${d.hasOwnProperty('in') ? d.in : '-9'}, ${d.hasOwnProperty('out') ? d.out : '-9'}, ${d.rec}, 0},// ${d.label} \n`;
+  cfgdata[devid].map((d,i)=>{
+    ports += `    {${d.sr}, ${d.hasOwnProperty('in') ? d.in : '-9'}, ${d.hasOwnProperty('out') ? d.out : '-9'}, ${d.rec}, 0}${i+1==numsr?' ':','}// ${d.label} \n`;
   })
   ports += `  }
-}`
+};`
   return ports
 }
 console.log(MKports());
@@ -201,7 +204,8 @@ const sen_t SE {
       sesrs += `}`
       sen += `    { ${nums}, ${sesrs}, "${dups[0].senses}", "${dups[0].model}" }${j+1==numtypes?' ':','} \n`
     })
-    sen += `  }\n}`
+    sen += `  }
+};\n`
   }
   return sen
 }
@@ -211,7 +215,7 @@ cfgc.write(MKsens());
 const MKsrs = ()=>{
   let srs =`
 /*srs data structure to hold the current state of the entire device*/
-const srs_t srs {
+srs_t srs {
 `
   const numsr = devobj.length 
   srs += `  ${numsr}, // numsr \n`
@@ -263,7 +267,7 @@ const srs_t srs {
   numdi = dif.length
   srs += `  ${numdi}, // numdi \n `
   if (numdi==0){
-    srs += ` {}, // dif:{sr, onoff}\n`
+    srs += ` {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
   }else{
     srs += ` { // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
     dif.map((d,i)=>{
@@ -271,7 +275,7 @@ const srs_t srs {
     })
     srs+= `  },\n`
   }
-  srs += `}`
+  srs += `};\n`
   return srs
 }
 console.log(MKsrs());
@@ -315,7 +319,7 @@ prgs_t prgs{
     })
     pstr += `  }\n`
   }
-  pstr += `}\n`
+  pstr += `};\n`
   return pstr
 }
 console.log(MKprgs());
@@ -324,6 +328,9 @@ cfgc.write(MKprgs());
 const flags =`
 /*flags extern data structure*/
 flags_t f {
+  0,//cONNectd
+  0,//hayWIFI
+  0,//hayMQTT
   0,//aUTOMA
   0,//fORCErESET
   5,//cREMENT
@@ -368,18 +375,19 @@ struct topics_t {
 };
 extern const topics_t TPC ;
 
-
+/*PORTS*/
 struct port_t {
   int sr;
   int in;
   int out;
   int rec;
   int isnew;
-}
+};
 struct ports_t {
   int numports;
   port_t port[${numsr}]; /*MODIFY*/
-}
+};
+extern const ports_t ports ;
 /*PORT*/
 
 /*SE constant declarations*/  
@@ -431,7 +439,6 @@ struct di_t {//diff control
     bool rec;
     bool isnew;
 };
-
 struct srs_t {
   int numsr;
   int numse;
@@ -443,7 +450,19 @@ struct srs_t {
   int numdi;
   di_t di[${numdi}];/*MODIFY*/
 };
+extern srs_t srs;
+/*srs data structure declarations*/  
 
+/*prg data structure declarations*/  
+struct prg_t{
+  int sr;
+  AlarmID_t aid;
+  int ev;
+  int numdata;
+  int prg[11][4];//max 11 events [hr,min,max,min]  
+  int port;
+  int hms;
+};
 struct prgs_t{
   int numprgs;
   prg_t prg[${numprgs}];/*MODIFY*/
@@ -453,6 +472,9 @@ extern prgs_t prgs;
 
 /*flags*/
 struct flags_t{
+  int cONNectd;
+  int hayWIFI;
+  int hayMQTT;
   bool aUTOMA;
   bool fORCErESET;  
   int cREMENT;
@@ -470,6 +492,8 @@ struct iscsidx_t {
   int srtype;
   int idx;
 };
+
+#endif
 `
 
 cfgh.write(configha)

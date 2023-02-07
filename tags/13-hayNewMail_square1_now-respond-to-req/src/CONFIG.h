@@ -1,4 +1,4 @@
-/*second time*/
+
 #ifndef CONFIG_h
 #define CONFIG_h
 
@@ -25,18 +25,19 @@ struct topics_t {
 };
 extern const topics_t TPC ;
 
-
+/*PORTS*/
 struct port_t {
   int sr;
   int in;
   int out;
   int rec;
   int isnew;
-}
+};
 struct ports_t {
   int numports;
   port_t port[7]; /*MODIFY*/
-}
+};
+extern const ports_t ports ;
 /*PORT*/
 
 /*SE constant declarations*/  
@@ -88,7 +89,6 @@ struct di_t {//diff control
     bool rec;
     bool isnew;
 };
-
 struct srs_t {
   int numsr;
   int numse;
@@ -100,7 +100,19 @@ struct srs_t {
   int numdi;
   di_t di[0];/*MODIFY*/
 };
+extern srs_t srs;
+/*srs data structure declarations*/  
 
+/*prg data structure declarations*/  
+struct prg_t{
+  int sr;
+  AlarmID_t aid;
+  int ev;
+  int numdata;
+  int prg[11][4];//max 11 events [hr,min,max,min]  
+  int port;
+  int hms;
+};
 struct prgs_t{
   int numprgs;
   prg_t prg[3];/*MODIFY*/
@@ -110,6 +122,9 @@ extern prgs_t prgs;
 
 /*flags*/
 struct flags_t{
+  int cONNectd;
+  int hayWIFI;
+  int hayMQTT;
   bool aUTOMA;
   bool fORCErESET;  
   int cREMENT;
@@ -127,3 +142,5 @@ struct iscsidx_t {
   int srtype;
   int idx;
 };
+
+#endif

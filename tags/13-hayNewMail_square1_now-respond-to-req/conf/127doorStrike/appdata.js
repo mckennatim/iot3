@@ -1,6 +1,6 @@
-const cfgdata = 
+const cfgdata =
 {
-  "CYURD128": [
+  "CYURD127": [
     {
       "sr": 0,
       "label": "contact",
@@ -8,16 +8,17 @@ const cfgdata =
       "senses": "onoff",
       "model": "NCcontact",
       "in": "D5",
-      "reading": 1,
+      "reading" : 1,
       "rec": 1,
       "descr": "a short description"
     },
+
     {
       "sr": 1,
       "label": "strike",
       "type": "rel",
       "out": "D1",
-      "onoff": 0,
+      "onoff" : 0,
       "hayprg": 1,
       "rec": 1,
       "descr": "a short description"
@@ -27,7 +28,7 @@ const cfgdata =
       "label": "ledRed",
       "type": "rel",
       "out": "D8",
-      "onoff": 1,
+      "onoff" : 1,
       "rec": 0,
       "descr": "a short descrition"
     },
@@ -36,7 +37,7 @@ const cfgdata =
       "label": "ledGreen",
       "type": "rel",
       "out": "D7",
-      "onoff": 0,
+      "onoff" : 0,
       "rec": 0,
       "descr": "a short descrition"
     },
@@ -45,7 +46,7 @@ const cfgdata =
       "label": "ledBlue",
       "type": "rel",
       "out": "D6",
-      "onoff": 0,
+      "onoff" : 0,
       "rec": 0,
       "descr": "a short descrition"
     },
@@ -57,7 +58,7 @@ const cfgdata =
       "model": "ds18b20",
       "in": "D0",
       "out": "D4",
-      "reading": 44,
+      "reading" : 44,
       "onoff": 0,
       "hi": 69,
       "lo": 67,
@@ -73,7 +74,7 @@ const cfgdata =
       "model": "ds18b20",
       "in": "D0",
       "out": "D1",
-      "reading": 33,
+      "reading" : 33,
       "onoff": 0,
       "hi": 70,
       "lo": 40,
@@ -81,6 +82,21 @@ const cfgdata =
       "rec": 1,
       "descr": "a short descrition"
     }
+    // {
+    //   "sr": 7,
+    //   "label": "solardif",
+    //   "type": "dif",
+    //   "out": "D9",
+    //   "sra": 5,
+    //   "srb" : 6,
+    //   "difon": 42,
+    //   "difoff": 48,
+    //   "maxa": 170,
+    //   "maxb": 140,
+    //   "onoff" : 0,
+    //   "hayprg" : 1,
+    //   "rec": 1
+    // },
   ],
   "CYURD006": [
     {
@@ -92,7 +108,7 @@ const cfgdata =
 }
 
 const devinfo = {
-  "devid": "CYURD128",
+  "devid": "CYURD127",
   "owner": "tim@sitebuilt.net",
   "pwd": "geniot",
   "mqtt_server": "sitebuilt.net",
@@ -107,4 +123,3 @@ const apploc ={
 }
 
 export {cfgdata, devinfo, apploc}
-

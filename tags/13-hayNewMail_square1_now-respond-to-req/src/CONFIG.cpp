@@ -14,7 +14,7 @@ void customLoop() {
 
 
 /*dev extern device variables*/  
-char devid[9]="CYURD128";
+char devid[9]="CYURD127";
 char owner[254]="tim@sitebuilt.net";
 char pwd[24]="geniot";
 char mqtt_server[60]="sitebuilt.net";
@@ -39,9 +39,9 @@ const ports_t ports {
     {3, -9, D7, 0, 0},// ledGreen 
     {4, -9, D6, 0, 0},// ledBlue 
     {5, D0, D4, 1, 0},// lr 
-    {6, D0, D1, 1, 0},// mb 
+    {6, D0, D1, 1, 0} // mb 
   }
-}
+};
 /*SE constant declarations*/
 const sen_t SE {
   2, // numstypes 
@@ -50,9 +50,10 @@ const sen_t SE {
     { 1, { 0 }, "onoff", "NCcontact" }, 
     { 2, { 5,6 }, "temp", "ds18b20" }  
   }
-}
+};
+
 /*srs data structure to hold the current state of the entire device*/
-const srs_t srs {
+srs_t srs {
   7, // numsr 
   1, // numse 
   { // se:{sr, reading} 
@@ -71,8 +72,9 @@ const srs_t srs {
     {4, 0}  // ledBlue
   },
   0, // numdi 
-  {}, // dif:{sr, onoff}
-}
+  {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} 
+};
+
 /*prgs extern data structure initalization*/ 
 prgs_t prgs{  
   3, // numprgs 
@@ -81,10 +83,13 @@ prgs_t prgs{
     {5, 255, 1, 2, {{0,0,69,67}}, 1502},  
     {6, 255, 1, 2, {{0,0,70,40}}, 1504}   
   }
-}
+};
 
 /*flags extern data structure*/
 flags_t f {
+  0,//cONNectd
+  0,//hayWIFI
+  0,//hayMQTT
   0,//aUTOMA
   0,//fORCErESET
   5,//cREMENT

@@ -27,15 +27,19 @@ let ddd = {}
 let dbz = `
 [
 `
+let numzon=0
 const keys = Object.keys(cfgdata)
 const z = keys.map((devid,i)=>{
-  const dd =cfgdata[devid].map((f)=>{
-    dbz += `  {"id": ${f.label}, "name":${f.descr}, "img": ${f.label}.png },\n`
-    return {"sr": f.sr, "label":f.label }
+  numzon += cfgdata[devid].length
+  const dd =cfgdata[devid].map((f,j)=>{
+    dbz += `  {"id": "${f.label}", "name": "${f.descr}", "img": "${f.label}.png" },\n`
+    return {"sr": f.sr, "label": f.label }
   })
   ddd[devid]=dd
 })
-dbz += `]`
+dbz = dbz.slice(0,-2)
+dbz += `
+]`
 
 console.log('dbz: ', dbz);
 const devs = JSON.stringify(ddd,null,2);
@@ -50,12 +54,15 @@ console.log(de);
 
 
 const insdev = `
-REPLACE INTO \`devs\` (\`devid\`, \`owner\`, \`devpwd\`, \`locid\`, \`description\`) VALUES ( 
+REPLACE INTO \`devs\` (\`devid\`, \`owner\`, \`devpwd\`, \`locid\`, \`description\`, \`server\`, \`specs\`) VALUES ( 
   '${devid}', 
   '${devinfo.owner}',
   '${devinfo.pwd}',
   '${locid}',
-  '${apploc.descr}'
+  '${apploc.descr}',
+  '{"mqtt_server": "${devinfo.mqtt_server}", "mqtt_port": "${devinfo.mqtt_port}"}',
+  '{"HAStIMER":28,"notTimerTags":["temp","onoff","hilimit","lolimit"],"sr":[{"id":0,"hayrelay":0,"sensor":{"senses":"temp","model":"DSP18b20"}}]}'
+
 );
 `
 console.log('insdev: ', insdev);  

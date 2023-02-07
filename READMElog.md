@@ -1,6 +1,12 @@
 # READMElog
 
 ## log
+### 2//7/23 13-hayNewMail_square1_now-respond-to-req
+TODO respond to req
+
+TODO was not parsing json from the database files. Compare to what's coming out of greenhouse
+SOLUTION use zones.slice(0,-2) to get rid of last comma in json array
+
 ### 2/6/23 12-127_appCreate_build_copyCONF_compile-run
 ### 2/5/23 11-128_create_conf
 TODO: Create a copy file to move CONFIG.h and .cpp to back to my
