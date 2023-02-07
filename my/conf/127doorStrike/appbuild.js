@@ -54,15 +54,12 @@ console.log(de);
 
 
 const insdev = `
-REPLACE INTO \`devs\` (\`devid\`, \`owner\`, \`devpwd\`, \`locid\`, \`description\`, \`server\`, \`specs\`) VALUES ( 
+REPLACE INTO \`devs\` (\`devid\`, \`owner\`, \`devpwd\`, \`locid\`, \`description\`) VALUES ( 
   '${devid}', 
   '${devinfo.owner}',
   '${devinfo.pwd}',
   '${locid}',
-  '${apploc.descr}',
-  '{"mqtt_server": "${devinfo.mqtt_server}", "mqtt_port": "${devinfo.mqtt_port}"}',
-  '{"HAStIMER":28,"notTimerTags":["temp","onoff","hilimit","lolimit"],"sr":[{"id":0,"hayrelay":0,"sensor":{"senses":"temp","model":"DSP18b20"}}]}'
-
+  '${apploc.descr}'
 );
 `
 console.log('insdev: ', insdev);  
@@ -499,9 +496,8 @@ struct iscsidx_t {
 cfgh.write(configha)
 
 /*app intiState --------------------------------------------------------*/
-
-const MKinitState =()=>{
-  let ini = `
+const MKinist=()=>{
+    let ini = `
 /*  
 temp_out: darr:[]
 tstat: {pro:[[0,0,65,63]], timeleft:0, darr:[reading,onoff,66,64]},
@@ -511,13 +507,12 @@ pond: {pro:[[0,0,0],[19,15,1]], timeleft:0, darr:[0,0,0]},
 */
 const initialState = {//pro must start at 0,0   
 `
-  if(devobj.length == 0){
-    ini += `  {}\n`
-  }else{
-    devobj.map((e,i)=>{
+  const keys = Object.keys(cfgdata)
+  keys.map((k)=>{
+    cfgdata[k].map((e,i)=>{
       switch(e.type){
         case "se":{
-          ini += `  ${e.label}: {darr:[${e.reading}]}${i+1==devobj.length?' ':','}  \n`
+          ini += `  ${e.label}: {darr:[${e.reading}]},\n`
           break; 
         }
         case "cs":{
@@ -525,7 +520,7 @@ const initialState = {//pro must start at 0,0
           if(e.hayprg){
             prg= `, pro:[[0,0,${e.hi},${e.lo}]], timeleft:0`
           }
-          ini += `  ${e.label}: {darr:[${e.reading}, ${e.onoff}, ${e.hi}, ${e.lo}]${prg}}${i+1==devobj.length?' ':','}  \n`
+          ini += `  ${e.label}: {darr:[${e.reading}, ${e.onoff}, ${e.hi}, ${e.lo}]${prg}},\n`
           break;
         }
         case "rel":{
@@ -533,7 +528,7 @@ const initialState = {//pro must start at 0,0
           if(e.hayprg){
             prg= `, pro:[[0,0,${e.onoff}]], timeleft:0`
           }
-          ini += `  ${e.label}: {darr:[${e.onoff}]${prg}}${i+1==devobj.length?' ':','}  \n`
+          ini += `  ${e.label}: {darr:[${e.onoff}]${prg}},\n`
           break;
         }
         case "dif":{
@@ -543,14 +538,16 @@ const initialState = {//pro must start at 0,0
           break
         }
       }
-    })
-    ini += `}\n`
-  }
-  return ini
+    }) 
+  }) 
+  ini= ini.slice(0,-2)+`\n}`
+  return ini 
 }
-console.log(MKinitState())
-appd.write(MKinitState())
+console.log('MKinist(): ', MKinist());
+appd.write(MKinist())
+/*app intiState --------------------------------------------------------*/
 
+/*create an empty appid.md  --------------------*/
 const md = `
 # ${appid}
 
@@ -562,7 +559,10 @@ if(!fs.existsSync(`${appid}.md`)){
   inst.write(md)
   inst.end()
 }
+/*create an empty appid.md ----------------------------------- */
+
 sql.end()
 appd.end()
 cfgc.end()
 cfgh.end()
+
