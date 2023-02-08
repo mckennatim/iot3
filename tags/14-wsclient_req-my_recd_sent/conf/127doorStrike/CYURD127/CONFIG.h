@@ -35,7 +35,7 @@ struct port_t {
 };
 struct ports_t {
   int numports;
-  port_t port[7]; /*MODIFY*/
+  port_t port[8]; /*MODIFY*/
 };
 extern const ports_t ports ;
 /*PORT*/
@@ -92,7 +92,7 @@ struct di_t {//diff control
 struct srs_t {
   int numsr;
   int numse;
-  se_t se[1];/*MODIFY*/
+  se_t se[2];/*MODIFY*/
   int numcs;
   cs_t cs[2];/*MODIFY*/
   int numrel;

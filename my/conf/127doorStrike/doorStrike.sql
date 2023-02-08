@@ -37,8 +37,12 @@ REPLACE INTO `app_loc` (`appid`, `locid`, `devs`, `zones`) VALUES (
       "label": "lr"
     },
     {
-      "sr": 6,
+      "sr": 7,
       "label": "mb"
+    },
+    {
+      "sr": 6,
+      "label": "music"
     }
   ],
   "CYURD006": [
@@ -57,6 +61,7 @@ REPLACE INTO `app_loc` (`appid`, `locid`, `devs`, `zones`) VALUES (
   {"id": "ledBlue", "name": "a short descrition", "img": "ledBlue.png" },
   {"id": "lr", "name": "a short descrition", "img": "lr.png" },
   {"id": "mb", "name": "a short descrition", "img": "mb.png" },
+  {"id": "music", "name": "a third sensor from 1-wire", "img": "music.png" },
   {"id": "temp_out", "name": "outside temperature", "img": "temp_out.png" }
 ]'
 );

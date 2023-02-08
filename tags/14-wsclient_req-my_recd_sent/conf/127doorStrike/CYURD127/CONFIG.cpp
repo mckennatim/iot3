@@ -31,7 +31,7 @@ const topics_t TPC {
 /*ports for input and output
  */
 const ports_t ports {
-  7, //numsr
+  8, //numsr
   {//port:{sr, in, out, rec, isnew}
     {0, D5, -9, 1, 0},// contact 
     {1, -9, D1, 1, 0},// strike 
@@ -39,30 +39,32 @@ const ports_t ports {
     {3, -9, D7, 0, 0},// ledGreen 
     {4, -9, D6, 0, 0},// ledBlue 
     {5, D0, D4, 1, 0},// lr 
-    {6, D0, D1, 1, 0} // mb 
+    {7, D0, D1, 1, 0},// mb 
+    {6, D0, -9, 0, 0} // music 
   }
 };
 /*SE constant declarations*/
 const sen_t SE {
   2, // numstypes 
-  3, // numsens 
+  4, // numsens 
   { // stype:{nums,{sra,srb...},type,model}
     { 1, { 0 }, "onoff", "NCcontact" }, 
-    { 2, { 5,6 }, "temp", "ds18b20" }  
+    { 3, { 5,7,6 }, "temp", "ds18b20" }  
   }
 };
 
 /*srs data structure to hold the current state of the entire device*/
 srs_t srs {
-  7, // numsr 
-  1, // numse 
+  8, // numsr 
+  2, // numse 
   { // se:{sr, reading} 
-    {0, 1}  // contact
+    {0, 1}, // contact
+    {6, 33}  // music
   },
   2, // numcs 
   { // cs:{sr, reading, onoff, hi, lo} 
     {5, 44, 0, 69, 67}, // lr
-    {6, 33, 0, 70, 40}  // mb
+    {7, 33, 0, 70, 40}  // mb
   },
   4, // numrel 
   { // rel:{sr, onoff} 
@@ -81,7 +83,7 @@ prgs_t prgs{
   { // prg:{sr,aid,ev,numdata,prg[[]],hms} 
     {1, 255, 1, 1, {{0,0,0,}}, 1500},  
     {5, 255, 1, 2, {{0,0,69,67}}, 1502},  
-    {6, 255, 1, 2, {{0,0,70,40}}, 1504}   
+    {7, 255, 1, 2, {{0,0,70,40}}, 1504}   
   }
 };
 

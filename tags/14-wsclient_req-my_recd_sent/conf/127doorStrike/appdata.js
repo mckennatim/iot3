@@ -67,7 +67,7 @@ const cfgdata =
       "descr": "a short descrition"
     },
     {
-      "sr": 6,
+      "sr": 7,
       "label": "mb",
       "type": "cs",
       "senses": "temp",
@@ -81,28 +81,25 @@ const cfgdata =
       "hayprg": 1,
       "rec": 1,
       "descr": "a short descrition"
+    },
+    {
+      "sr": 6,
+      "label": "music",
+      "type": "se",
+      "senses": "temp",
+      "model": "ds18b20",
+      "in": "D0",
+      "reading" : 33,
+      "rec": 0,
+      "descr": "a third sensor from 1-wire"
     }
-    // {
-    //   "sr": 7,
-    //   "label": "solardif",
-    //   "type": "dif",
-    //   "out": "D9",
-    //   "sra": 5,
-    //   "srb" : 6,
-    //   "difon": 42,
-    //   "difoff": 48,
-    //   "maxa": 170,
-    //   "maxb": 140,
-    //   "onoff" : 0,
-    //   "hayprg" : 1,
-    //   "rec": 1
-    // },
   ],
   "CYURD006": [
     {
       "sr": 0,
       "label": "temp_out",
       "type": "se",
+      "model": "ds18b20",
       "reading": 55,
       "descr": "outside temperature"
     }

@@ -35,7 +35,7 @@ struct port_t {
 };
 struct ports_t {
   int numports;
-  port_t port[7]; /*MODIFY*/
+  port_t port[4]; /*MODIFY*/
 };
 extern const ports_t ports ;
 /*PORT*/
@@ -96,7 +96,7 @@ struct srs_t {
   int numcs;
   cs_t cs[2];/*MODIFY*/
   int numrel;
-  rel_t rel[4];/*MODIFY*/
+  rel_t rel[1];/*MODIFY*/
   int numdi;
   di_t di[0];/*MODIFY*/
 };
@@ -115,7 +115,7 @@ struct prg_t{
 };
 struct prgs_t{
   int numprgs;
-  prg_t prg[3];/*MODIFY*/
+  prg_t prg[0];/*MODIFY*/
 };
 extern prgs_t prgs;
 /*prg data structure declarations*/  

@@ -115,7 +115,7 @@ struct prg_t{
 };
 struct prgs_t{
   int numprgs;
-  prg_t prg[0];/*MODIFY*/
+  prg_t prg[1];/*MODIFY*/
 };
 extern prgs_t prgs;
 /*prg data structure declarations*/  

@@ -34,3 +34,5 @@ Ports used in 8266_2in-4out board are shown. The outD0temp2 connection may be pr
 ![pcb_long](./pcb_long.png)
 
 ![schem_long](./schem_long.png)
+
+[long](boards/long.pdf)

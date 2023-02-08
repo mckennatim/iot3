@@ -7,13 +7,9 @@ pond: {pro:[[0,0,0],[19,15,1]], timeleft:0, darr:[0,0,0]},
 //solar: darr:[sra_rdg, srb_rdg, difon, difoff,maxa, maxb onoff]
 */
 const initialState = {//pro must start at 0,0   
-  contact: {darr:[1]},
-  strike: {darr:[0], pro:[[0,0,0]], timeleft:0},
-  ledRed: {darr:[1]},
-  ledGreen: {darr:[0]},
-  ledBlue: {darr:[0]},
-  lr: {darr:[44, 0, 69, 67], pro:[[0,0,69,67]], timeleft:0},
-  mb: {darr:[33, 0, 70, 40], pro:[[0,0,70,40]], timeleft:0},
-  music: {darr:[33]},
+  temp2: {darr:[45]},
+  temp: {darr:[44, 0, 69, 67]},
+  hum: {darr:[24, 0, 60, 90]},
+  timr1: {darr:[0]},
   temp_out: {darr:[55]}
 }

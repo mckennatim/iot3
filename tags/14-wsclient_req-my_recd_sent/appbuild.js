@@ -19,7 +19,7 @@ console.log("${devid}/CONFIG.cpp: ", `${devid}/CONFIG.cpp`);
 
 const sql = fs.createWriteStream(`${appid}.sql`);
 
-const appd = fs.createWriteStream(`${appid}.js`);
+const appd = fs.createWriteStream(`initialState.js`);
 const cfgh = fs.createWriteStream(`${devid}/CONFIG.h`);
 const cfgc = fs.createWriteStream(`${devid}/CONFIG.cpp`);
 
@@ -497,38 +497,43 @@ cfgh.write(configha)
 
 /*app intiState --------------------------------------------------------*/
 const MKinist=()=>{
-    let ini = `
-/*  
+    let ini = 
+`/*  
 temp_out: darr:[]
 tstat: {pro:[[0,0,65,63]], timeleft:0, darr:[reading,onoff,66,64]},
 tv: {pro:[[0,0,hi,lo]], darr:[reading,onoff,hi,lo]},
 pond: {pro:[[0,0,0],[19,15,1]], timeleft:0, darr:[0,0,0]},
 //solar: darr:[sra_rdg, srb_rdg, difon, difoff,maxa, maxb onoff]
 */
-const initialState = {//pro must start at 0,0   
+const initialState = {
+  //pro must start at 0,0
 `
   const keys = Object.keys(cfgdata)
   keys.map((k)=>{
     cfgdata[k].map((e,i)=>{
       switch(e.type){
         case "se":{
-          ini += `  ${e.label}: {darr:[${e.reading}]},\n`
+          ini += `  ${e.label}: { darr: [${e.reading}] },\n`
           break; 
         }
         case "cs":{
           let prg=''
           if(e.hayprg){
-            prg= `, pro:[[0,0,${e.hi},${e.lo}]], timeleft:0`
+            prg= `, pro: [[0, 0, ${e.hi}, ${e.lo}]], timeleft: 0`
           }
-          ini += `  ${e.label}: {darr:[${e.reading}, ${e.onoff}, ${e.hi}, ${e.lo}]${prg}},\n`
+          ini += `  ${e.label}: { darr: [${e.reading}, ${e.onoff}, ${e.hi}, ${e.lo}]${prg} },\n`
           break;
         }
         case "rel":{
           let prg=''
+          let timr=''
           if(e.hayprg){
-            prg= `, pro:[[0,0,${e.onoff}]], timeleft:0`
+            prg= `, pro: [[0, 0, ${e.onoff}]], timeleft: 0`
           }
-          ini += `  ${e.label}: {darr:[${e.onoff}]${prg}},\n`
+          if(e.haytimr){
+            timr = `, timeleft: 0`
+          }
+          ini += `  ${e.label}: { darr: [${e.onoff}]${prg} },\n`
           break;
         }
         case "dif":{
@@ -540,7 +545,8 @@ const initialState = {//pro must start at 0,0
       }
     }) 
   }) 
-  ini= ini.slice(0,-2)+`\n}`
+  ini= ini.slice(0,-2)+`\n}:\n\n`
+  ini += `export {initialState}`
   return ini 
 }
 console.log('MKinist(): ', MKinist());

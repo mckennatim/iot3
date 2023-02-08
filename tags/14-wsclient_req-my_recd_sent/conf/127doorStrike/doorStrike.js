@@ -14,5 +14,6 @@ const initialState = {//pro must start at 0,0
   ledBlue: {darr:[0]},
   lr: {darr:[44, 0, 69, 67], pro:[[0,0,69,67]], timeleft:0},
   mb: {darr:[33, 0, 70, 40], pro:[[0,0,70,40]], timeleft:0},
+  music: {darr:[33]},
   temp_out: {darr:[55]}
 }

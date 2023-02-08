@@ -14,7 +14,7 @@ void customLoop() {
 
 
 /*dev extern device variables*/  
-char devid[9]="CYURD127";
+char devid[9]="CYURD128";
 char owner[254]="tim@sitebuilt.net";
 char pwd[24]="geniot";
 char mqtt_server[60]="sitebuilt.net";
@@ -31,15 +31,12 @@ const topics_t TPC {
 /*ports for input and output
  */
 const ports_t ports {
-  7, //numsr
+  4, //numsr
   {//port:{sr, in, out, rec, isnew}
-    {0, D5, -9, 1, 0},// contact 
-    {1, -9, D1, 1, 0},// strike 
-    {2, -9, D8, 0, 0},// ledRed 
-    {3, -9, D7, 0, 0},// ledGreen 
-    {4, -9, D6, 0, 0},// ledBlue 
-    {5, D0, D4, 1, 0},// lr 
-    {6, D0, D1, 1, 0} // mb 
+    {0, D2, -9, 1, 0},// temp2 
+    {1, D5, D8, 1, 0},// temp 
+    {2, D5, D7, 1, 0},// hum 
+    {3, -9, D6, 0, 0} // timr1 
   }
 };
 /*SE constant declarations*/
@@ -47,29 +44,26 @@ const sen_t SE {
   2, // numstypes 
   3, // numsens 
   { // stype:{nums,{sra,srb...},type,model}
-    { 1, { 0 }, "onoff", "NCcontact" }, 
-    { 2, { 5,6 }, "temp", "ds18b20" }  
+    { 1, { 0 }, "temp", "DS18B20" }, 
+    { 2, { 1,2 }, "temp-hum", "DHT11" }  
   }
 };
 
 /*srs data structure to hold the current state of the entire device*/
 srs_t srs {
-  7, // numsr 
+  4, // numsr 
   1, // numse 
   { // se:{sr, reading} 
-    {0, 1}  // contact
+    {0, 45}  // temp2
   },
   2, // numcs 
   { // cs:{sr, reading, onoff, hi, lo} 
-    {5, 44, 0, 69, 67}, // lr
-    {6, 33, 0, 70, 40}  // mb
+    {1, 44, 0, 69, 67}, // temp
+    {2, 24, 0, 60, 90}  // hum
   },
-  4, // numrel 
+  1, // numrel 
   { // rel:{sr, onoff} 
-    {1, 0}, // strike
-    {2, 1}, // ledRed
-    {3, 0}, // ledGreen
-    {4, 0}  // ledBlue
+    {3, 0}  // timr1
   },
   0, // numdi 
   {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} 
@@ -77,12 +71,8 @@ srs_t srs {
 
 /*prgs extern data structure initalization*/ 
 prgs_t prgs{  
-  3, // numprgs 
-  { // prg:{sr,aid,ev,numdata,prg[[]],hms} 
-    {1, 255, 1, 1, {{0,0,0,}}, 1500},  
-    {5, 255, 1, 2, {{0,0,69,67}}, 1502},  
-    {6, 255, 1, 2, {{0,0,70,40}}, 1504}   
-  }
+  0, // numprgs 
+  {}
 };
 
 /*flags extern data structure*/

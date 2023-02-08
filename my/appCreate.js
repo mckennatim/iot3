@@ -8,10 +8,11 @@ Then in the new project directory modify appata.js for your project particlulars
 */
 
 import fs from 'fs'
-const devid = "CYURD127" /*MODIFY*/
-const appid = "doorStrike" /*MODIFY*/
-const locid = "255ChestnutAve" /*MODIFY*/
+const devid = "CYURD128" /*MODIFY*/
+const appid = "demo2" /*MODIFY*/
+const locid = "12ParleyVale" /*MODIFY*/
 const user = "mckenna.tim@gmail.com" /*MODIFY*/
+const board = "long.pdf"
 
 const folder =devid.substring(5)+appid
 const devdir = `conf/${folder}/${devid}`
@@ -48,6 +49,7 @@ const cfgdata =
       "type": "rel",
       "out": "D8",
       "onoff" : 1,
+      "haytimr": 1,
       "rec": 0,
       "descr": "a short descrition"
     },
@@ -203,3 +205,10 @@ fs.mkdir(devdir, (err)=>{
   cfgcp.write(cpcode)
   cfgcp.end()
 })
+
+  fs.copyFile(`boards/${board}`,`conf/${folder}/${board}`,(err)=>{
+    if (err){
+      console.log('err: ', err);
+    }
+    console.log(`conf/${folder}/${board} created`);
+  })
