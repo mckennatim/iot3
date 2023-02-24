@@ -13,8 +13,8 @@ public:
 	// void updTimers();
 	// void deseriProg(char* kstr);
 	// void ckAlarms();
-	// void ckRelays();
-	// void adjRelay(int id, cs_t& te);
+	void ckRelays();
+	void adjRelay(int id, cs_t& te);
 private:
 	// void deductCrement(int id);
 	// void copyProg(prg_t& t, JsonArray& ev);

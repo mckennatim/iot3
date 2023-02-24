@@ -1,6 +1,14 @@
 # READMElog
 
 ## log
+### 2/23/23 15-128demo2-mvp
+Minimally viable project (mvp(compiles, runs on board with sensors, communicates with web app)) 128demo2 uses long board to test DHT11 of `cs` type, an `se` DS18B20 sensor and a `rel`. 
+
+TODO 
+- get timers and programs to run
+- have device subsrcibed to other devices
+- getCONFIG.js produced in appCreate.js to have best working copies of COFIG and main files in conf/projectId/devid
+
 ### 2/7/23 14-wsclient_req-my_recd_sent
 
 TODO build device to have changing states

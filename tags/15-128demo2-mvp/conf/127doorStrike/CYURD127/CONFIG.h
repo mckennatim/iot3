@@ -35,9 +35,9 @@ struct port_t {
 };
 struct ports_t {
   int numports;
-  port_t port[4]; /*MODIFY*/
+  port_t port[8]; /*MODIFY*/
 };
-extern ports_t ports ;
+extern const ports_t ports ;
 /*PORT*/
 
 /*SE constant declarations*/  
@@ -59,17 +59,23 @@ extern const sen_t SE;
 struct se_t {//sensors
     int sr;
     int reading;
+    bool rec;
+    bool isnew;
 };
 struct cs_t {//controlled sensors
     int sr;
     int reading;
     bool onoff;
-    int hi;
-    int lo;
+    int hilimit;
+    int lolimit;
+    bool rec;
+    bool isnew;   
 };
 struct rel_t {//timers
     int sr;
     bool onoff;
+    bool rec; 
+    bool isnew;  
 };
 struct di_t {//diff control
     int sa;
@@ -78,16 +84,19 @@ struct di_t {//diff control
     int doff;
     int maxa;
     int maxb;
+    int port;
     bool onoff;
+    bool rec;
+    bool isnew;
 };
 struct srs_t {
   int numsr;
   int numse;
-  se_t se[1];/*MODIFY*/
+  se_t se[2];/*MODIFY*/
   int numcs;
   cs_t cs[2];/*MODIFY*/
   int numrel;
-  rel_t rel[1];/*MODIFY*/
+  rel_t rel[4];/*MODIFY*/
   int numdi;
   di_t di[0];/*MODIFY*/
 };
@@ -100,12 +109,13 @@ struct prg_t{
   AlarmID_t aid;
   int ev;
   int numdata;
-  int prg[11][4];//max 11 events [hr,min,hi,lo]  
+  int prg[11][4];//max 11 events [hr,min,max,min]  
+  int port;
   int hms;
 };
 struct prgs_t{
   int numprgs;
-  prg_t prg[1];/*MODIFY*/
+  prg_t prg[3];/*MODIFY*/
 };
 extern prgs_t prgs;
 /*prg data structure declarations*/  

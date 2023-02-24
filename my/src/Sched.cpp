@@ -23,38 +23,67 @@ void Sched::actTime(){
   printf("%d:%d \n", hour(), minute() );
 }
 
-// void Sched::adjRelay(int sr, cs_t& te){
-//   int bit =pow(2,sr);
-//   int mask = 31-bit; 
-//   bool relayState = te.onoff;
-//   if (te.reading >= te.hilimit){
-//     relayState=0;
-//   } else if (te.reading <= te.lolimit){
-//     relayState=1;
-//   }
-//   if (relayState != te.onoff){
-//     te.onoff = relayState;
-//     te.rec=1;
-//     int relayon = f.ISrELAYoN;
-//     if(te.onoff){
-//       relayon = relayon | bit;
-//     }else{
-//       relayon = relayon & mask;
-//     }
-//     if(relayon!=f.ISrELAYoN){
-//       f.ISrELAYoN = relayon;
-//       // req.pubTimr();
-//     }
-//     // for (int i=0;i<prgs.numprgs;i++){
-//     //   if(prgs.prg[i].sr==sr){
-//     //     digitalWrite(prgs.prg[i].port, relayState); 
-//     //   }
-//     // }
-//   }    
-//   // printf("relayState = %d", relayState);
-// }
+void Sched::adjRelay(int sr, cs_t& te){
+  int bit =pow(2,sr);
+  int mask = 31-bit; 
+  bool relayState = te.onoff;
+  if (te.reading >= te.hi){
+    relayState=0;
+  } else if (te.reading <= te.lo){
+    relayState=1;
+  }
+  if (relayState != te.onoff){
+    te.onoff = relayState;
+    ports.port[sr].rec=1;  
+    // te.rec=1;
+    int relayon = f.ISrELAYoN;
+    if(te.onoff){
+      relayon = relayon | bit;
+    }else{
+      relayon = relayon & mask;
+    }
+    if(relayon!=f.ISrELAYoN){
+      f.ISrELAYoN = relayon;
+      // req.pubTimr();
+    }
+    digitalWrite(ports.port[sr].out, relayState);
+    // for (int i=0;i<prgs.numprgs;i++){
+    //   if(prgs.prg[i].sr==sr){
+    //     digitalWrite(prgs.prg[i].port, relayState); 
+    //   }
+    // }
+    printf("sr: %d, port: %d, relayState: %d \n",sr, ports.port[sr].out, digitalRead(ports.port[sr].out));
+  }    
+  // printf("relayState = %d", relayState);
+}
 
-// void Sched::ckRelays(){
+void Sched::ckRelays(){
+  for (int i=0; i<ports.numports;i++){
+    if (ports.port[i].out>=0){
+      iscsidx_t ici = req.getTypeIdx(ports.port[i].sr);
+      switch(ici.srtype){
+        case 0:
+          //cannot change a se reading from afar
+          break;
+        case 1:
+          if(srs.cs[ici.idx].onoff != digitalRead(ports.port[i].sr)){
+            digitalWrite(ports.port[i].out, srs.cs[ici.idx].onoff);
+          }
+          break;
+        case 2:
+          if(srs.rel[ici.idx].onoff != digitalRead(ports.port[i].out)){
+            digitalWrite(ports.port[i].out, srs.rel[ici.idx].onoff);
+          }
+          break;
+        default:
+          Serial.println("in desirCmd default");
+          break;
+      }   
+    }
+  }
+}
+
+// void Sched::ckRelays2(){
 //   for (int i=0;i<prgs.numprgs;i++){
 //     iscsidx_t ici = req.getTypeIdx(prgs.prg[i].sr);
 //     switch(ici.srtype){
@@ -77,6 +106,8 @@ void Sched::actTime(){
 //     } 
 //   }  
 // }
+
+
 
 // void Sched::copyProg(prg_t& t, JsonArray& ev){
 //   t.ev=ev.size();
@@ -146,8 +177,8 @@ void Sched::actTime(){
 //         break;
 //       case 1:{
 //         cs_t *cs = &srs.cs[i];
-//         cs->hilimit = p->prg[cur][2];
-//         cs->lolimit = p->prg[cur][3];
+//         cs->hi = p->prg[cur][2];
+//         cs->lo = p->prg[cur][3];
 //         adjRelay(sr,*cs);
 //         int hr = p->prg[nxt][0];
 //         int min = p->prg[nxt][1];

@@ -101,9 +101,9 @@ const util = `
 These are SQL commands utlity commands
 */
 
-SELECT * FROM \`devs\` ORDER BY \`id\` DESC LIMIT 3;
-SELECT * FROM \`app_loc_user\` ORDER BY \`id\` DESC LIMIT 3;
-SELECT * FROM \`app_loc\` ORDER BY \`id\` DESC LIMIT 3;
+SELECT * FROM \`devs\` ORDER BY \`id\` DESC;
+SELECT * FROM \`app_loc_user\` ORDER BY \`id\` DESC;
+SELECT * FROM \`app_loc\` ORDER BY \`id\` DESC;
 
 `
 console.log('util: ', util);  
@@ -153,7 +153,7 @@ const MKports = ()=>{
   let ports =`
 /*ports for input and output
  */
-ports_t ports {
+const ports_t ports {
 `
   ports += `  ${numsr}, //numsr
   {//port:{sr, in, out, rec, isnew}\n`
@@ -406,6 +406,8 @@ extern const sen_t SE;
 struct se_t {//sensors
     int sr;
     int reading;
+    bool rec;
+    bool isnew;
 };
 struct cs_t {//controlled sensors
     int sr;
@@ -413,10 +415,14 @@ struct cs_t {//controlled sensors
     bool onoff;
     int hilimit;
     int lolimit;
+    bool rec;
+    bool isnew;   
 };
 struct rel_t {//timers
     int sr;
     bool onoff;
+    bool rec; 
+    bool isnew;  
 };
 struct di_t {//diff control
     int sa;
@@ -427,6 +433,8 @@ struct di_t {//diff control
     int maxb;
     int port;
     bool onoff;
+    bool rec;
+    bool isnew;
 };
 struct srs_t {
   int numsr;
@@ -449,6 +457,7 @@ struct prg_t{
   int ev;
   int numdata;
   int prg[11][4];//max 11 events [hr,min,max,min]  
+  int port;
   int hms;
 };
 struct prgs_t{

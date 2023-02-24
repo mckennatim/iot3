@@ -9,7 +9,8 @@
 
 class Reqs{
 public:
-  Reqs(char* devid);
+  Reqs(char* devid, PubSubClient& client);
+  PubSubClient cclient;
   char* cdevid;
 	void pubFlags();
 	void pubTimr();
