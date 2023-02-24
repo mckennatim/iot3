@@ -30,13 +30,13 @@ const topics_t TPC {
 
 /*ports for input and output
  */
-const ports_t ports {
+ports_t ports {
   4, //numsr
   {//port:{sr, in, out, rec, isnew}
-    {0, D2, -9, 1, 0},// temp2 
-    {1, D5, D8, 1, 0},// temp 
-    {2, D5, D7, 1, 0},// hum 
-    {3, -9, D6, 0, 0} // timr1 
+    {0, D2, -9, 1, 0},// temp2 DS18B20
+    {1, D5, D8, 1, 0},// temp DHT11
+    {2, D5, D7, 1, 0},// hum DHT11
+    {3, -9, D6, 0, 0} // timr1 undefined
   }
 };
 /*SE constant declarations*/
@@ -59,7 +59,7 @@ srs_t srs {
   2, // numcs 
   { // cs:{sr, reading, onoff, hi, lo} 
     {1, 44, 0, 69, 67}, // temp
-    {2, 24, 0, 60, 90}  // hum
+    {2, 24, 0, 90, 60}  // hum
   },
   1, // numrel 
   { // rel:{sr, onoff} 

@@ -19,7 +19,7 @@ console.log("${devid}/CONFIG.cpp: ", `${devid}/CONFIG.cpp`);
 
 const sql = fs.createWriteStream(`${appid}.sql`);
 
-const appd = fs.createWriteStream(`initialState.js`);
+const appd = fs.createWriteStream(`appInit.js`);
 const cfgh = fs.createWriteStream(`${devid}/CONFIG.h`);
 const cfgc = fs.createWriteStream(`${devid}/CONFIG.cpp`);
 
@@ -158,7 +158,7 @@ ports_t ports {
   ports += `  ${numsr}, //numsr
   {//port:{sr, in, out, rec, isnew}\n`
   cfgdata[devid].map((d,i)=>{
-    ports += `    {${d.sr}, ${d.hasOwnProperty('in') ? d.in : '-9'}, ${d.hasOwnProperty('out') ? d.out : '-9'}, ${d.rec}, 0}${i+1==numsr?' ':','}// ${d.label} \n`;
+    ports += `    {${d.sr}, ${d.hasOwnProperty('in') ? d.in : '-9'}, ${d.hasOwnProperty('out') ? d.out : '-9'}, ${d.rec}, 0}${i+1==numsr?' ':','}// ${d.label} ${d.model}\n`;
   })
   ports += `  }
 };`
@@ -384,7 +384,7 @@ struct ports_t {
   int numports;
   port_t port[${numsr}]; /*MODIFY*/
 };
-extern const ports_t ports ;
+extern ports_t ports ;
 /*PORT*/
 
 /*SE constant declarations*/  
@@ -411,8 +411,8 @@ struct cs_t {//controlled sensors
     int sr;
     int reading;
     bool onoff;
-    int hilimit;
-    int lolimit;
+    int hi;
+    int lo;
 };
 struct rel_t {//timers
     int sr;
@@ -425,7 +425,6 @@ struct di_t {//diff control
     int doff;
     int maxa;
     int maxb;
-    int port;
     bool onoff;
 };
 struct srs_t {
@@ -537,7 +536,8 @@ const initialState = {
     }) 
   }) 
   ini= ini.slice(0,-2)+`\n}:\n\n`
-  ini += `export {initialState}`
+  ini +=  `const appid = ${appid}\n\n`
+  ini += `export {initialState, appid}`
   return ini 
 }
 console.log('MKinist(): ', MKinist());

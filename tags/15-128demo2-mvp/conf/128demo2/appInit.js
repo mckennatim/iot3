@@ -9,9 +9,11 @@ const initialState = {
   //pro must start at 0,0
   temp2: { darr: [45] },
   temp: { darr: [44, 0, 69, 67] },
-  hum: { darr: [24, 0, 74, 60] },
+  hum: { darr: [24, 0, 90, 60] },
   timr1: { darr: [0], pro: [[0, 0, 0]], timeleft: 0 },
   temp_out: { darr: [55] }
 }:
 
-export {initialState}
+const appid = demo2
+
+export {initialState, appid}

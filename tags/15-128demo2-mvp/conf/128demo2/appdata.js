@@ -65,6 +65,8 @@ const cfgdata =
   ]
 }
 
+const models = "DSB1820, DS18B20b, DHT11, DHT22, BH1750, HTU21D, MAX31855, ANALOG, DIG1, DIG2 "
+
 const devinfo = {
   "devid": "CYURD128",
   "owner": "tim@sitebuilt.net",
@@ -77,7 +79,7 @@ const apploc ={
   "appid": "demo2",
   "locid": "12ParleyVale",
   "user": "mckenna.tim@gmail.com",
-  "descr": "door strike app"
+  "descr": "demo of long board with relay, DHT11 and DSB1820"
 }
 
-export {cfgdata, devinfo, apploc}
+export {cfgdata, devinfo, apploc, models}

@@ -100,7 +100,7 @@ struct prg_t{
   AlarmID_t aid;
   int ev;
   int numdata;
-  int prg[11][4];//max 11 events [hr,min,hi,lo]  
+  int prg[11][4];//max 11 events [hr,min,max,min]  
   int hms;
 };
 struct prgs_t{

@@ -4,7 +4,7 @@ REPLACE INTO `devs` (`devid`, `owner`, `devpwd`, `locid`, `description`) VALUES 
   'tim@sitebuilt.net',
   'geniot',
   '12ParleyVale',
-  'door strike app'
+  'demo of long board with relay, DHT11 and DSB1820'
 );
 
 REPLACE INTO `app_loc` (`appid`, `locid`, `devs`, `zones`) VALUES (
@@ -67,6 +67,6 @@ These are SQL commands utlity commands
 */
 
 SELECT * FROM `devs` ORDER BY `id` DESC LIMIT 3;
-SELECT * FROM `app_loc_user` ORDER BY `id` DESC LIMIT 10;
-SELECT * FROM `app_loc` ORDER BY `id` DESC LIMIT 2;
+SELECT * FROM `app_loc_user` ORDER BY `id` DESC LIMIT 3;
+SELECT * FROM `app_loc` ORDER BY `id` DESC LIMIT 3;
 

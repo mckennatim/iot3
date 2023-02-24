@@ -2,21 +2,26 @@
 * A generic project data file. with devs, devinfo and apploc 
 * Copies appbuild.js to the project conf/129projctname
 
-Modify the four items noted as MODIFY then run> node appCreate.js
+Modify the six items noted as MODIFY then run> node appCreate.js
 
-Then in the new project directory modify appata.js for your project particlulars
+Then in the new project directory modify appdata.js for your project particlulars
 */
 
 import fs from 'fs'
-const devid = "CYURD128" /*MODIFY*/
-const appid = "demo2" /*MODIFY*/
-const locid = "12ParleyVale" /*MODIFY*/
-const user = "mckenna.tim@gmail.com" /*MODIFY*/
+
+/*MODIFY  items starting here */
+
+const devid = "CYURD128" 
+const appid = "demo2" 
+const locid = "12ParleyVale" 
+const user = "mckenna.tim@gmail.com" 
 const board = "long.pdf"
+const descr = "demo of long board with relay, DHT11 and DSB1820"
+
+/*MODIFY end of data to modify */
 
 const folder =devid.substring(5)+appid
 const devdir = `conf/${folder}/${devid}`
-
 
 const cfgdata =
 `const cfgdata =
@@ -24,44 +29,55 @@ const cfgdata =
   "${devid}": [
     {
       "sr": 0,
-      "label": "contact",
+      "label": "temp2",
       "type": "se",
-      "senses": "onoff",
-      "model": "NCcontact",
-      "in": "D5",
-      "reading" : 1,
+      "senses": "temp",
+      "model": "DS18B20",
+      "in": "D2",
+      "reading" : 45,
       "rec": 1,
-      "descr": "a short description"
+      "descr": "demo temp sensor"
     },
 
     {
       "sr": 1,
-      "label": "strike",
-      "type": "rel",
-      "out": "D1",
-      "onoff" : 0,
-      "hayprg": 1,
+      "label": "temp",
+      "type": "cs",
+      "senses": "temp-hum",
+      "model": "DHT11",
+      "in": "D5",
+      "out": "D8",
+      "reading" : 44,
+      "onoff": 0,
+      "hi": 69,
+      "lo": 67,
       "rec": 1,
-      "descr": "a short description"
+      "descr": "temp side of DHT11"
     },
     {
       "sr": 2,
-      "label": "ledRed",
-      "type": "rel",
-      "out": "D8",
-      "onoff" : 1,
-      "haytimr": 1,
-      "rec": 0,
-      "descr": "a short descrition"
+      "label": "hum",
+      "type": "cs",
+      "model": "DHT11",
+      "in": "D5",
+      "out": "D7",
+      "reading" : 24,
+      "onoff": 0,
+      "hi": 90,
+      "lo": 60,
+      "rec": 1,
+      "descr": "temp side of DHT11"
     },
     {
       "sr": 3,
-      "label": "ledGreen",
+      "label": "timr1",
       "type": "rel",
-      "out": "D7",
+      "out": "D6",
       "onoff" : 0,
+      "hayprg": 1,
+      "haytimr": 1,
       "rec": 0,
-      "descr": "a short descrition"
+      "descr": "a relay controlled by timer"
     },
     {
       "sr": 4,
@@ -145,7 +161,7 @@ const apploc ={
   "appid": "${appid}",
   "locid": "${locid}",
   "user": "${user}",
-  "descr": "door strike app"
+  "descr": "${descr}"
 }
 
 export {cfgdata, devinfo, apploc, models}
@@ -201,17 +217,47 @@ fs.copyFile('CONFIG.cpp', \`\${dest}/CONFIG.cpp\`,(err)=>{
 })
 
 `
+const getcode = `
+import fs from 'fs'
+
+const src= '../../../src'
+
+fs.copyFile(\`\${src}/CONFIG.h\`, \`CONFIG.h\`,(err)=>{
+  if (err){
+    console.log('err: ', err);
+  }
+  console.log('CONFIG.h is copied from my/src ');
+})
+
+fs.copyFile(\`\${src}/CONFIG.cpp\`, \`CONFIG.cpp\`,(err)=>{
+  if (err){
+    console.log('err: ', err);
+  }
+  console.log('CONFIG.cpp is copied from my/src ');
+})
+
+fs.copyFile(\`\${src}/main.cpp\`, \`main.cpp\`,(err)=>{
+  if (err){
+    console.log('err: ', err);
+  }
+  console.log('main.cpp is copied from my/src ');
+})
+
+`
 
 fs.mkdir(devdir, (err)=>{
   console.log(err)
   const cfgcp= fs.createWriteStream(`${devdir}/copyCONFIG.js`)
   cfgcp.write(cpcode)
   cfgcp.end()
+  const cfgget= fs.createWriteStream(`${devdir}/getCONFIG.js`)
+  cfgget.write(getcode)
+  cfgcp.end()
 })
 
-  fs.copyFile(`boards/${board}`,`conf/${folder}/${board}`,(err)=>{
-    if (err){
-      console.log('err: ', err);
-    }
-    console.log(`conf/${folder}/${board} created`);
-  })
+fs.copyFile(`boards/${board}`,`conf/${folder}/${board}`,(err)=>{
+  if (err){
+    console.log('err: ', err);
+  }
+  console.log(`conf/${folder}/${board} created`);
+})

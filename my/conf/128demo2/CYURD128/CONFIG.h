@@ -37,7 +37,7 @@ struct ports_t {
   int numports;
   port_t port[4]; /*MODIFY*/
 };
-extern const ports_t ports ;
+extern ports_t ports ;
 /*PORT*/
 
 /*SE constant declarations*/  
@@ -59,23 +59,17 @@ extern const sen_t SE;
 struct se_t {//sensors
     int sr;
     int reading;
-    bool rec;
-    bool isnew;
 };
 struct cs_t {//controlled sensors
     int sr;
     int reading;
     bool onoff;
-    int hilimit;
-    int lolimit;
-    bool rec;
-    bool isnew;   
+    int hi;
+    int lo;
 };
 struct rel_t {//timers
     int sr;
     bool onoff;
-    bool rec; 
-    bool isnew;  
 };
 struct di_t {//diff control
     int sa;
@@ -84,10 +78,7 @@ struct di_t {//diff control
     int doff;
     int maxa;
     int maxb;
-    int port;
     bool onoff;
-    bool rec;
-    bool isnew;
 };
 struct srs_t {
   int numsr;
@@ -110,7 +101,6 @@ struct prg_t{
   int ev;
   int numdata;
   int prg[11][4];//max 11 events [hr,min,max,min]  
-  int port;
   int hms;
 };
 struct prgs_t{
