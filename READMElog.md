@@ -4,6 +4,8 @@
 ### 2/23/23 15-128demo2-mvp
 Minimally viable project (mvp(compiles, runs on board with sensors, communicates with web app)) 128demo2 uses long board to test DHT11 of `cs` type, an `se` DS18B20 sensor and a `rel`. 
 
+Worked on build system as described in `iot3/my/appCreate.md`
+
 TODO 
 - get timers and programs to run
 - have device subsrcibed to other devices
