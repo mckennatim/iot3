@@ -5,6 +5,7 @@
 req.pubTimr() put in sched.updateTimr() behind a f.cONNectd flag to run when hay active timers.
 
 TODO 
+- [ ] figure out if there can be timers without programs
 - [ ] cleanup
 - [ ] have device subsrcibed to other devices
 - [x] get timers and programs to run
