@@ -5,6 +5,9 @@
 #include <TimeLib.h>
 #include <TimeAlarms.h>
 #include <ESP8266WebServer.h>
+#include <PubSubClient.h>
+
+extern PubSubClient client;
 
 void customInit();
 void customLoop();
@@ -105,7 +108,7 @@ struct prg_t{
 };
 struct prgs_t{
   int numprgs;
-  prg_t prg[1];/*MODIFY*/
+  prg_t prg[2];/*MODIFY*/
 };
 extern prgs_t prgs;
 /*prg data structure declarations*/  

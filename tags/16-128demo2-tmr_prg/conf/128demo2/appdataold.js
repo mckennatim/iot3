@@ -9,7 +9,7 @@ const cfgdata =
       "model": "DS18B20",
       "in": "D2",
       "reading" : 45,
-      "rec": 0,
+      "rec": 1,
       "descr": "demo temp sensor"
     },
 
@@ -25,8 +25,7 @@ const cfgdata =
       "onoff": 0,
       "hi": 69,
       "lo": 67,
-      "hayprg": 1,
-      "rec": 0,
+      "rec": 1,
       "descr": "temp side of DHT11"
     },
     {
@@ -38,9 +37,9 @@ const cfgdata =
       "out": "D7",
       "reading" : 24,
       "onoff": 0,
-      "hi": 54,
-      "lo": 44,
-      "rec": 0,
+      "hi": 90,
+      "lo": 60,
+      "rec": 1,
       "descr": "temp side of DHT11"
     },
     {
@@ -66,8 +65,6 @@ const cfgdata =
   ]
 }
 
-const models = "DSB1820, DS18B20b, DHT11, DHT22, BH1750, HTU21D, MAX31855, ANALOG, DIG1, DIG2 "
-
 const devinfo = {
   "devid": "CYURD128",
   "owner": "tim@sitebuilt.net",
@@ -80,7 +77,7 @@ const apploc ={
   "appid": "demo2",
   "locid": "12ParleyVale",
   "user": "mckenna.tim@gmail.com",
-  "descr": "demo of long board with relay, DHT11 and DSB1820"
+  "descr": "door strike app"
 }
 
-export {cfgdata, devinfo, apploc, models}
+export {cfgdata, devinfo, apploc}

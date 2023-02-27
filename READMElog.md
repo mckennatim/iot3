@@ -1,15 +1,49 @@
 # READMElog
 
 ## log
+### 2/27/23 16-128demo2-tmr_prg
+req.pubTimr() put in sched.updateTimr() behind a f.cONNectd flag to run when hay active timers.
+
+TODO 
+- [ ] cleanup
+- [ ] have device subsrcibed to other devices
+- [x] get timers and programs to run
+
+TODO 
+
+- [x] now works as it should, except it as "new" instead of "rec" in the MQTT message is misleading. Fix would require breaking change in server 
+
+TODO control bigdata and new
+
+- [x] made `extern PubSubClient client;` in `CONFIG.h`
+- class funtions of req can't use the client object, it was hacked in the constructor with cclient = client but that no longer works
+- [x] fixed: document had capacity = JSON_OBJECT_SIZE(4) too small
+
+TODO pubPrg() a sched see req.creaJSON
+
+    id = 3
+    ev(size)=2
+    18:15
+    sr: 3 aid: 0 hr: 21 min: 55
+    3 1315
+    sr: 3 is 1
+    {
+      "id": 3,
+      "aid": 0,
+      "ev": 2,
+      "numdata": 1
+    }{"id":3,"aid":0,"ev":2,"numdata":1}
+    CYURD128/sched{"id":3,"aid":0,"ev":2,"numdata":1}
+
 ### 2/23/23 15-128demo2-mvp
 Minimally viable project (mvp(compiles, runs on board with sensors, communicates with web app)) 128demo2 uses long board to test DHT11 of `cs` type, an `se` DS18B20 sensor and a `rel`. 
 
-Worked on build system as described in `iot3/my/appCreate.md`
+Worked on build system as described in [iot3/my/appCreate.md](my/appCreate.md)
 
 TODO 
-- get timers and programs to run
-- have device subsrcibed to other devices
-- getCONFIG.js produced in appCreate.js to have best working copies of COFIG and main files in conf/projectId/devid
+- [ ] get timers and programs to run
+- [ ] have device subsrcibed to other devices
+- [x] getCONFIG.js produced in appCreate.js to have best working copies of COFIG and main files in conf/projectId/devid
 
 ### 2/7/23 14-wsclient_req-my_recd_sent
 
