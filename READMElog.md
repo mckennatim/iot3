@@ -2,6 +2,9 @@
 
 ## log
 ### 2/27/23 16-128demo2-tmr_prg
+TODO
+- [ ]turn relay on for x seconds
+
 req.pubTimr() put in sched.updateTimr() behind a f.cONNectd flag to run when hay active timers.
 
 TODO 

@@ -73,6 +73,7 @@ void Reqs::deseriCmd(){
   DynamicJsonDocument rot(1000);
   deserializeJson(rot, ipayload);  
   int id = rot["id"];
+  int tsec = rot["tsec"];
   Serial.print("id = ");
   Serial.println(id);
   JsonArray sra = rot["sra"]; 
@@ -91,7 +92,13 @@ void Reqs::deseriCmd(){
     f.HAYsTATEcNG=f.HAYsTATEcNG | bit; 
     break;
   case 2://rel CYURD128/cmd {"id":3,"sra":[1]}
-    if(sra[0] != digitalRead(ports.port[id].out)){
+    printf("tsec:%d \n",tsec);
+    if (tsec>0){
+      srs.rel[ici.idx].onoff = 1;
+      digitalWrite(ports.port[id].out, 1);
+      f.tIMElEFT[id]=tsec;
+    } 
+    else if(sra[0] != digitalRead(ports.port[id].out)){
       srs.rel[ici.idx].onoff = sra[0];
       digitalWrite(ports.port[id].out, sra[0]);
       ports.port[id].isnew=1;
