@@ -19,7 +19,7 @@ console.log("${devid}/CONFIG.cpp: ", `${devid}/CONFIG.cpp`);
 
 const sql = fs.createWriteStream(`${appid}.sql`);
 
-const appd = fs.createWriteStream(`appInit.js`);
+const appd = fs.createWriteStream(`initialState.js`);
 const cfgh = fs.createWriteStream(`${devid}/CONFIG.h`);
 const cfgc = fs.createWriteStream(`${devid}/CONFIG.cpp`);
 
@@ -101,9 +101,9 @@ const util = `
 These are SQL commands utlity commands
 */
 
-SELECT * FROM \`devs\` ORDER BY \`id\` DESC LIMIT 3;
-SELECT * FROM \`app_loc_user\` ORDER BY \`id\` DESC LIMIT 3;
-SELECT * FROM \`app_loc\` ORDER BY \`id\` DESC LIMIT 3;
+SELECT * FROM \`devs\` ORDER BY \`id\` DESC;
+SELECT * FROM \`app_loc_user\` ORDER BY \`id\` DESC;
+SELECT * FROM \`app_loc\` ORDER BY \`id\` DESC;
 
 `
 console.log('util: ', util);  
@@ -153,12 +153,12 @@ const MKports = ()=>{
   let ports =`
 /*ports for input and output
  */
-ports_t ports {
+const ports_t ports {
 `
   ports += `  ${numsr}, //numsr
   {//port:{sr, in, out, rec, isnew}\n`
   cfgdata[devid].map((d,i)=>{
-    ports += `    {${d.sr}, ${d.hasOwnProperty('in') ? d.in : '-9'}, ${d.hasOwnProperty('out') ? d.out : '-9'}, ${d.rec}, 0}${i+1==numsr?' ':','}// ${d.label} ${d.model}\n`;
+    ports += `    {${d.sr}, ${d.hasOwnProperty('in') ? d.in : '-9'}, ${d.hasOwnProperty('out') ? d.out : '-9'}, ${d.rec}, 0}${i+1==numsr?' ':','}// ${d.label} \n`;
   })
   ports += `  }
 };`
@@ -331,7 +331,7 @@ flags_t f {
   0,//aUTOMA
   0,//fORCErESET
   5,//cREMENT
-  0,//HAStIMR 1100000 64+32=96
+  96,//HAStIMR 1100000 64+32=96
   0,//IStIMERoN
   198,//HAYpROG 11000010 =128+64+4=198
   1023,//HAYsTATEcNG
@@ -352,9 +352,6 @@ const configha =
 #include <TimeLib.h>
 #include <TimeAlarms.h>
 #include <ESP8266WebServer.h>
-#include <PubSubClient.h>
-
-extern PubSubClient client;
 
 void customInit();
 void customLoop();
@@ -387,7 +384,7 @@ struct ports_t {
   int numports;
   port_t port[${numsr}]; /*MODIFY*/
 };
-extern ports_t ports ;
+extern const ports_t ports ;
 /*PORT*/
 
 /*SE constant declarations*/  
@@ -409,17 +406,23 @@ extern const sen_t SE;
 struct se_t {//sensors
     int sr;
     int reading;
+    bool rec;
+    bool isnew;
 };
 struct cs_t {//controlled sensors
     int sr;
     int reading;
     bool onoff;
-    int hi;
-    int lo;
+    int hilimit;
+    int lolimit;
+    bool rec;
+    bool isnew;   
 };
 struct rel_t {//timers
     int sr;
     bool onoff;
+    bool rec; 
+    bool isnew;  
 };
 struct di_t {//diff control
     int sa;
@@ -428,7 +431,10 @@ struct di_t {//diff control
     int doff;
     int maxa;
     int maxb;
+    int port;
     bool onoff;
+    bool rec;
+    bool isnew;
 };
 struct srs_t {
   int numsr;
@@ -451,6 +457,7 @@ struct prg_t{
   int ev;
   int numdata;
   int prg[11][4];//max 11 events [hr,min,max,min]  
+  int port;
   int hms;
 };
 struct prgs_t{
@@ -512,7 +519,7 @@ const initialState = {
         case "cs":{
           let prg=''
           if(e.hayprg){
-            prg= `, pro: [[0, 0, ${e.hi}, ${e.lo}]]`
+            prg= `, pro: [[0, 0, ${e.hi}, ${e.lo}]], timeleft: 0`
           }
           ini += `  ${e.label}: { darr: [${e.reading}, ${e.onoff}, ${e.hi}, ${e.lo}]${prg} },\n`
           break;
@@ -538,9 +545,8 @@ const initialState = {
       }
     }) 
   }) 
-  ini= ini.slice(0,-2)+`\n}\n\n`
-  ini +=  `const appid = "${appid}" \n\n`
-  ini += `export {initialState, appid}`
+  ini= ini.slice(0,-2)+`\n}:\n\n`
+  ini += `export {initialState}`
   return ini 
 }
 console.log('MKinist(): ', MKinist());

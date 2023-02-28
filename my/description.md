@@ -442,3 +442,110 @@ while connected
       D3, //pulled up
       D4};//pulled up
     /*SE constant declarations*/  
+
+
+## functional flow
+
+MQTT fires a `handleCallback` when a message is received which sets NEW_MAIL and puts the message topic and payload in extern (global) `itopic` and `ipayload`
+
+`req.processInc()` runs from loop() when there is NEW_MAIL
+
+responding to incoming prg message
+
+- CYURD073/prg {"id":0,"pro":[[0,0,61,59],[9,0,62,60]]} JsonArr `[[0,0,61,59],[9,0,62,60]]` looks for the sr in prgs that matches the id of MQTTmess. Then it sets the f.CKaLARM bit and copies the prg and JsonArr. into prg.
+
+      req.processInc(ipayload) => 
+          sched.deseriProg(kstr) => 
+              set:f.CKaLARM for sr
+              sched.copyProg(prgs.prg[i], events) 
+
+### in loop()   
+
+`f.CKaLARM` is set to have programs scanned... 
+1. on startup of an app. `req.processInc()case 0` 
+2. whenever a new program comes in on an MQTT message. `sched.deseriProg()`
+3. whenever an alarm rings at the end of a program event `alarmRings()`
+
+`ckAlarms()` is called from `main.cpp` every 2 seconds if a `f.CKaLARM` is set for any sr. After `sched2.ckAlarms()` runs `f.CKaLARM=f.CKaLARM & 0;` are cleared. in `main.cpp`
+
+`ckAlarms()` cycles through prgs. For each prg it creates a pointer to that prg,sending that to `setCur(prg_t& p, int &cur, int &nxt)` which returns a `cur` set set of hilo values [hi,lo] or [onoff] and a `nxt` set of [hr,min]. For both `cs` an `rel` an Alarm is set `Alarm.alarmOnce(hr,min,sr, alarmRings)` to go off when the time gets to nxt[h,m]. (The callback: `alarmRings()` sets the bit in f.CKaLARMS once time is up). Prgs are `sortPrgHms()`, printed to console `showArray()` and `f.HAYsTATEcNG` is set
+
+The `srs.cs[idx of sr].hi&lo`  are set and the relays are adjusted if needed. 
+
+The `srs.rel[idx of sr].onoff` is set to current prg[onoff]. If relay is on, `f.ISrELAYoN` and `f.IStIMERoN` are set and `f.tIMElEFT[sr]=getTleft()*60`;
+
+    ckAlarms() =>
+      cycles through prgs 
+      setCur(prg_t& p, int &cur, int &nxt) => prg[cur] and prg[nxt]
+      Alarm.alarmOnce() cb>> alarmRings sets:f.CKaLARMS
+      sortPrgHms()
+      showArray()
+      set:f.HAYsTATEcNG  
+      for cs
+        sets `srs.cs[idx of sr].hi&lo` to cur[hi,lo]
+        adjRelay() if needed
+      for rel
+        sets `srs.rel[idx of sr].onoff` to cur[onoff]  
+        if relay is on 
+          set f.ISrELAYoN and f.IStIMERoN
+          get setTleft() and put it in f.tIMElEFT[sr]=tleft*60;
+          if hay only one prg [0,0,1] mask f.IStIMERoN
+
+`sched2.updTimers()`  is called from `main.cpp:loop()` every 2 seconds 
+
+`sched2.ckRelays()` is called from `main.cpp:loop()` every 2 seconds
+
+`readSensors();` is called from `main.cpp:loop()` every 2 seconds
+
+#### in loop(), only if MQTT (and WIFI) are connected...
+- `req.processInc();` is called every time there is `NEW_MAIL`
+- When `f.HAYsTATEcNG>0` `req.pubState()` is called
+- When `f.CKaLARM>0` `req.pubPrg(f.CKaLARM)` is called
+
+## timers
+Timers are different from programs. They are contained if the `f.tIMElEFT` array.
+
+Timers `f.tIMElEFT` are set in `Sched::ckAlarms()` whenever the loop() is run and `f.CKaLARM>0`.
+
+Timers are updated whenever `f.tIMElEFT>0` in loop() via `updTimers()`
+
+> In `updTimers()` each sr timer > 0 is counted down via `deductCrement()` which resets `f.tIMElEFT` and, if timer is down to 0, masks `f.IStIMERoN` . The state of the timers is published  via `req.pubPrg()` if `f.cONNectd`.
+
+### timers tsec NEW feature
+
+`iot3/my` has already been improved in that prgs is disentangled from ports. You don't need a prog to turn a relay on or off. Now, in addition to being able to turn a relay on and off with simpler code, you can turn a relay on for a set amount of time, even just 1 second. The cmd to do it would look like `CYURD128/cmd {"id":3,"sra":[1],"tsec":23}` . For `srs.rel` types, if you put in a value for `tsec > 0` the command will ignore what's in "sra" and just turn on the relay for `tsec` seconds.
+
+In `reqs.deseriCmd()case 2` the code that starts the timer and turns on the relay is 
+
+      int bit = pow(2,id);
+      f.HAStIMR=f.HAStIMR | bit;
+      srs.rel[ici.idx].onoff = 1;
+      digitalWrite(ports.port[id].out, 1);
+      f.tIMElEFT[id]=tsec;
+
+In `deductCrement()` called by `sched.updTimers()` the code that turns off the `srs.rel[x].onoff` when time runs out for a `f.HAStIMER` is
+
+    /*tsec code for turning off srs.rel[x].onoff when times up*/
+    iscsidx_t ici = req.getTypeIdx(id);
+    int bit = pow(2,id);
+    if((bit & f.HAStIMR)==bit){
+      srs.rel[ici.idx].onoff = 0;
+      int mask = 1023-bit;
+      f.HAStIMR = f.HAStIMR & mask;
+    }
+    /*tsec code end */
+
+Things to check are
+1. initalize f.HAStIMER to 0;
+2. Can you have a project with relays without programs?
+
+
+
+## messages
+
+ CYURD128/flags {"aUTOMA":true,"fORCErESET":false,"cREMENT":5,"HAStIMR":1023,"IStIMERoN":0,"HAYpROG":1023,"HAYsTATEcNG":1023,"CKaLARM":0,`"ISrELAYoN":4`,"tIMElEFT":[0,0,0,0,0]}
+
+
+
+
+ 

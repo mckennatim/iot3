@@ -20,6 +20,7 @@ public:
 	void deseriReq(); 
 	void deseriCmd(); 
 	iscsidx_t getTypeIdx(int srid);
+  int getPrgIdx(int srid);
 	int getStoredReading(int srid);
 private:	
 	bool dog;

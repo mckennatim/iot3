@@ -91,9 +91,11 @@ void Reqs::deseriCmd(){
     // srs.cs[ici.idx].isnew=1;
     f.HAYsTATEcNG=f.HAYsTATEcNG | bit; 
     break;
-  case 2://rel CYURD128/cmd {"id":3,"sra":[1]}
+  case 2://rel CYURD128/cmd {"id":3,"sra":[1],"tsec":23}
     printf("tsec:%d \n",tsec);
     if (tsec>0){
+      int bit = pow(2,id);
+      f.HAStIMR=f.HAStIMR | bit;
       srs.rel[ici.idx].onoff = 1;
       digitalWrite(ports.port[id].out, 1);
       f.tIMElEFT[id]=tsec;
@@ -297,6 +299,16 @@ iscsidx_t Reqs::getTypeIdx(int srid){
   //   }
   // }
   return ici;
+}
+
+int Reqs::getPrgIdx(int srid){
+  int idx;
+  for (int i=0;i<prgs.numprgs;i++){
+    if(srid==prgs.prg[i].sr){
+      idx=i;
+    }
+  }
+  return idx;
 }
 
 // int Reqs::getStoredReading(int srid){

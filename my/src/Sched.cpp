@@ -25,7 +25,7 @@ void Sched::actTime(){
 
 void Sched::adjRelay(int sr, cs_t& te){
   int bit =pow(2,sr);
-  int mask = 31-bit; 
+  int mask = 1023-bit; 
   bool relayState = te.onoff;
   if (te.reading >= te.hi){
     relayState=0;
@@ -210,7 +210,7 @@ void Sched::ckAlarms(){
           prt->isnew=1;
           f.ISrELAYoN = f.ISrELAYoN | bit;
           if (nxt != cur){ //don't countdown allday[[0,0,1]]
-            setTleft(*p, cur, nxt, tleft);
+            getTleft(*p, cur, nxt, tleft);
             f.IStIMERoN = f.IStIMERoN | bit; //on here, shut off in deductCrement
           }else{ //shutoff timer if program only is a single ev, hold[[0,0,1]]
             f.IStIMERoN = f.IStIMERoN & mask;
@@ -245,7 +245,7 @@ void Sched::ckAlarms(){
   }  
 }
 
-void Sched::setTleft(prg_t p, int cur, int nxt, int &tleft){
+void Sched::getTleft(prg_t p, int cur, int nxt, int &tleft){
   int hr = hour();
   int min = minute(); 
   if(nxt==0){
@@ -292,12 +292,21 @@ void Sched::showArray(const prg_t prg[], int size){
 }
 
 void Sched::deductCrement(int id){
-  int mask = 31 - pow(2,id);
+  int mask = 1023 - pow(2,id);
   int t = f.tIMElEFT[id];
   t = t - f.cREMENT;
   if(t<=0){
     t=0;
     f.IStIMERoN = f.IStIMERoN & mask; //11011
+    /*tsec code for turning off srs.rel[x].onoff when times up*/
+    iscsidx_t ici = req.getTypeIdx(id);
+    int bit = pow(2,id);
+    if((bit & f.HAStIMR)==bit){
+      srs.rel[ici.idx].onoff = 0;
+      int mask = 1023-bit;
+      f.HAStIMR = f.HAStIMR & mask;
+    }
+    /*tsec code end */
   }
   f.tIMElEFT[id] = t;
   // printf("deduct: id:%d, timeleft:%d \n",id,t);

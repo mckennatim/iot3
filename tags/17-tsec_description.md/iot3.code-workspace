@@ -1,11 +1,11 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"path": ".."
 		},
 		{
 			"name": "my",
-			"path": "my"
+			"path": "."
 		}
 	],
   "settings": {
@@ -13,9 +13,6 @@
       "statusBar.background": "#0b0477",
       "activityBar.background": "#0b0477",
       "titleBar.activeBackground": "#042c77"
-    },
-    "files.associations": {
-      "cmath": "cpp"
     }
   }
 }

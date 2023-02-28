@@ -20,7 +20,7 @@ private:
 	void deductCrement(int id);
 	void copyProg(prg_t& t, JsonArray ev);
 	void setCur(prg_t& p, int &cur, int &nxt);
-	void setTleft(prg_t p, int cur, int nxt, int &tleft);	
+	void getTleft(prg_t p, int cur, int nxt, int &tleft);	
 	void sortPrgsHms(prg_t prg[], int size);
 	void showArray(const prg_t prg[], int size);
   time_t unix;

@@ -1,14 +1,19 @@
 # READMElog
 
 ## log
+### 2/28/23 17-tsec_description.md
+TODO
+- [ ] cleanup
+- [ ] have device subsrcibed to other devices
+
 ### 2/27/23 16-128demo2-tmr_prg
 TODO
-- [ ]turn relay on for x seconds
+- [x]turn relay on for x seconds
 
 req.pubTimr() put in sched.updateTimr() behind a f.cONNectd flag to run when hay active timers.
 
 TODO 
-- [ ] figure out if there can be timers without programs
+- [x] figure out if there can be timers without programs
 - [ ] cleanup
 - [ ] have device subsrcibed to other devices
 - [x] get timers and programs to run
@@ -45,7 +50,7 @@ Minimally viable project (mvp(compiles, runs on board with sensors, communicates
 Worked on build system as described in [iot3/my/appCreate.md](my/appCreate.md)
 
 TODO 
-- [ ] get timers and programs to run
+- [x] get timers and programs to run
 - [ ] have device subsrcibed to other devices
 - [x] getCONFIG.js produced in appCreate.js to have best working copies of COFIG and main files in conf/projectId/devid
 
