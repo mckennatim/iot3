@@ -21,6 +21,7 @@ public:
 	void deseriCmd(); 
 	iscsidx_t getTypeIdx(int srid);
   int getPrgIdx(int srid);
+  void getXdata(char* xdevtpc, char* xpayload);
 	int getStoredReading(int srid);
 private:	
 	bool dog;

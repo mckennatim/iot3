@@ -10,6 +10,8 @@
 Sched sched;
 extern char itopic[40];
 extern char ipayload[250];
+extern char idev[9];
+extern unsigned int ipaylen;
 
 Reqs::Reqs(char* devid, PubSubClient& client ){
   cdevid = devid;
@@ -49,6 +51,42 @@ void Reqs::processInc(){
         	Serial.print(i);         
           Serial.println(": in processInc default");
           break;           
+      }
+    }
+  }
+  getXdata(idev, ipayload);
+}
+
+void Reqs::getXdata(char* xdevtpc, char* xpayload){
+  char xpayl[100];
+	strcpy(xpayl,xpayload);
+  for (int i=0; i<=xdata.numdevs;i++){
+    if(strcmp(xdevtpc, xdata.xda[i].xdev)==0){
+      DynamicJsonDocument rot(1000);
+      deserializeJson(rot, xpayload);  
+      int id = rot["id"];
+      JsonArray darr = rot["darr"];
+      srs_t xrs = xdata.xda[i].xrs;
+      for (int i=0; i<xrs.numse;i++){
+        if(xrs.se[i].sr==id){
+          xrs.se[i].reading = darr[0];
+          printf("xdevtpc:%s, xpayload:%s \n", xdevtpc, xpayl);
+        }
+      }
+      for (int i=0; i<xrs.numcs;i++){
+        if(xrs.cs[i].sr==id){
+          xrs.cs[i].reading = darr[0];
+          xrs.cs[i].onoff = darr[1];
+          xrs.cs[i].hi = darr[2];
+          xrs.cs[i].lo = darr[3];
+          printf("xdevtpc:%s, xpayl:%s \n", xdevtpc, xpayl);
+        }
+      }
+      for (int i=0; i<xrs.numrel;i++){
+        if(xrs.rel[i].sr==id){
+          xrs.rel[i].onoff = darr[0];
+          printf("xdevtpc:%s, xpayl:%s \n", xdevtpc, xpayl);
+        }
       }
     }
   }
@@ -302,7 +340,7 @@ iscsidx_t Reqs::getTypeIdx(int srid){
 }
 
 int Reqs::getPrgIdx(int srid){
-  int idx;
+  int idx = -1;
   for (int i=0;i<prgs.numprgs;i++){
     if(srid==prgs.prg[i].sr){
       idx=i;

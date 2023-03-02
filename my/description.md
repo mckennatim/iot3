@@ -7,7 +7,7 @@
 Once you lose the wificonnection the mq.reconn will just be in and endless loop
 
 
-## explanation of the design
+## explanation of the OLD design
 from [abbrevaitions.md](abbreviations.md):
 
 srs
@@ -24,7 +24,7 @@ Since both cs a rel's can have an associated program, why do they need hilimit/l
 
 Because it is the place that stores the the current and default values. 
 
-## what happens in the loop
+### what happens in the loop
 
 During the loop a message could come in from the outside. Or there could be a change in one of the sensor values. Or a running timer can display its progress or could reach the end of its run. Or it might be time to change a program. Or check the difference controller or custom code.
 
@@ -443,6 +443,7 @@ while connected
       D4};//pulled up
     /*SE constant declarations*/  
 
+# new versiom iot3/my
 
 ## functional flow
 
@@ -539,8 +540,72 @@ Things to check are
 1. initalize f.HAStIMER to 0;
 2. Can you have a project with relays without programs?
 
+### xdata NEW feature
 
+A device like an outdoor reset might use a microcontroller at the boiler in combination with info from a diffeent microcontroller sensing outdoor temperature in a different part of the house. It can give permission to the boiler device to listen to its readings and act on them within a different application.
 
+The data structure that stores the state of other devices is `xdata`. It can hold data from `numdevs` external devices in an `xda` array. The members of the array each have the `xda_t` structure which includes  an `xdev[17]` like `CYURD006/srstate` AND an srs_t structure to hold the sensors and relays that you want to listen to.
+
+    struct xda_t {
+      char xdev[17];
+      srs_t xrs;
+    };
+    struct xdata_t {
+      int numdevs;
+      xda_t xda[1];
+    };
+    extern xdata_t xdata;
+
+The project device can subscribe to another device by looking in `CONFIG.cpp` and scanning throught the `xdevs`. This happens in `MQclient::reconn(PubSubClient& client)`
+
+    for (int i=0; i<=xdata.numdevs;i++){
+      client.subscribe(xdata.xda[i].xdev);
+    }
+
+In the callback that runs when a new message comes in, an new `extern char idev[17]` is stored
+
+    void handleCallback(char* topic, byte* payload, unsigned int length){
+      strcpy(idev,topic);
+
+When the subscribed NEW_MAIL comes in, `Reqs::processInc()`, after looking to see if the message is for the native device, runs `Reqs::getXdata(idev, ipayload)` looking for the `xdata.xda[x].xdev == xdevtpc (idev), then storing the data that it is interested in.
+
+    void Reqs::getXdata(char* xdevtpc, char* xpayload){
+      char xpayl[100];
+      strcpy(xpayl,xpayload);
+      for (int i=0; i<=xdata.numdevs;i++){
+        if(strcmp(xdevtpc, xdata.xda[i].xdev)==0){
+          DynamicJsonDocument rot(1000);
+          deserializeJson(rot, xpayload);  
+          int id = rot["id"];
+          JsonArray darr = rot["darr"];
+          srs_t xrs = xdata.xda[i].xrs;
+          for (int i=0; i<xrs.numse;i++){
+            if(xrs.se[i].sr==id){
+              xrs.se[i].reading = darr[0];
+              printf("xdevtpc:%s, xpayload:%s \n", xdevtpc, xpayl);
+            }
+          }
+          for (int i=0; i<xrs.numcs;i++){
+            if(xrs.cs[i].sr==id){
+              xrs.cs[i].reading = darr[0];
+              xrs.cs[i].onoff = darr[1];
+              xrs.cs[i].hi = darr[2];
+              xrs.cs[i].lo = darr[3];
+              printf("xdevtpc:%s, xpayl:%s \n", xdevtpc, xpayl);
+            }
+          }
+          for (int i=0; i<xrs.numrel;i++){
+            if(xrs.rel[i].sr==id){
+              xrs.rel[i].onoff = darr[0];
+              printf("xdevtpc:%s, xpayl:%s \n", xdevtpc, xpayl);
+            }
+          }
+        }
+      }
+    }
+
+An actual project might have a relay operation influenced by some xdata as well as some native data. The xdata structure can be set up by appbuild.js. Once CONFIG.cpp is set up, custom code can be put there to do things like a difference controller.
+ 
 ## messages
 
  CYURD128/flags {"aUTOMA":true,"fORCErESET":false,"cREMENT":5,"HAStIMR":1023,"IStIMERoN":0,"HAYpROG":1023,"HAYsTATEcNG":1023,"CKaLARM":0,`"ISrELAYoN":4`,"tIMElEFT":[0,0,0,0,0]}

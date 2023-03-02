@@ -1,10 +1,14 @@
 # READMElog
 
 ## log
+### 3/1/23 18-xdata_feature
+[my/description.md # xdata NEW feature](my/description.md#xdata-new-feature)
+
 ### 2/28/23 17-tsec_description.md
 TODO
-- [ ] cleanup
-- [ ] have device subsrcibed to other devices
+- [] re-run appCreate with a programless relay and tstats should not have timeleft
+- [] cleanup
+- [] have device subsrcibed to other devices
 
 ### 2/27/23 16-128demo2-tmr_prg
 TODO
