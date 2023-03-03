@@ -30,35 +30,68 @@ const topics_t TPC {
 
 /*ports for input and output*/
 ports_t ports {
-  7, //numsr
+  4, //numsr
   {//port:{sr, in, out, rec, isnew}
     {0, D2, -9, 1, 0},// temp2 DS18B20
     {1, D5, D8, 1, 0},// temp DHT11
     {2, D5, D7, 1, 0},// hum DHT11
-    {3, -9, D6, 0, 0},// timr1 undefined
-    {4, -9, D6, 0, 0},// ledBlue undefined
-    {5, D0, D4, 1, 0},// lr DS18B20
-    {6, D0, D1, 1, 0} // mb DS18B20
+    {3, -9, D6, 0, 0} // timr1 undefined
   }
 };
 /*SE constant declarations*/
 const sen_t SE {
-  3, // numstypes 
-  5, // numsens 
+  2, // numstypes 
+  3, // numsens 
   { // stype:{nums,{sra,srb...},type,model}
     { 1, { 0 }, "temp", "DS18B20" }, 
-    { 2, { 1,2 }, "temp-hum", "DHT11" }, 
-    { 2, { 5,6 }, "temp", "DS18B20" }  
+    { 2, { 1,2 }, "temp-hum", "DHT11" }  
   }
 };
+/*?rs data structure to hold the current state of device*/
+srs_t srs  {
+      4, // numsr 
+      1, // se.length 
+      { // se:{sr, reading} 
+        {0, 45}  // temp2
+      },
+      2, // cs.length 
+      { // cs:{sr, reading, onoff, hi, lo} 
+        {1, 44, 0, 69, 67}, // temp
+        {2, 24, 0, 68, 60}  // hum
+      },
+      1, // rel.length 
+      { // rel:{sr, onoff} 
+        {3, 0}  // timr1
+      },
+      0, // dif.length 
+      {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} 
+    };
 
+/*xdata extern data struct initalization*/ 
+xdata_t xdata { 
+  1, //numxdevs
+  { 
+    "CYURD006srstate", //xdev 
+    {
+      1, // numsr 
+      1, // se.length 
+      { // se:{sr, reading} 
+        {0, 55}  // temp_out
+      },
+      0, // cs.length 
+      {}, // cs:{sr, reading, onoff, hi, lo}
+      0, // rel.length 
+      {}, // rel:{sr, onoff}
+      0, // dif.length 
+      {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} 
+    }
+  } 
+};
 /*prgs extern data structure initalization*/ 
 prgs_t prgs{  
-  3, // numprgs 
+  1, // numprgs 
   { // prg:{sr,aid,ev,numdata,prg[[]],hms} 
-    {3, 255, 1, 1, {{0,0,0,}}, 1500},  
-    {5, 255, 1, 2, {{0,0,69,67}}, 1502},  
-    {6, 255, 1, 2, {{0,0,70,40}}, 1504}   
+    {3, 255, 1, 1, {{0,0,0,}}, 1500}   
   }
 };
 

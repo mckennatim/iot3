@@ -74,8 +74,8 @@ const cfgdata =
       "type": "rel",
       "out": "D6",
       "onoff" : 0,
-      "hayprg": 1,
-      "haytimr": 1,
+      "hayprg": true,
+      "haytimr": true,
       "rec": 0,
       "descr": "a relay controlled by timer"
     },
@@ -86,6 +86,7 @@ const cfgdata =
       "out": "D6",
       "onoff" : 0,
       "rec": 0,
+      "haytimr": true,
       "descr": "a short descrition"
     },
     {
@@ -116,9 +117,9 @@ const cfgdata =
       "onoff": 0,
       "hi": 70,
       "lo": 40,
-      "hayprg": 1,
       "rec": 1,
-      "descr": "a short descrition"
+      "descr": "a short descrition",      
+      "hayprg": 1
     }
     // {
     //   "sr": 7,
@@ -132,8 +133,8 @@ const cfgdata =
     //   "maxa": 170,
     //   "maxb": 140,
     //   "onoff" : 0,
-    //   "hayprg" : 1,
-    //   "rec": 1
+    //   "rec": 1,
+    //   "hayprg" : 1
     // },
   ],
   "CYURD006": [
@@ -141,10 +142,34 @@ const cfgdata =
       "sr": 0,
       "label": "temp_out",
       "type": "se",
-      "inxdata": true,
-      "inapp": true,
       "reading": 55,
-      "descr": "outside temperature"
+      "descr": "outside temperature",
+      "inxdata": true,
+      "inapp": true
+    },
+    {
+      "sr": 4,
+      "label": "ledBlue",
+      "type": "rel",
+      "onoff" : 0,
+      "rec": 0,
+      "descr": "a short descrition",
+      "inxdata": false,
+      "inapp": true
+    }
+  ],
+  "CYURD007": [
+    {
+      "sr": 0,
+      "label": "temp_out2",
+      "type": "cs",
+      "onoff": 0,
+      "hi": 70,
+      "lo": 40,
+      "reading": 55,
+      "descr": "outside temperature",
+      "inxdata": true,
+      "inapp": true
     }
   ]
 }

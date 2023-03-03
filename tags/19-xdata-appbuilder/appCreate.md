@@ -1,13 +1,49 @@
 # project build system 
-The project build system creates a custom project based on fs/iot3/my base project. It sets up a new `conf/`, from which the specifics of the custom project can be specified. 
+The project build system creates a custom project based on fs/iot3/my base project. It sets up a new `conf/`, from which the specifics of a custom project can be specified. 
 
 Building a project from `my/conf/projectid/ ` copies the CONFIG.cpp and CONFIG.h files into the my/src directory. It also sends information to the server's database so the project can be identified and authorized by the server. 
 
-Each project has an associated react app. That app uses the information in a `initState.js` file in the conf directory. That file gest sopied to the react app.
+Each project has an associated react app. That app uses the information in a `appInit.js` file in the conf directory. That file gets sopied to the react app.
 
 Now you go to `my/src/main.cpp` and tweak it until the it compiles and does what it is supposed to do. From the `conf/appid/devid` directory you can run 'getMain.js` to have a copy of the tweaked main.cpp file associtaed with each project and device.
 
-## my/appCreate.js
+# Steps in building an esp8266 d1_mini project
+## Step -1 - Set up a development environment
+On a windows machine you need to install
+1. [vscode](https://code.visualstudio.com/Download) code editor
+1. [platformio]() extension to vs code
+1. `vscode-database` vscode extension
+1. [git](https://gitforwindows.org) for windows
+1. [node](https://www.digitalocean.com/community/tutorials/nodejs-node-version-manager) (recommend installing using node verrsion manager (nvm))
+
+Optionally, if you want to do any web app or back end development, do it in linux by installing WSL. 
+
+You would need to do this even to just to run the `wsclient` app used to test the project, monitoring the state of the device and putting through its paces. (Tim (admin) could also modify a wsclient that you could use)
+
+1. [WSL](https://www.omgubuntu.co.uk/how-to-install-wsl2-on-windows-10)
+1. vscode extension `Remote-SSH`
+1. set up Ubuntu 22.04.1 running nginx so you could locally host web applications while modifying and testing.
+
+## Step 0 - Start up vscode and import and open the project in platformio
+- open vscode and go to some convenient directory 
+- open a terminal and run the command: 
+
+   `git clone https://github.com/mckennatim/iot3.git`
+   
+- that will create an `iot3` directory which has a `my` subdirectory containing the base project   
+- open platformio and open the project `my` project
+
+## Step 1 - Choose the hardware 
+A project is made up of an d1_mini and whatever sensors and relays you need to get it to do what you want.
+1. Gather the spec sheets and circuit diagrams of sensors and outputs that you need for the project 
+1. Look through available circuit boards and schematics in iot3/my/boards by rt-clk on the pdf files, reveal in explorer then open.
+1. If you can base your project on an existing board, print out and mark up your pdf. Otherwise, 
+    - sketch up a board and schematic for your project 
+    - design a [board](./pcb_long.png) in [Kicad](https://www.kicad.org) and send it out for [fabrication](https://jlcpcb.com) (or have Tim do it)
+1. Assign each sensor and output to an [appropriate gpio port](../esp8266ports.png) on [the device pinouts](./8266_2in-4outSCH.png)  
+
+## Step 2 - Spec your project and run my/appCreate.js Step 2
+- open iot3/my/appCreate.js in vscode
  
 - `node my/appCreate.js` creates a new application based upon values chosen 
   - const devid = "CYURD128" /*higher number is most recent project*/
@@ -15,28 +51,70 @@ Now you go to `my/src/main.cpp` and tweak it until the it compiles and does what
   - const locid = "12ParleyVale" /*MODIFY*/
   - const user = "mckenna.tim@gmail.com" /*MODIFY*/
   - const board = "long.pdf" /* one of the board options from `my/boards/` */
+
+Tim as server admin needs to be sure the `locid` and `user` are known to the server. You should also ask him what device id `devid` to use.
  
-Running `node my/appCreate.js` creates a new directory `conf/128appid`, copies `appbuild.js` to it and  creates an `appdata.js` file in it. It also creates an `conf/128/appid/CYURD128` directory and creates a file called `copyCONFIG.js` in it.  
+Running `node my/appCreate.js` creates a new directory `conf/128appid`, copies `appbuild.js` to it and  creates an `appdata.js` file in it. It also creates an `conf/128/appid/CYURD128` directory and creates a file called `copyCONFIG.js` in it. 
 
-## building my/conf/projectId/
+## Step 3 - Customizing my/conf/projectId/appdata.js
+Open the `my/conf/projectfolder/appdata.js` file. You will see a `cfgdata` JSON object describing a bunch of sensors and relays, their initial values and the [ports](./abbreviations.md#ports) they are associated with. That is the template for your project design. As such it includes a lot of examples of possible ways to configure sensors and relays. Most of the stuff you don't need. You need to prune it to just include your projects stuff.
 
-`appdate.js` is a template for a project.  Here, `devinfo` and `apploc` info are specified. Each device in a project has  a list of sensors and relays`sr`'s that it contains. Depending the `sr` type, it can contain other info. 
+[Abbreviations](./abbreviations.md#abbreviations) used in CONFIG.cpp&h, MQTT, appdata.js and appInit.js
 
-From the cutomized `appdata.js` the necessary device and project configuration files and database modifications are generated.
+## Step 4 building my/conf/projectId/appbuild.js 
+From the customized `appdata.js` the necessary device and project configuration files, database modifications and a web app config file  are generated by running `node appbuild.js` from the `my/conf/project/` directory. Before you build a project you should remove any CONFIG.cpp and CONFIG.h files previosly created
 
-Each `sr` has a label and a description that the web app uses to keep track of and modify the state of the system. The web app uses information contained in `initState` as its base configuration. 
+`CONFIG.cpp` and `CONFIG.h` are placed in the `my/conf/project/dev/` directory.
 
-## trying the configuration in my/src and running the device from a web app.
+`appInit.js` and `appid.sql` are placed in the `my/conf/project/` directory.
 
-The device CONFIG.cpp and CONFIG.h are then copied by running `node copyCONF.js` for a device. Ideally it should compile and run and be flashable to a blank esp8266 device. 
+## Step 5 compiling the project
 
-Using a copy of `initState.js` placed in a wsl:/home/tim/www/react/v18/iot/src/ directory, a prototype demo of the device state and operation by the web app can be created and the device function can be verified.
+The device CONFIG.cpp and CONFIG.h need to be copied by into the `my/src` directory by running `node copyCONF.js` from the `my/conf/project/dev/` directory.
 
-## saving a project configuration and sendig it tp GITHUB
+Try compiling the project by clicking on the Platformio:Build check mark in the bottom bar of vscode. Pray.
 
-Once a minimally viable project MVP is built, `getCONF.js` can be run from conf/projectId/devid to have a current best copy of the project's main.cpp, CONFIG.cpp and CONFIG.h files in conf/projectId/devid.
+You might need to tweak `main.cpp` or modify `customcode()` or `customloop()` 
 
-At this point and all along the way, it is wise to send everything to git repositories. 
+Keep fixing any errors until it compiles successfully.
+
+## Step 6 modify database
+1. click on `Server not selected` in the bottom vscode bar and open connection to the `sitebuilt.net` host for the user `tim` and the password I give you.
+1. click on `Database nor selected` in the bottom vscode bar and connect to the `geniot` database.
+1. Open the `my/conf/project/appid.sql file. Select all its contens with ctrl-A
+1. rt-clk somewhere in the text and choose `Run selected text as SQL query wi CSV result`
+
+The database should now be modified and your project should be known to the server and you should be allowed to use the mqtt broker and server.
+
+## Step 7 modify wsclient
+`wsclient` the web app for testing whether the project is working need to be modified by replacing the existing `appInit.js` file with the one created in the appbuild process. 
+
+You can get it from github. (or have Tim (admin) send you a link to a wsclient web app for your pproject)
+
+`git clone https://github.com/mckennatim/v18.git` 
+
+Go to the wsclient directory. Replace the existing `appInit.js` Run `npm run dev` ond open the app in your localhost `v18/iot/wsclient/dist`
+
+## Step 8 flash the code to the device
+Connect a esp8266 d1_mini to your computer via USB. This can be a bare device or a device connected to a breadboard at this point. All the sensor readings will be garbage since nothing is connected. But the code should flash to the device. 
+ 
+Click the Platformio:Upload `->` in the bottom bar ov vscoode. Pray
+
+If it succeeds open the serial monitor clicking on the plug symbol in the vscode bottom bar. It should start trying to connect and give you instructions on connecting to WIFI. 
+
+Once you have connected to WIFI it should connect to the server and message broker and start getting information like the current time and data
+
+This is good
+
+## Step 9 Breadboard and build the circuit board
+
+You should be able to power the device. It will run as soon as you plug it in. It does not necessarily need WIFI unless you want to take advantage of having your device online.
+
+## Step 10 saving a project configuration and sendig it tp GITHUB
+
+Once a minimally viable project MVP is built, `getCONF.js` can be run from conf/projectId/devid to put a current best copy of the project's main.cpp, CONFIG.cpp and CONFIG.h files in conf/projectId/devid.
+
+Back up up your codebase to github.
 
 
 

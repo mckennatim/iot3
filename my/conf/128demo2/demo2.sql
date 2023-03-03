@@ -27,38 +27,12 @@ REPLACE INTO `app_loc` (`appid`, `locid`, `devs`, `zones`) VALUES (
     {
       "sr": 3,
       "label": "timr1"
-    },
-    {
-      "sr": 4,
-      "label": "ledBlue"
-    },
-    {
-      "sr": 5,
-      "label": "lr"
-    },
-    {
-      "sr": 6,
-      "label": "mb"
     }
   ],
   "CYURD006": [
     {
       "sr": 0,
       "label": "temp_out"
-    },
-    {
-      "sr": 4,
-      "label": "ledBlue"
-    }
-  ],
-  "CYURD007": [
-    {
-      "sr": 0,
-      "label": "temp_out"
-    },
-    {
-      "sr": 4,
-      "label": "ledBlue"
     }
   ]
 }', 
@@ -68,13 +42,7 @@ REPLACE INTO `app_loc` (`appid`, `locid`, `devs`, `zones`) VALUES (
   {"id": "temp", "name": "temp side of DHT11", "img": "temp.png" },
   {"id": "hum", "name": "temp side of DHT11", "img": "hum.png" },
   {"id": "timr1", "name": "a relay controlled by timer", "img": "timr1.png" },
-  {"id": "ledBlue", "name": "a short descrition", "img": "ledBlue.png" },
-  {"id": "lr", "name": "a short descrition", "img": "lr.png" },
-  {"id": "mb", "name": "a short descrition", "img": "mb.png" },
-  {"id": "temp_out", "name": "outside temperature", "img": "temp_out.png" },
-  {"id": "ledBlue", "name": "a short descrition", "img": "ledBlue.png" },
-  {"id": "temp_out", "name": "outside temperature", "img": "temp_out.png" },
-  {"id": "ledBlue", "name": "a short descrition", "img": "ledBlue.png" }
+  {"id": "temp_out", "name": "outside temperature", "img": "temp_out.png" }
 ]'
 );
 

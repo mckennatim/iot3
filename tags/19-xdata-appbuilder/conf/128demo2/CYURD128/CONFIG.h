@@ -38,7 +38,7 @@ struct port_t {
 };
 struct ports_t {
   int numports;
-  port_t port[7]; /*MODIFY*/
+  port_t port[4]; /*MODIFY*/
 };
 extern ports_t ports ;
 /*PORT*/
@@ -53,7 +53,7 @@ struct senso_t{
 struct sen_t {
   int numtypes;
   int numsens;
-  senso_t stype[3];
+  senso_t stype[2];
 };
 extern const sen_t SE;
 /*END SE constant declarations*/ 
@@ -88,7 +88,7 @@ struct srs_t {
   int numse;
   se_t se[1];/*MODIFY*/
   int numcs;
-  cs_t cs[0];/*MODIFY*/
+  cs_t cs[2];/*MODIFY*/
   int numrel;
   rel_t rel[1];/*MODIFY*/
   int numdi;
@@ -104,7 +104,7 @@ struct xda_t {
 };
 struct xdata_t {
   int numdevs;
-  xda_t xda[2];
+  xda_t xda[1];
 };
 extern xdata_t xdata;
 /*END xdata structure declarations*/
@@ -121,7 +121,7 @@ struct prg_t{
 };
 struct prgs_t{
   int numprgs;
-  prg_t prg[3];/*MODIFY*/
+  prg_t prg[1];/*MODIFY*/
 };
 extern prgs_t prgs;
 /*END prg data structure declarations*/  

@@ -26,8 +26,8 @@ signed long lcksens = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 Console console(devid, client);
-MQclient mq(devid, owner, pwd);
 Reqs req(devid, client);
+MQclient mq(devid, owner, pwd);
 Sched sched2;
 
 OneWire oneWire(D2);
@@ -106,7 +106,7 @@ void setIfDif (int srid, int reading, int old, int dif, int hi, int lo)
     setSrs(srid, reading);
     int bit =pow(2,srid);
     f.HAYsTATEcNG=f.HAYsTATEcNG | bit; 
-    printf("main106 hay %d: Sensor %d: reading: %d  old: %d \n",f.HAYsTATEcNG, srid, reading, old);
+    printf("main setIfDif hay %d: Sensor %d: reading: %d  old: %d \n",f.HAYsTATEcNG, srid, reading, old);
   }
 }
 
@@ -168,7 +168,7 @@ void readSensors(){
       setIfDif (srt, senvals[srt] , old, 1, 120, -20);
       // printf("DHTll temp sensro:%d, reading:%d \n", srt, senvals[srt]);
       old = req.getStoredReading(srh);
-      setIfDif (srh, senvals[srh] , old, 1, 100, 0);
+      setIfDif (srh, senvals[srh] , old, 3, 100, 0);
       // printf("DHTll humidity sensro:%d, reading:%d \n", srh, senvals[srh]);
     // }else if(strcmp(SE.stype[i].model, "ANALOG")==0){
     //   sr = SE.stype[i].ids[0];
@@ -223,20 +223,32 @@ void loop() {
   if (f.cONNectd){
     client.loop();
     if(NEW_MAIL){
-        Serial.println("hay NEW_MAIL");
+        // Serial.println("hay NEW_MAIL");
         req.processInc();
         NEW_MAIL=0;
     }
   }
+  
   if (inow - lcksens > every2sec) {
-      lcksens = inow;
-      readSensors();
-      if(f.HAYsTATEcNG>0){
-          if(f.cONNectd) req.pubState(f.HAYsTATEcNG, client);
-          f.HAYsTATEcNG=0;
+    lcksens = inow;
+    readSensors();
+    if(f.HAYsTATEcNG>0){
+        if(f.cONNectd) req.pubState(f.HAYsTATEcNG, client);
+        f.HAYsTATEcNG=0;
+    }
+    sched2.ckRelays();
+    sched2.updTimers();
+    // if (f.cONNectd){
+    //   req.pubTimr();
+    // }
+    customLoop();
+    // diffCtrl();  
+    if (f.CKaLARM>0){
+      sched2.ckAlarms(); //whatever gets scheduled should publish its update
+      if (f.cONNectd){
+        req.pubPrg(f.CKaLARM);
       }
-      sched2.ckRelays();
-      customLoop();
-      // diffCtrl();  
+      f.CKaLARM=f.CKaLARM & 0; //11110 turnoff CKaLARM for 1
+    }
   }    
 } 

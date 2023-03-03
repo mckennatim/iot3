@@ -209,103 +209,113 @@ const sen_t SE {
 console.log(MKsens());
 cfgc.write(MKsens());
 
+let introsrs =`/*?rs data structure to hold the current state of device*/
+srs_t srs `
+
 const MKsrs = (ansr)=>{
-  let srs =`
-/*srs data structure to hold the current state of the entire device*/
-srs_t srs {
-`
+  let srs = `{\n`
   const numsr = ansr.length 
-  srs += `  ${numsr}, // numsr \n`
+  srs += `      ${numsr}, // numsr \n`
   const se = ansr.filter(d=>{
     return d.type === "se"
   })
-  numse = se.length
-  srs += `  ${numse}, // numse \n `
+  numse = se.length > numse ? se.length : numse
+  srs += `      ${numse}, // numse \n `
   if (numse==0){
-    srs += ` {}, // se:{sr, reading,}\n`
+    srs += `    {}, // se:{sr, reading,}\n`
   }else{  
-    srs += ` { // se:{sr, reading} \n`
+    srs += `     { // se:{sr, reading} \n`
     se.map((d,i)=>{
-      srs += `    {${d.sr}, ${d.reading}}${i+1==numse?' ':','} // ${d.label}\n`
+      srs += `        {${d.sr}, ${d.reading}}${i+1==numse?' ':','} // ${d.label}\n`
     })
-    srs+= `  },\n`
+    srs+= `      },\n`
   }
   const cs = ansr.filter(d=>{
     return d.type === "cs"
   })
-  numcs= cs.length
-  srs += `  ${numcs}, // numcs \n `
+  numcs= cs.length > numcs ? cs.length : numcs
+  console.log('numcs: ', numcs);
+  srs += `      ${numcs}, // numcs \n `
   if (numcs==0){
-    srs += ` {}, // cs:{sr, reading, onoff, hi, lo}\n`
+    srs += `     {}, // cs:{sr, reading, onoff, hi, lo}\n`
   }else{
-    srs += ` { // cs:{sr, reading, onoff, hi, lo} \n`
-    cs.map((d,i)=>{
-      srs += `    {${d.sr}, ${d.reading}, ${d.onoff}, ${d.hi}, ${d.lo}}${i+1==numcs?' ':','} // ${d.label}\n`
+    srs += `     { // cs:{sr, reading, onoff, hi, lo} \n`
+    cs.map((d,i)=>{  
+      srs += `        {${d.sr}, ${d.reading}, ${d.onoff}, ${d.hi}, ${d.lo}}${i+1==numcs?' ':','} // ${d.label}\n`
     })
-    srs+= `  },\n`
+    srs+= `      },\n`
   }
   const rel = ansr.filter(d=>{
     return d.type === "rel"
   })
-  numrel=rel.length
-  srs += `  ${numrel}, // numrel \n `
+  numrel=rel.length > numrel ? rel.length : numrel
+  srs += `      ${numrel}, // numrel \n `
   if (numrel==0){
-    srs += ` {}, // rel:{sr, onoff}\n`
+    srs += `     {}, // rel:{sr, onoff}\n`
   }else{
-    srs += ` { // rel:{sr, onoff} \n`
+    srs += `     { // rel:{sr, onoff} \n`
     rel.map((d,i)=>{
-      srs += `    {${d.sr}, ${d.onoff}}${i+1==numrel?' ':','} // ${d.label}\n`
+      srs += `        {${d.sr}, ${d.onoff}}${i+1==numrel?' ':','} // ${d.label}\n`
     })
-    srs+= `  },\n`
+    srs+= `      },\n`
   }
   const dif = ansr.filter(d=>{
     return d.type === "dif"
   })
-  numdi = dif.length
-  srs += `  ${numdi}, // numdi \n `
+  numdi = dif.length > numdi ? dif.length : numdi
+  srs += `      ${numdi}, // numdi \n `
   if (numdi==0){
-    srs += ` {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
+    srs += `     {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
   }else{
-    srs += ` { // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
+    srs += `     { // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
     dif.map((d,i)=>{
-      srs += `    {${d.sr}, ${d.sra}, ${d.srb}, ${d.difon}, ${d.difoff}, ${d.maxa}, ${d.maxb}, ${d.onoff}}${i+1==numdi?' ':','} // ${d.label}\n`
+      srs += `        {${d.sr}, ${d.sra}, ${d.srb}, ${d.difon}, ${d.difoff}, ${d.maxa}, ${d.maxb}, ${d.onoff}}${i+1==numdi?' ':','} // ${d.label}\n`
     })
-    srs+= `  },\n`
+    srs+= `       },\n`
   }
-  srs += `};\n`
+  srs += `    }`
   return srs
 }
-console.log(MKsrs(devobj));
-cfgc.write(MKsrs(devobj));
+console.log(`${introsrs} ${MKsrs(devobj)};\n`);
+cfgc.write(`${introsrs} ${MKsrs(devobj)};\n`);
 
 const MKxdata=()=>{
   let xdstr = `
 /*xdata extern data struct initalization*/ 
 xdata_t xdata { 
-  ${numxdevs},
-`
-if(numxdevs==0){
-  xdstr += `{}
-  };
-`
-} else {
-  for(let i= 1; i>=numdevs; i++){
-    const devtpc =Object.keys(cfgdata[i])+"srstate"
-    xdstr += `${devtpc},
+  ${numxdevs}, //numxdevs
+` 
+  if(numxdevs==0){
+    xdstr += `{}
+    };
     `
-    xdstr += MKsrs(xdata.xda[i])
-  }
-  xdstr += `
-  }`
-}
+  } else {
+    for(let i= 1; i<=numxdevs; i++){
+        const xdev = Object.keys(cfgdata)[i]
+        const fdata = cfgdata[xdev].filter((d)=>{
+            return d.inxdata == true
+        })
+        // console.log('cfgdata[xdev]: ', xdev, i, Object.keys(cfgdata[xdev][i]));
+        // if(cfgdata[xdev][i].inexdata)
+        const devtpc =xdev +"srstate"
 
+        xdstr += `  { \n    "${devtpc}", //xdev \n`
+        xdstr += `    ${MKsrs(fdata)}\n  }${i==numxdevs?' ':',\n'}`
+    }
+    xdstr += `\n};`
+  }
+  return xdstr
 }
+console.log(MKxdata());
+cfgc.write(MKxdata());
 
 const MKprgs=()=>{
   let pstr = `
 /*prgs extern data structure initalization*/ 
 prgs_t prgs{  
 `
+
+
   const prgs = devobj.filter(d=>{
     if(d.hasOwnProperty('hayprg')) {
       return d.hayprg===1
@@ -544,7 +554,10 @@ const initialState = {
 `
   const keys = Object.keys(cfgdata)
   keys.map((k)=>{
-    cfgdata[k].map((e,i)=>{
+    const fdata = cfgdata[k].filter((d)=>{
+      return typeof d.inapp === 'undefined' || d.inapp == true
+    })
+    fdata.map((e,i)=>{
       switch(e.type){
         case "se":{
           ini += `  ${e.label}: { darr: [${e.reading}] },\n`
@@ -567,7 +580,7 @@ const initialState = {
           if(e.haytimr){
             timr = `, timeleft: 0`
           }
-          ini += `  ${e.label}: { darr: [${e.onoff}]${prg} },\n`
+          ini += `  ${e.label}: { darr: [${e.onoff}]${prg}${timr}},\n`
           break;
         }
         case "dif":{

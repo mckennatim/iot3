@@ -13,7 +13,7 @@ void customInit();
 void customLoop();
 
 /*dev */
-// extern bool haywifi;
+extern bool haywifi;
 extern char devid[9];
 extern char owner[254];
 extern char pwd[24];
@@ -43,7 +43,7 @@ struct ports_t {
 extern ports_t ports ;
 /*PORT*/
 
-/*SE constant declarations*/  
+/*START SE constant declarations*/  
 struct senso_t{
   int nums;
   int ids[6]; //srs/portin
@@ -56,9 +56,9 @@ struct sen_t {
   senso_t stype[2];
 };
 extern const sen_t SE;
-/*SE constant declarations*/ 
+/*END SE constant declarations*/ 
 
-/*srs data structure declarations*/ 
+/*START srs data structure declarations*/ 
 struct se_t {//sensors
     int sr;
     int reading;
@@ -95,19 +95,22 @@ struct srs_t {
   di_t di[0];/*MODIFY*/
 };
 extern srs_t srs;
-/*srs data structure declarations*/  
+/*END srs data structure declarations*/  
 
+/*START xdata structure declarations*/
 struct xda_t {
   char xdev[17];
   srs_t xrs;
 };
 struct xdata_t {
-  int numxdevs;
+  int numdevs;
   xda_t xda[1];
 };
 extern xdata_t xdata;
+/*END xdata structure declarations*/
 
-/*prg data structure declarations*/  
+
+/*START prg data structure declarations*/  
 struct prg_t{
   int sr;
   AlarmID_t aid;
@@ -118,10 +121,10 @@ struct prg_t{
 };
 struct prgs_t{
   int numprgs;
-  prg_t prg[2];/*MODIFY*/
+  prg_t prg[1];/*MODIFY*/
 };
 extern prgs_t prgs;
-/*prg data structure declarations*/  
+/*END prg data structure declarations*/  
 
 /*flags*/
 struct flags_t{

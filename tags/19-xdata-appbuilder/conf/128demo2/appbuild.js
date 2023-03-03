@@ -219,56 +219,56 @@ const MKsrs = (ansr)=>{
   const se = ansr.filter(d=>{
     return d.type === "se"
   })
-  numse = se.length
-  srs += `      ${numse}, // numse \n `
-  if (numse==0){
+  numse = se.length > numse ? se.length : numse
+  srs += `      ${se.length}, // se.length \n `
+  if (se.length==0){
     srs += `    {}, // se:{sr, reading,}\n`
   }else{  
     srs += `     { // se:{sr, reading} \n`
     se.map((d,i)=>{
-      srs += `        {${d.sr}, ${d.reading}}${i+1==numse?' ':','} // ${d.label}\n`
+      srs += `        {${d.sr}, ${d.reading}}${i+1==se.length?' ':','} // ${d.label}\n`
     })
     srs+= `      },\n`
   }
   const cs = ansr.filter(d=>{
     return d.type === "cs"
   })
-  numcs= cs.length
-  srs += `      ${numcs}, // numcs \n `
-  if (numcs==0){
+  numcs= cs.length > numcs ? cs.length : numcs
+  srs += `      ${cs.length}, // cs.length \n `
+  if (cs.length==0){
     srs += `     {}, // cs:{sr, reading, onoff, hi, lo}\n`
   }else{
     srs += `     { // cs:{sr, reading, onoff, hi, lo} \n`
     cs.map((d,i)=>{  
-      srs += `        {${d.sr}, ${d.reading}, ${d.onoff}, ${d.hi}, ${d.lo}}${i+1==numcs?' ':','} // ${d.label}\n`
+      srs += `        {${d.sr}, ${d.reading}, ${d.onoff}, ${d.hi}, ${d.lo}}${i+1==cs.length?' ':','} // ${d.label}\n`
     })
     srs+= `      },\n`
   }
   const rel = ansr.filter(d=>{
     return d.type === "rel"
   })
-  numrel=rel.length
-  srs += `      ${numrel}, // numrel \n `
-  if (numrel==0){
+  numrel=rel.length > numrel ? rel.length : numrel
+  srs += `      ${rel.length}, // rel.length \n `
+  if (rel.length==0){
     srs += `     {}, // rel:{sr, onoff}\n`
   }else{
     srs += `     { // rel:{sr, onoff} \n`
     rel.map((d,i)=>{
-      srs += `        {${d.sr}, ${d.onoff}}${i+1==numrel?' ':','} // ${d.label}\n`
+      srs += `        {${d.sr}, ${d.onoff}}${i+1==rel.length?' ':','} // ${d.label}\n`
     })
     srs+= `      },\n`
   }
   const dif = ansr.filter(d=>{
     return d.type === "dif"
   })
-  numdi = dif.length
-  srs += `      ${numdi}, // numdi \n `
-  if (numdi==0){
+  numdi = dif.length > numdi ? dif.length : numdi
+  srs += `      ${dif.length}, // dif.length \n `
+  if (dif.length==0){
     srs += `     {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
   }else{
     srs += `     { // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} \n`
     dif.map((d,i)=>{
-      srs += `        {${d.sr}, ${d.sra}, ${d.srb}, ${d.difon}, ${d.difoff}, ${d.maxa}, ${d.maxb}, ${d.onoff}}${i+1==numdi?' ':','} // ${d.label}\n`
+      srs += `        {${d.sr}, ${d.sra}, ${d.srb}, ${d.difon}, ${d.difoff}, ${d.maxa}, ${d.maxb}, ${d.onoff}}${i+1==dif.length?' ':','} // ${d.label}\n`
     })
     srs+= `       },\n`
   }
@@ -276,7 +276,7 @@ const MKsrs = (ansr)=>{
   return srs
 }
 console.log(`${introsrs} ${MKsrs(devobj)};\n`);
-// cfgc.write(MKsrs(devobj));
+cfgc.write(`${introsrs} ${MKsrs(devobj)};\n`);
 
 const MKxdata=()=>{
   let xdstr = `
@@ -294,7 +294,6 @@ xdata_t xdata {
         const fdata = cfgdata[xdev].filter((d)=>{
             return d.inxdata == true
         })
-        console.log('fdata: ', fdata);
         // console.log('cfgdata[xdev]: ', xdev, i, Object.keys(cfgdata[xdev][i]));
         // if(cfgdata[xdev][i].inexdata)
         const devtpc =xdev +"srstate"
@@ -307,7 +306,7 @@ xdata_t xdata {
   return xdstr
 }
 console.log(MKxdata());
-// cfgc.write(MKxdata());
+cfgc.write(MKxdata());
 
 const MKprgs=()=>{
   let pstr = `
@@ -318,7 +317,7 @@ prgs_t prgs{
 
   const prgs = devobj.filter(d=>{
     if(d.hasOwnProperty('hayprg')) {
-      return d.hayprg===1
+      return d.hayprg == true
     }
   })
   numprgs =prgs.length
@@ -554,7 +553,10 @@ const initialState = {
 `
   const keys = Object.keys(cfgdata)
   keys.map((k)=>{
-    cfgdata[k].map((e,i)=>{
+    const fdata = cfgdata[k].filter((d)=>{
+      return typeof d.inapp === 'undefined' || d.inapp == true
+    })
+    fdata.map((e,i)=>{
       switch(e.type){
         case "se":{
           ini += `  ${e.label}: { darr: [${e.reading}] },\n`
@@ -577,7 +579,7 @@ const initialState = {
           if(e.haytimr){
             timr = `, timeleft: 0`
           }
-          ini += `  ${e.label}: { darr: [${e.onoff}]${prg} },\n`
+          ini += `  ${e.label}: { darr: [${e.onoff}]${prg}${timr}},\n`
           break;
         }
         case "dif":{

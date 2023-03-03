@@ -8,7 +8,7 @@ Once you lose the wificonnection the mq.reconn will just be in and endless loop
 
 
 ## explanation of the OLD design
-from [abbrevaitions.md](abbreviations.md):
+from [abbrevaitions.md](./abbreviations.md):
 
 srs
 - sr: sesnor or relay ID

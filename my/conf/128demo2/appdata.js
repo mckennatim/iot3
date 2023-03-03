@@ -48,110 +48,21 @@ const cfgdata =
       "type": "rel",
       "out": "D6",
       "onoff" : 0,
-      "hayprg": 1,
-      "haytimr": 1,
+      "hayprg": true,
+      "haytimr": true,
       "rec": 0,
       "descr": "a relay controlled by timer"
     },
-    {
-      "sr": 4,
-      "label": "ledBlue",
-      "type": "rel",
-      "out": "D6",
-      "onoff" : 0,
-      "rec": 0,
-      "descr": "a short descrition"
-    },
-    {
-      "sr": 5,
-      "label": "lr",
-      "type": "cs",
-      "senses": "temp",
-      "model": "DS18B20",
-      "in": "D0",
-      "out": "D4",
-      "reading" : 44,
-      "onoff": 0,
-      "hi": 69,
-      "lo": 67,
-      "hayprg": 1,
-      "rec": 1,
-      "descr": "a short descrition"
-    },
-    {
-      "sr": 6,
-      "label": "mb",
-      "type": "cs",
-      "senses": "temp",
-      "model": "DS18B20",
-      "in": "D0",
-      "out": "D1",
-      "reading" : 33,
-      "onoff": 0,
-      "hi": 70,
-      "lo": 40,
-      "hayprg": 1,
-      "rec": 1,
-      "descr": "a short descrition"
-    }
-    // {
-    //   "sr": 7,
-    //   "label": "solardif",
-    //   "type": "dif",
-    //   "out": "D9",
-    //   "sra": 5,
-    //   "srb" : 6,
-    //   "difon": 42,
-    //   "difoff": 48,
-    //   "maxa": 170,
-    //   "maxb": 140,
-    //   "onoff" : 0,
-    //   "hayprg" : 1,
-    //   "rec": 1
-    // },
   ],
   "CYURD006": [
     {
       "sr": 0,
       "label": "temp_out",
       "type": "se",
-      "inxdata": true,
-      "inapp": true,
       "reading": 55,
-      "descr": "outside temperature"
-    },
-    {
-      "sr": 4,
-      "label": "ledBlue",
-      "type": "rel",
-      "out": "D6",
-      "onoff" : 0,
-      "rec": 0,
-      "inxdata": false,
-      "inapp": true,
-      "descr": "a short descrition"
-    }
-  ],
-  "CYURD007": [
-    {
-      "sr": 0,
-      "label": "temp_out",
-      "type": "se",
+      "descr": "outside temperature",
       "inxdata": true,
-      "inapp": true,
-      "reading": 55,
-      "descr": "outside temperature"
-    },
-    {
-      "sr": 4,
-      "label": "ledBlue",
-      "type": "rel",
-      "out": "D6",
-      "onoff" : 0,
-      "rec": 0,
-      "inxdata": true,
-      "inapp": true,
-      "descr": "a short descrition"
+      "inapp": true
     }
   ]
 }

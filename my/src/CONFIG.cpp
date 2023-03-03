@@ -28,14 +28,13 @@ const topics_t TPC {
   {"devtime", "cmd", "prg", "req", "set"}
 };
 
-/*ports for input and output
- */
+/*ports for input and output*/
 ports_t ports {
   4, //numsr
   {//port:{sr, in, out, rec, isnew}
-    {0, D2, -9, 0, 0},// temp2 DS18B20
-    {1, D5, D8, 0, 0},// temp DHT11
-    {2, D5, D7, 0, 0},// hum DHT11
+    {0, D2, -9, 1, 0},// temp2 DS18B20
+    {1, D5, D8, 1, 0},// temp DHT11
+    {2, D5, D7, 1, 0},// hum DHT11
     {3, -9, D6, 0, 0} // timr1 undefined
   }
 };
@@ -48,54 +47,51 @@ const sen_t SE {
     { 2, { 1,2 }, "temp-hum", "DHT11" }  
   }
 };
-
-/*srs data structure to hold the current state of the entire device*/
-srs_t srs {
-  4, // numsr 
-  1, // numse 
-  { // se:{sr, reading} 
-    {0, 45}  // temp2
-  },
-  2, // numcs 
-  { // cs:{sr, reading, onoff, hi, lo} 
-    {1, 44, 0, 69, 67}, // temp
-    {2, 24, 0, 90, 60}  // hum
-  },
-  1, // numrel 
-  { // rel:{sr, onoff} 
-    {3, 0}  // timr1
-  },
-  0, // numdi 
-  {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} 
-};
+/*?rs data structure to hold the current state of device*/
+srs_t srs  {
+      4, // numsr 
+      1, // se.length 
+      { // se:{sr, reading} 
+        {0, 45}  // temp2
+      },
+      2, // cs.length 
+      { // cs:{sr, reading, onoff, hi, lo} 
+        {1, 44, 0, 69, 67}, // temp
+        {2, 24, 0, 68, 60}  // hum
+      },
+      1, // rel.length 
+      { // rel:{sr, onoff} 
+        {3, 0}  // timr1
+      },
+      0, // dif.length 
+      {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} 
+    };
 
 /*xdata extern data struct initalization*/ 
-xdata_t xdata {
+xdata_t xdata { 
   1, //numxdevs
-  {
-    "CYURD006/srstate", //xdev
-    { //xrs
-      1, //numsr
-      1, //numse
-      { // se:{sr, reading}
-        {0, 44}
+  { 
+    "CYURD006srstate", //xdev 
+    {
+      1, // numsr 
+      1, // se.length 
+      { // se:{sr, reading} 
+        {0, 55}  // temp_out
       },
-      0, // numcs
-      {},
-      0, // numrel
-      {},
-      0, //dumdi
-      {}
+      0, // cs.length 
+      {}, // cs:{sr, reading, onoff, hi, lo}
+      0, // rel.length 
+      {}, // rel:{sr, onoff}
+      0, // dif.length 
+      {} // dif:{sr, sra, srb, diffon, diffoff, maxa, maxb, onoff} 
     }
-  }
+  } 
 };
-
 /*prgs extern data structure initalization*/ 
 prgs_t prgs{  
-  2, // numprgs 
+  1, // numprgs 
   { // prg:{sr,aid,ev,numdata,prg[[]],hms} 
-    {1, 255, 1, 2, {{0,0,69,67}}, 1500},  
-    {3, 255, 1, 1, {{0,0,0,}}, 1502}   
+    {3, 255, 1, 1, {{0,0,0,}}, 1500}   
   }
 };
 
@@ -109,7 +105,7 @@ flags_t f {
   5,//cREMENT
   0,//HAStIMR 1100000 64+32=96
   0,//IStIMERoN
-  1023,//HAYpROG 11000010 =128+64+4=198
+  198,//HAYpROG 11000010 =128+64+4=198
   1023,//HAYsTATEcNG
   0,//CKaLARM
   0,//ISrELAYoN
