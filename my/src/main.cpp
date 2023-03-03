@@ -106,7 +106,7 @@ void setIfDif (int srid, int reading, int old, int dif, int hi, int lo)
     setSrs(srid, reading);
     int bit =pow(2,srid);
     f.HAYsTATEcNG=f.HAYsTATEcNG | bit; 
-    printf("main106 hay %d: Sensor %d: reading: %d  old: %d \n",f.HAYsTATEcNG, srid, reading, old);
+    printf("main setIfDif hay %d: Sensor %d: reading: %d  old: %d \n",f.HAYsTATEcNG, srid, reading, old);
   }
 }
 

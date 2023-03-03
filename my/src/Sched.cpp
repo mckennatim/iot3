@@ -5,7 +5,7 @@
 #include "Reqs.h"
 
 extern Reqs req;
-extern char ipayload[250];
+// extern char ipayload[250];
 
 void Sched::deseriTime(){
   DynamicJsonDocument root(200);
@@ -52,7 +52,7 @@ void Sched::adjRelay(int sr, cs_t& te){
     //     digitalWrite(prgs.prg[i].port, relayState); 
     //   }
     // }
-    printf("sr: %d, port: %d, relayState: %d \n",sr, ports.port[sr].out, digitalRead(ports.port[sr].out));
+    printf("adjRelay sr: %d, port: %d, relayState: %d \n",sr, ports.port[sr].out, digitalRead(ports.port[sr].out));
   }    
   // printf("relayState = %d", relayState);
 }
@@ -111,6 +111,7 @@ void Sched::ckRelays(){
 
 void Sched::copyProg(prg_t& t, JsonArray ev){
   t.ev=ev.size();
+  printf("copyProg: t.ev = %d \n", t.ev);
   for(size_t h=0;h<ev.size();h++){
     JsonArray aprg = ev[h];
     for(int j=0;j<t.numdata+2;j++){
@@ -137,11 +138,12 @@ void Sched::deseriProg(char* kstr){
 }    
 
 void Sched::setCur(prg_t& p, int &cur, int &nxt){
-  Serial.print("ev(size)=");
-  Serial.println(p.ev);
-  Serial.print(hour());
-  Serial.print(":");
-  Serial.println(minute());
+  // Serial.print("ev(size)=");
+  // Serial.println(p.ev);
+  // Serial.print(hour());
+  // Serial.print(":");
+  // Serial.println(minute());
+  printf("setCur: p.sr:%d, p.ev=%d, %d:%d \n", p.sr, p.ev, hour(), minute());
   for(int j=0; j<p.ev;j++){
     if (hour() == p.prg[j][0]){
       if (minute() < p.prg[j][1]){
@@ -188,14 +190,15 @@ void Sched::ckAlarms(){
         // int asec = second()+sr;        
         p->aid = Alarm.alarmOnce(hr,min,sr,alarmRings);
         p->hms=hr*60+min;
-        Serial.print("sr: ");
-        Serial.print(p->sr);
-        Serial.print(" aid: ");
-        Serial.print(p->aid);
-        Serial.print(" hr: ");
-        Serial.print(hr);
-        Serial.print(" min: ");
-        Serial.println(min);
+        // Serial.print("sr: ");
+        // Serial.print(p->sr);
+        // Serial.print(" aid: ");
+        // Serial.print(p->aid);
+        // Serial.print(" hr: ");
+        // Serial.print(hr);
+        // Serial.print(" min: ");
+        // Serial.println(min);
+        printf("ckAlarms case1cs: sr:%d, aid:%d, %d:%d \n", p->sr, p->aid, hr, min);
         sortPrgsHms(prgs.prg, prgs.numprgs);
         showArray(prgs.prg, prgs.numprgs);
         f.HAYsTATEcNG=f.HAYsTATEcNG | bit;
@@ -226,14 +229,15 @@ void Sched::ckAlarms(){
         int min = p->prg[nxt][1];
         p->aid = Alarm.alarmOnce(hr,min,sr, alarmRings);
         p->hms=hr*60+min;
-        Serial.print("sr: ");
-        Serial.print(p->sr);
-        Serial.print(" aid: ");
-        Serial.print(p->aid);
-        Serial.print(" hr: ");
-        Serial.print(hr);
-        Serial.print(" min: ");
-        Serial.println(min);
+        // Serial.print("sr: ");
+        // Serial.print(p->sr);
+        // Serial.print(" aid: ");
+        // Serial.print(p->aid);
+        // Serial.print(" hr: ");
+        // Serial.print(hr);
+        // Serial.print(" min: ");
+        // Serial.println(min);
+        printf("ckAlarms case2rel: sr:%d, aid:%d, %d:%d \n", p->sr, p->aid, hr, min);
         sortPrgsHms(prgs.prg, prgs.numprgs);
         showArray(prgs.prg, prgs.numprgs);
       }
@@ -285,9 +289,10 @@ void alarmRings(){//alarm went off
 
 void Sched::showArray(const prg_t prg[], int size){
   for (int i=0;i<size;i++){
-    Serial.print(prg[i].sr);
-    Serial.print(" ");
-    Serial.println(prg[i].hms);
+    printf("showArray prg[i].sr:%d, hms:%d \n",prg[i].sr, prg[i].hms );
+    // Serial.print(prg[i].sr);
+    // Serial.print(" ");
+    // Serial.println(prg[i].hms);
   }
 }
 

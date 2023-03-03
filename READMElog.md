@@ -1,14 +1,31 @@
 # READMElog
 
 ## log
+### 3/2/23 19-xdata-appbuilder
+- [~] fix appCreate and appbuilder to deal with xdata
 ### 3/1/23 18-xdata_feature
 [my/description.md # xdata NEW feature](my/description.md#xdata-new-feature)
+
+TODO
+- [] ck sending a new program in the AM
+- [] test project with current sensors
+- [] project for food forest
+- [] test project with buttons
+- [] design doorstrike
+- [] create custom difference controller
+- [] reflash music
+- [] reflash attic
+- [] reflash temp_out
+- [~] fix appCreate and appbuilder to deal with xdata
+- [] re-run appCreate with a programless relay and tstats should not have timeleft
+- [] cleanup
+
 
 ### 2/28/23 17-tsec_description.md
 TODO
 - [] re-run appCreate with a programless relay and tstats should not have timeleft
 - [] cleanup
-- [] have device subsrcibed to other devices
+- [x] have device subsrcibed to other devices
 
 ### 2/27/23 16-128demo2-tmr_prg
 TODO
@@ -19,7 +36,7 @@ req.pubTimr() put in sched.updateTimr() behind a f.cONNectd flag to run when hay
 TODO 
 - [x] figure out if there can be timers without programs
 - [ ] cleanup
-- [ ] have device subsrcibed to other devices
+- [x] have device subsrcibed to other devices
 - [x] get timers and programs to run
 
 TODO 

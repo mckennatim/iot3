@@ -8,10 +8,10 @@
 #include "CONFIG.h"
 
 Sched sched;
-extern char itopic[40];
-extern char ipayload[250];
-extern char idev[9];
-extern unsigned int ipaylen;
+// extern char itopic[40];
+// extern char ipayload[250];
+// extern char idev[17];
+// extern unsigned int ipaylen;
 
 Reqs::Reqs(char* devid, PubSubClient& client ){
   cdevid = devid;
@@ -48,7 +48,6 @@ void Reqs::processInc(){
           deseriReq();
           break;          
         default: 
-        	Serial.print(i);         
           Serial.println(": in processInc default");
           break;           
       }
@@ -136,14 +135,14 @@ void Reqs::deseriCmd(){
       f.HAStIMR=f.HAStIMR | bit;
       srs.rel[ici.idx].onoff = 1;
       digitalWrite(ports.port[id].out, 1);
-      f.tIMElEFT[id]=tsec;
+      f.tIMElEFT[id]=tsec+f.cREMENT;
     } 
     else if(sra[0] != digitalRead(ports.port[id].out)){
       srs.rel[ici.idx].onoff = sra[0];
       digitalWrite(ports.port[id].out, sra[0]);
       ports.port[id].isnew=1;
       f.HAYsTATEcNG=f.HAYsTATEcNG | bit;
-      printf("srid: %d, port %d is now %d \n",id, ports.port[id].out, digitalRead(ports.port[id].out));
+      printf("desiriCmd case2rel srid: %d, port %d is now %d \n",id, ports.port[id].out, digitalRead(ports.port[id].out));
     } 
     break;
   // case 3://di
@@ -211,8 +210,6 @@ void Reqs::pubFlags(){
   char ast[180];
   serializeJson(root, ast);
   printf("creaJSON313: %s, sizeof(%d) \n",ast, sizeof(ast));
-  Serial.println(ast);
-
   clpub(flags,ast);  
 }
 
@@ -242,10 +239,11 @@ void Reqs::pubPrg(int hayprg){
   strcat(sched,"/sched"); 
   for( int i=0;i<prgs.numprgs;i++){
     int bit =pow(2,prgs.prg[i].sr);
-    Serial.print("sr: ");
-    Serial.print(prgs.prg[i].sr);
-    Serial.print(" is ");
-    Serial.println(((bit & hayprg)==bit));
+    // Serial.print("sr: ");
+    // Serial.print(prgs.prg[i].sr);
+    // Serial.print(" is ");
+    // Serial.println(((bit & hayprg)==bit));
+    printf("pubPrg prgs.prg[i].sr: %d, (bit & hayprg)==bit): %d \n", prgs.prg[i].sr, (bit & hayprg)==bit);
     if((bit & hayprg)==bit){
       prg_t p = prgs.prg[i];
       char astr[200];
@@ -256,7 +254,6 @@ void Reqs::pubPrg(int hayprg){
 }
 
 void Reqs::pubState(int hc, PubSubClient& client){
-  Serial.println(hc);
   int sr;
   int bit;
   bool shouldrec = 0;
@@ -270,7 +267,7 @@ void Reqs::pubState(int hc, PubSubClient& client){
     if((hc & bit)==bit){
       shouldrec = isNewRec(ports.port[sr].rec, ports.port[sr].isnew);
       sprintf(payload, "{\"id\":%d, \"darr\":[%d], \"new\":%d}", sr, srs.se[i].reading, shouldrec);
-      printf("Req128{\"id\":%d, \"darr\":[%d], \"new\":%d }\n", sr, srs.se[i].reading, shouldrec);
+      printf("Req.pubState se {\"id\":%d, \"darr\":[%d], \"new\":%d }\n", sr, srs.se[i].reading, shouldrec);
       ports.port[sr].isnew=0;
       client.publish(devtopic, payload, true);
     }
@@ -281,7 +278,7 @@ void Reqs::pubState(int hc, PubSubClient& client){
     if((hc & bit)==bit){
       shouldrec = isNewRec(ports.port[sr].rec, ports.port[sr].isnew);
       sprintf(payload, "{\"id\":%d, \"darr\":[%d, %d, %d, %d], \"new\":%d}",sr, srs.cs[i].reading, srs.cs[i].onoff, srs.cs[i].hi, srs.cs[i].lo, shouldrec);  
-      printf("Req219:%s{\"id\":%d, \"darr\":[%d, %d, %d, %d], \"new\":%d}\n",cdevid,sr, srs.cs[i].reading, srs.cs[i].onoff, srs.cs[i].hi, srs.cs[i].lo, shouldrec);  
+      printf("Req.pubState cs: %s{\"id\":%d, \"darr\":[%d, %d, %d, %d], \"new\":%d}\n",cdevid,sr, srs.cs[i].reading, srs.cs[i].onoff, srs.cs[i].hi, srs.cs[i].lo, shouldrec);  
       ports.port[sr].isnew=0;
       client.publish(devtopic, payload, true);
     }
@@ -292,7 +289,7 @@ void Reqs::pubState(int hc, PubSubClient& client){
     if((hc & bit)==bit){
       shouldrec = isNewRec(ports.port[sr].rec, ports.port[sr].isnew);
       sprintf(payload, "{\"id\":%d, \"darr\":[%d], \"new\":%d}", sr, srs.rel[i].onoff, shouldrec);
-      printf("Req230{\"id\":%d, \"darr\":[%d], \"new\":%d }\n", sr, srs.rel[i].onoff, shouldrec);
+      printf("Req.pubState rel{\"id\":%d, \"darr\":[%d], \"new\":%d }\n", sr, srs.rel[i].onoff, shouldrec);
       ports.port[sr].isnew=0;
       client.publish(devtopic, payload, true);
     }
@@ -300,7 +297,7 @@ void Reqs::pubState(int hc, PubSubClient& client){
 }
 
 void Reqs::clpub(char topic[20], char payload[200]){
-  printf("req241: %d \n", cclient.connected());
+  printf("req.clpub: %d \n", cclient.connected());
   if (cclient.connected()){
     cclient.publish(topic, payload, true);
   }   
@@ -384,7 +381,6 @@ void Reqs::creaJson(prg_t& p, char* astr){
   char ast[200];
   serializeJson(root, ast);
   printf("creaJSON313: %s, sizeof(%d) \n",ast, sizeof(ast));
-  Serial.println(ast);
   strcpy(astr,ast);
 }
 
