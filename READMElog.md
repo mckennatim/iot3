@@ -1,6 +1,8 @@
 # READMElog
 
 ## log
+### 3/9/23 20-test_amain
+probably wrecked iot3/my, but now I know a bit more about c++ data structures and the wisdom on trying stuff out on the WSL c++ compiler instead of so much in platformio.
 ### 3/2/23 19-xdata-appbuilder
 - [~] fix appCreate and appbuilder to deal with xdata
 ### 3/1/23 18-xdata_feature

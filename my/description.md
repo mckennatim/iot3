@@ -447,11 +447,11 @@ while connected
 
 ## functional flow
 
-MQTT fires a `handleCallback` when a message is received which sets NEW_MAIL and puts the message topic and payload in extern (global) `itopic` and `ipayload`
+MQTT fires a `handleCallback` when a message is received which sets NEW_MAIL and puts the message topic and payload in extern (global) `itopic` and `ipayload` and `idev`. Then `idev` is dev/topic like `CYURD006/srstate`
 
 `req.processInc()` runs from loop() when there is NEW_MAIL
 
-responding to incoming prg message
+### responding to incoming prg message
 
 - CYURD073/prg {"id":0,"pro":[[0,0,61,59],[9,0,62,60]]} JsonArr `[[0,0,61,59],[9,0,62,60]]` looks for the sr in prgs that matches the id of MQTTmess. Then it sets the f.CKaLARM bit and copies the prg and JsonArr. into prg.
 
@@ -459,6 +459,9 @@ responding to incoming prg message
           sched.deseriProg(kstr) => 
               set:f.CKaLARM for sr
               sched.copyProg(prgs.prg[i], events) 
+
+### responding to an xdata message  like CYURD006/ststate  
+The state of external devices (xdata) can be subscribed to. `getXdata` stores that state in the `xdata` data structure.         
 
 ### in loop()   
 
@@ -503,6 +506,14 @@ The `srs.rel[idx of sr].onoff` is set to current prg[onoff]. If relay is on, `f.
 - When `f.HAYsTATEcNG>0` `req.pubState()` is called
 - When `f.CKaLARM>0` `req.pubPrg(f.CKaLARM)` is called
 
+### adjRelays(int sr, cs_t& te)
+- Called when a `cs` reading changes from
+  - main().loop()->readSensors()->setIfDir()->setSrs()
+- Called when a `cs` /cmd comes in changin hi & lo
+- Compares reading to hi & lo and if there should be a change
+  - sets cs.onoff
+  - digitalWrites(port[sr].out, onoff) 
+
 ## timers
 Timers are different from programs. They are contained if the `f.tIMElEFT` array.
 
@@ -539,6 +550,13 @@ In `deductCrement()` called by `sched.updTimers()` the code that turns off the `
 Things to check are
 1. initalize f.HAStIMER to 0;
 2. Can you have a project with relays without programs?
+
+### ckrelays() called every 2 seconds in loop
+
+    every 2 seconds
+      go thourgh all the ports (srs) that have an output port
+      for cs, rel check the current state value and update port
+
 
 ### xdata NEW feature
 
@@ -606,9 +624,363 @@ When the subscribed NEW_MAIL comes in, `Reqs::processInc()`, after looking to se
 
 An actual project might have a relay operation influenced by some xdata as well as some native data. The xdata structure can be set up by appbuild.js. Once CONFIG.cpp is set up, custom code can be put there to do things like a difference controller.
  
+## considered changes 
+
+    ports_t ports {
+      5, //numsr
+      {//port:{sr, in, out, type, xd, label rec, isnew}
+        {0, D2, -9, "se", -1, "temp2" 0, 0},// temp2 DS18B20
+        {1, D5, -1, "cs", -1, "temp", 0, 0},// temp DHT11
+        {2, D5, D7, "cs", -1, "hum", 0, 0},// hum DHT11
+        {3, -9, D6, "rel" -1, "timr" 0, 0},// timr1 undefined
+        {4, D3, D1, "cr", -1, "btn1, 0, 0} // btn1 NO-btn
+        {5, -9, -1, "se", 0, "temp_out, 0, 0}// temp_out na
+        {6, -1, D8, "di", -1, "out_reset, 0,0"},  
+      }
+    };
+
+implications 
+
+- when ckrelays goes through ports it could find multiple outs that are the same 
+  - for diff only port 6 out reset matters 
+- 
+
+
+    srs_t srs  {
+      5, // numsr 
+      1, // se.length 
+      { // se:{sr, reading} 
+        {0, 45}  // temp2
+      },
+      2, // cs.length 
+      { // cs:{sr, reading, onoff, hi, lo} 
+        {1, 44, 0, 69, 67}, // temp
+        {2, 24, 0, 38, 23}  // hum
+      },
+      1, // cr.length 
+      { // cr:{sr, tsec, onoff} 
+        {4, 1200, 0}  // btn1
+      },
+      1, // rel.length 
+      { // rel:{sr, onoff} 
+        {3, 0}  // timr1
+      },
+      1, // dif.length 
+      { //dif: {sr, onoff, rdA, rdB, dif, hyst}
+        {6, onoff, rdA, rdB, diff, hyst} // out_reset
+      }
+    };
+
+ckrelays will need to be modified
+
+    void Sched::ckRelays(){
+      for (int i=0; i<ports.numports;i++){
+        if (ports.port[i].out>=0){
+          iscsidx_t ici = req.getTypeIdx(ports.port[i].sr);
+          switch(ici.srtype){
+            case 0:
+              //cannot change a se reading from afar
+              break;
+            case 1:
+              if(srs.cs[ici.idx].onoff != digitalRead(ports.port[i].sr)){
+                digitalWrite(ports.port[i].out, srs.cs[ici.idx].onoff);
+              }
+              break;
+            case di:
+              if(srs.di[ici.idx].onoff != digitalRead(ports.port[i].sr)){
+                digitalWrite(ports.port[i].out, srs.di[ici.idx].onoff);
+              }
+              break;
+
+What else does ckRelays(di) need to do? How does srs.di[ici.idx].onoff get set based on dif controller? On every read
+
+read buttons needs to happen every loop() How does read work for di(with xdata) and cr(buttons)?
+
+readSensors goes through all the sensors
+   
+    const sen_t SE {
+      3, // numstypes 
+      4, // numsens 
+      { // stype:{nums,{sra,srb...},type,model}
+        { 1, { 0 }, "temp", "DS18B20" }, 
+        { 2, { 1,2 }, "temp-hum", "DHT11" }, 
+        { 1, { 4 }, "btn", "NO-btn" }  
+      }
+    };
+
+    for(int i=0;i<SE.numtypes;i++){//check all the types incl.
+      if(strcmp(SE.stype[i].model, "DS18B20")==0){
+        for(int j=0;j<SE.stype[i].nums;j++) {
+          read sensor
+          get old value 
+          setIfDif() => setSrs()
+      if(strcmp(SE.stype[i].model, "NO-btn")==0){
+        for(int j=0;j<SE.stype[i].nums;j++) {   
+          read debouce
+          get cr.onoff old value
+          setIfDif() 
+            set onoff, tsec 
+            if on turn on timer for that sr
+              f.tIMElEFT[id]=tsec+f.cREMENT;   
+
+- What happens for button?
+- How does xdata get set? 
+  - NO xdata never gets set          
+- How does cmd to change cr work?  
+  - It could change onoff or tsec
+
+case 2://rel CYURD128/cmd {"id":3,"sra":[1],"tsec":23}
+    printf("tsec:%d \n",tsec);
+    if (tsec>0){
+      if id3 is "rel"
+        int bit = pow(2,id);
+        f.HAStIMR=f.HAStIMR | bit;
+        srs.rel[ici.idx].onoff = 1;
+        digitalWrite(ports.port[id].out, darr[0]);
+        f.tIMElEFT[id]=tsec+f.cREMENT;  
+ case cr       
+      if id3 is "cr"
+        int bit = pow(2,id);
+        f.HAStIMR=f.HAStIMR | bit;
+        srs.cr[ici.idx].onoff = darr[0];
+        srs.cr[ici.idx].tsec = tsec
+        digitalWrite(ports.port[id].out, darr[0]);
+        f.tIMElEFT[id]=tsec+f.cREMENT;  
+
+How does tsec f.timeleft turn it off?
+
+#### how to find xdata value from ports
+    ptypes_t ptypes
+    char[5][3]
+
+    types = {"se","cs","cr","rel","di"}
+    typnd =    {1,4,2,1,5}
+    maxpda = 5 + 3 //max(typnd)+3
+
+
+
+
+    ports_t ports {
+      5, //numsr
+      {//port:{sr, in, out, type, xd, label rec, isnew}
+        {0, D2, -9, "se", -1, "temp2" 0, 0},// temp2 DS18B20
+        {1, D5, -1, "cs", -1, "temp", 0, 0},// temp DHT11
+        {2, D5, D7, "cs", -1, "hum", 0, 0},// hum DHT11
+        {3, -9, D6, "rel" -1, "timr" 0, 0},// timr1 undefined
+        {4, D3, D1, "cr", -1, "btn1, 0, 0} // btn1 NO-btn
+        {5, -10, -1, "se", 0, "temp_out, 0, 0}
+    // {xsr, in-10=sr, grp-1, type, datxidx, label, rec, isnew}
+        {6, -1, D8, "di", -1, "out_reset, 0, 0"},  
+      }
+    };
+
+if you know are scanning ports and get to and sr with and xd>-1 you have to find which xda[] it is in and then which sr it is from there
+- xd could be xda[idx]
+- sr could be -(in-10)
+- xdata[xd][type][10-in] if you could
+    for allports 
+      if xd>=0
+        xrs xda[xd].xrs
+        ici = getTypIdx(10-in, xda[xd].xrs)
+        if(strcmp(ports[sr].type,"se")===0)
+          reading = xda[xd].xrs.se.reading
+        if(strcmp(ports[sr].type,"cs")===0)
+        if(strcmp(ports[sr].type,"cr")===0)
+        if(strcmp(ports[sr].type,"rel")===0)
+        if(strcmp(ports[sr].type,"di")===0)
+
+#### adjRelay for diff ctrl (with xdata)
+  adjRelays (di)
+
+#### alt xdata data stru
+    const ${numxdt}
+
+    struct xdevtpc_t {
+      int numxdt;
+      char xdtstrarr[${numxdt}][20];
+    } 
+
+    const xdevtpc_t xdevtpc {
+      ${numxdt},
+      {"CYURD006/ststate", "CYURD018/srstate"}//datx
+
+    char datax[${numxdt}][8] //declaration
+
+    datax = {// fill not used with -9
+      {7, 1, 1, 0, 55, 44, 10, 1, 1},//{xsr, devtpc, osr, onoff, rdA, rdB, diffd, hyst,gd}
+      {5, 0, 0, 56, -9, -9, -9, -9 , -9}//{xsr, devtpc, osr, reading}
+    }
+
+    int xdata = getXdata(int devidx, int sr, int datidx){
+      darr = datax[devidx]
+      for (int i=0;i<=xdevtpc, i++ ){
+        if(sr==darr[i][1]){
+          return darr[i][3] //returns reading
+        }
+      }
+    }
+
+    bool isThisXdata(idev){
+      bool ret == false
+      if (strcmp(devid, idev.substr(0,8))==1)
+        ret = true
+      return ret  
+    }
+
+
+    void setXdata(){
+      dtidx = findTopicSrIdx(tpc, osr)
+        for i numdxtpc
+          if stcmp (tpc, datax[i])
+            tpcidx = i
+        for j -> numxdt
+          if datax[j][1] == tpcidx  &&  datax[j][2]== osr
+            return j  
+      typidx = findtyp(datax[dtidx][xsr]) //"se","cs"etc OR just the idx
+        type = ports[xsr].type
+        for k types
+          if strcmp(type, types[k]) 
+          return k   
+      nd = typnd[typidx]
+      for i to nd
+        for y = i, <nd
+        datax[dtidx][i+2] = osr
+        datax[dtidx][i+3] = darr[i]
+    }
+
+    void ckDif(){ //set rdA, rdB, diff, hyst,gd and onoff
+      for ports
+        [sr, port sra, srb]
+        if port.type == "di"{
+          sr = port.sr
+          port= port.out           
+          ab = port.in 
+          for ports
+            if port.out = ab -> 
+                sra = port.sr
+                char typa = port.type
+                xdia = port.xd
+                for the rest of ports 
+                  if(port.out = ab)
+                      srb = port.sr
+                      char typb = port.type
+                      xdib = port.xd
+        rdA = srs.di[0].rdA = getRd(sra, typa, xdia)              
+        rdB = srs.di[0].rdB = getRd(srb. typeb, xdia)
+        diff = srs.di[0].diff
+        hyst = srs.di[0].hyst 
+        onoffOld = srs.di[0].onoff //old
+        gd = srs.di[0].gd //gd=1->greater difference turns on relay
+        if (abs(rdA-rdB) >= dif+hyst) && onoffOld == !gd
+          srs.di[0].onoff =gd  
+        }
+        if (abs(rdA-rdB) < dif- hyst) && onoffOld == gd
+          srs.di[0].onoff =!gd  
+        }
+        if readPort(port.out) != srs.di[0].onoff{
+          writePort(port.out, srs.di[0].onoff)
+        }
+      } 
+    }
+
+If being rdA-rdB is greater than dif causes you to wan to turn on the relay
+
+     102 >= 100+2 on 102 !< 100-2 x
+     101 !>= 100+2 x 101 !< 100-2 x
+     103 >= 100+2 on 103 !< 100-2 x
+     100 !>= 100+2 x 100 !< 100-2 x
+     98 !>= 100+2 x 98 !< 100-2 x
+     97 !>= 100+2 x 97 !< 100-2 off
+     101 !>= 100+2 x 101 !< 100-2 x
+     103 >= 100+2 on 103 !< 100-2 x
+
+- A greater diff might want you to turn relay on
+- A greater diff might want you to turn relay off
+
+    struct di_t {//diff control
+        int sr;
+        int onoff;
+        int rdA;
+        int rdB;
+        int dif;
+        bool hyst;
+        bool gt;
+    };
+
+
+    int getRd(sr, typ, xdi){
+      if xdi==-1
+        return getStoredReading(sr)
+      if xdi >=0
+        for j -> numxdt
+          if datax[xdi][1] == tpcidx  &&  datax[idx][0]== sr
+            return datax[xdi][3] 
+    }
+
+    int sztd = 6;
+
+    struct td_t {
+      char type[8];
+      int numd;
+      char* dname[7];
+    } 
+
+    td_t td[6] = 
+    {
+      {"se", 1, {"reading"}},
+      {"cs", 1, {"reading", "onoff", "hi", "lo"}},
+      {"cr", 1, {"tsec, "onoff"}},
+      {"rel", 1, {"onoff"}},
+      {"di", 1, {"onoff", "rdA", "rdB", "dif", "hyst", gd"}},
+    }
+
+
+    int getStoredValue(int sr, char* typ, int xdi, char* dnam){
+      typidx = getTypeDataIdx(typ , dname)
+      if xdi==-1
+        return getStoredReading(sr)
+      if xdi >=0
+        for j -> numxdt
+          if datax[xdi][1] == tpcidx  &&  datax[idx][0]== sr
+            return datax[xdi][3] 
+    }
+
+    int getTypIdx(char* type){
+      int ret;
+      for (int i =o; i<sztd;i++){
+        if(strcmp(td[i].type, type)==0){
+          ret =i;
+        }
+      }
+      return ret;
+    }
+
+### overall changes
+
+xdata
+For each external data array an sr is created in ports. A port.xd>-1 indicates that it is external data. Port.type indicates what type of data array it is. External data never has an input port.
+
+You could have external data controlling an array. In that case there is an output port and the onoff value of the external data sets the relay.
+
+    {5, -10, D6, "rel", 0, "temp_out, 0, 0}
+
+Here the ports sr is 5, the output port is D6, the data structure is of the "rel" type and it is the [0]'th entry in the xdevtpc.datax array. The input port is used to encode the original sr (osr) of the external data as osr-10. Any time the external data changed it would get processed incoming. When the port state is different than the datax onoff value it should change the relay.
+
+
+  and Port stores {xsr, in-10=sr, grp-1, type, datxidx, label, rec, isnew}stores the  has an original device and sr as well and get 
+- if xdata comes in `processInc()-> if(isThisXdatya(idev)) {setXdata(idev,ipayload)}` puts it into datax 
+- xdata is only used internally on the device
+- xdata is only relavent if connected
+
+
+ports
+
 ## messages
 
+
+
  CYURD128/flags {"aUTOMA":true,"fORCErESET":false,"cREMENT":5,"HAStIMR":1023,"IStIMERoN":0,"HAYpROG":1023,"HAYsTATEcNG":1023,"CKaLARM":0,`"ISrELAYoN":4`,"tIMElEFT":[0,0,0,0,0]}
+
 
 
 
