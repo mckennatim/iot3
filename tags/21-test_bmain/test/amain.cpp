@@ -14,33 +14,8 @@ int darr7[6]={1, 67, 46, 10, 1, 1};
 char c[20] = "CYURD006/srstate";//idev 0
 char d[20] = "CYURD018/srstate";//idev 1
 
-int getXdataIdx(int xsr){
-  int xd=-1;
-  for(int i=0;i<NUMXD;i++){
-    if(xdata[i][0]==xsr){xd= i;}
-  }
-  return xd;
-}
+void ckRelays(){
 
-/*get sr and darr from ArduinoJson on ipayload*/
-void setXdata(char* idev, int sr, int darr[]){
-  int xsr =getXsr(sr, whichDev(idev));
-  int tdidx = getTdsIdx(xsr);
-  int xdidx = getXdataIdx(xsr);
-  xdata[xdidx][2] = sr; 
-  for (int i=0;i<tds[tdidx].numdl;i++){
-    xdata[xdidx][i+3] = darr[i];
-  }
-}
-
-void printXdata(){
-  for (int i=0;i<NUMXD;i++){
-    printf("{");
-    for (int j=0;j<MAXD+3;j++){
-      printf("%d, ",xdata[i][j]);
-    }
-    printf("}, \n");
-  }
 }
 
 int main()   // define the main functio

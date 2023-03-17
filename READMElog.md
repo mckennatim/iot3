@@ -1,6 +1,8 @@
 # READMElog
 
 ## log
+### 3/17/23 21-test_bmain
+last thing was implementing relay, tsec
 ### 3/9/23 20-test_amain
 probably wrecked iot3/my, but now I know a bit more about c++ data structures and the wisdom on trying stuff out on the WSL c++ compiler instead of so much in platformio.
 ### 3/2/23 19-xdata-appbuilder

@@ -7,7 +7,7 @@
 #define sizeOf(a) (sizeof(a) / sizeof(a[0]))
 /*project constants*/
 #define NUMXD 2 //number of external data sources
-#define NUMSR 8 //number of sr's (also port entries)
+#define NUMSR 14 //number of sr's (also port entries)
 #define NUMTYP 5 //number of types
 #define MAXD 6  //max number of data in an sr
 /*END proj constants*/
@@ -17,6 +17,10 @@ extern char owner[254];
 extern char pwd[24];
 extern char mqtt_server[60];
 extern char mqtt_port[6];
+
+/*external device/topic*/
+// struct xdevtpc_t {
+extern char xdevtpc[][20];
 
 /*ports*/
 struct ports_t {
@@ -41,9 +45,13 @@ struct tds_t {
 extern const tds_t tds[];
 /*END type and data labels*/
 
-/*external device/topic*/
-// struct xdevtpc_t {
-extern char xdevtpc[][20];
+/*srs*/
+struct srs_t {
+  int sr;
+  int xsr;
+  int data[MAXD];
+};
+extern srs_t srs[];
 
 /*external data*/
 extern int xdata[][MAXD+3];

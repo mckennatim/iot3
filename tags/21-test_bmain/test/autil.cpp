@@ -70,3 +70,35 @@ int getTdsIdx(int xrs){
   return tdidx;
 }
 
+int getXdataIdx(int xsr){
+  int xd=-1;
+  for(int i=0;i<NUMXD;i++){
+    if(xdata[i][0]==xsr){xd= i;}
+  }
+  return xd;
+}
+
+/*get sr and darr from ArduinoJson on ipayload*/
+void setXdata(char* idev, int sr, int darr[]){
+  printf("%s siz of idev %d \n",idev, (int)strlen(idev));
+  int xsr;
+  if(strlen(idev)>2){
+    xsr =getXsr(sr, whichDev(idev));
+  }else {xsr=sr;}
+  int tdidx = getTdsIdx(xsr);
+  int xdidx = getXdataIdx(xsr);
+  xdata[xdidx][2] = sr; 
+  for (int i=0;i<tds[tdidx].numdl;i++){
+    xdata[xdidx][i+3] = darr[i];
+  }
+}
+
+void printXdata(){
+  for (int i=0;i<NUMXD;i++){
+    printf("{");
+    for (int j=0;j<MAXD+3;j++){
+      printf("%d, ",xdata[i][j]);
+    }
+    printf("}, \n");
+  }
+}

@@ -506,15 +506,33 @@ The `srs.rel[idx of sr].onoff` is set to current prg[onoff]. If relay is on, `f.
 - When `f.HAYsTATEcNG>0` `req.pubState()` is called
 - When `f.CKaLARM>0` `req.pubPrg(f.CKaLARM)` is called
 
-### adjRelays(int sr, cs_t& te)
-- Called when a `cs` reading changes from
+### adjRelays(int sr, cs_t& te
+- Called when a srs`cs` reading changes from
   - main().loop()->readSensors()->setIfDir()->setSrs()
 - Called when a `cs` /cmd comes in changin hi & lo
-- Compares reading to hi & lo and if there should be a change
+- Does Compare reading to hi & lo and if there should be a change
   - sets cs.onoff
   - digitalWrites(port[sr].out, onoff) 
 
-## timers
+XDATA COULD BE for`cs`
+
+Can cs use xdata? Set a local relay based un external reading? Add funtionality to a tstat? Have a second tstat connected to the exdata sensor that say turns on a ceiling fan if a room is occupied and it is hot in the room? ports like {9,-12,D4,"cs",xd=2, rec=0}. If so
+- Called when xdata changes
+
+XDATA COULD BE for `di`
+  - Called when rdA or rdB change whe readSensors() set CKrELAYS
+  - Called when xdata (used as rdA or rdB) changes
+  - Called when di/cmd comes in desiriCmd
+
+Does 
+
+XDATA COULD BE for `cr`
+  - Called when some external relay changes, changing local relay for some tsec. 0=infinity. CAN `cr` HAVE A `pgm`? A switch that goes on at certain times of the day? Sounds like `rel`. Maybe `cr` and `rel` functionality can be combined.
+
+XDATA COULD BE for `rel`  
+  - Called when some switch changes somewhere else
+
+##  
 Timers are different from programs. They are contained if the `f.tIMElEFT` array.
 
 Timers `f.tIMElEFT` are set in `Sched::ckAlarms()` whenever the loop() is run and `f.CKaLARM>0`.
