@@ -9,11 +9,11 @@
 #define NUMXD 2 //number of external data sources
 #define NUMSR 7//number of sr's (also port entries)
 #define BITS pow(2,NUMSR)
-#define NUMTYP 5 //number of types
+#define NUMTYP 10 //number of types
 #define MAXD 8 //max number of data in an sr
 #define MAXTARGETS 3  //max number of data in an sr
 #define MAXSENSED 8
-#define SENSTYPS 6
+#define SENSTYPS 10
 #define NUMINP 7
 #define MAXSSTR 8
 #define MAXDSTR 20
@@ -81,7 +81,8 @@ extern inp_t inp[];
 struct xdata_t {
   int dev;
   int sr;
-  int targets[MAXSENSED][MAXTARGETS][2];
+  char type[MAXSSTR];
+  targs_t tar[MAXSENSED];
 };
 extern xdata_t xdata[];
 

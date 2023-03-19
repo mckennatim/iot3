@@ -18,6 +18,9 @@ const tds_t tds[NUMTYP] ={
   {"relay", 2, {"onoff", "tsec"}},
   {"ctrl", 3, {"bell", "reading", "setting"}},
   {"array", 8, {"a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7"}},
+  {"se", 1, {"reading"}},
+  {"cs", 4, {"onoff", "reading", "hi", "lo"}},
+  {"re", 1, {"onoff"}}
 };
 
 srs_t srs[NUMSR] ={ //pow(2,sr) = HASpROG=0b0001011, HAStIMR =0b0001100,
@@ -33,7 +36,7 @@ srs_t srs[NUMSR] ={ //pow(2,sr) = HASpROG=0b0001011, HAStIMR =0b0001100,
 unsigned long stime[NUMSR] ;
 
 char sensors[SENSTYPS][MAXSSTR] =
-{"butn", "switch", "1-wire", "dht", "i2c", "spi"};
+{"butn", "switch", "1-wire", "dht", "i2c", "spi","ext"};
 
 /*
 {{D0}, "1-wire", 2, 
@@ -78,8 +81,15 @@ inp_t inp[NUMINP] = {
 };
 
 xdata_t xdata[NUMXD] = {
-  {1, 0, {{{}},{{6, 7}}}},
-  {0, 0, {{{0, 2}}} }
+  {1, 0, "cs", 
+    { {0, {{}}},
+      {1, {{6, 7}}},//reading
+      {0, {{}}},
+      {0, {{}}}
+    }},
+  {0, 0, "se", 
+    { {1, {{0, 2}}} //reading
+    }}
 };
 
 /*flags extern data structure*/
@@ -304,7 +314,7 @@ const initialState = {
 /*
 loop(){
   unsigned long inow = millis();  
-  updSensors(inow))
+  updInputs(inow))
 
   readSwitch(inow)
   get prior state

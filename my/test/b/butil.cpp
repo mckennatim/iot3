@@ -21,6 +21,15 @@ int getDnIdx(int typidx, const char* dname){
   return ret;
 }
 
+int getXdataIdx(int dev, int sr){
+  int xd=-1;
+  for(int i=0;i<NUMXD;i++){
+    if(xdata[i].dev == dev & xdata[i].sr == sr){xd= i;}
+  }
+  return xd;
+}
+
+
 //getStoredValue(0, "se", "reading")
 //getStoredValue(1, "di", "rdB")
 int getStoredValue(int sr, const char* type, const char* dname){
@@ -50,7 +59,7 @@ void devOfDevTpc(char* dt, char* d){
 int whichDev(char* idev){
   int xd=-1;
   for(int i=0;i<NUMXD;i++){
-    printf("%s, %s, %d \n", idev, xdevtpc[i],strcmp(idev, xdevtpc[i])==0);
+    // printf("%s, %s, %d \n", idev, xdevtpc[i],strcmp(idev, xdevtpc[i])==0);
     if(strcmp(idev, xdevtpc[i])==0){xd= i;}
   }
   return xd;
@@ -181,6 +190,7 @@ void invokeInp(int h, int i, int (*readSense)(int port, int i)){
       for(int m=0;m<inp[h].tar[k].numtargs;m++){
         int sr = inp[h].tar[k].gets[m][0];
         /* for switch with tsec>0*/
+
         int tsec;
         if(i == 1 & oval == 0 & nval ==1 & srs[sr].data[1]>0){//i=1=switch
           tsec =srs[sr].data[1];
@@ -210,7 +220,7 @@ void invokeInp(int h, int i, int (*readSense)(int port, int i)){
   }  
 }
 
-void updSensors(){
+void updInputs(){
   for(int h=0;h<NUMINP;h++){
     for(int i=0;i<SENSTYPS;i++){
       if(strcmp(sensors[i],inp[h].type)==0){
@@ -339,7 +349,42 @@ void updCtrl(int sr, int x){
   } 
 }
 
+/*get sr and darr from ArduinoJson on ipayload*/
+void setXdata(char* idev, int sr, int darr[]){
+  printf("%s size of idev %d \n",idev, (int)strlen(idev));
+  int didx = whichDev(idev);
+  int xidx = getXdataIdx(didx ,sr);
+  if(xidx>-1){
+    printf("xidx=%d, %s\n",xidx,xdata[0].type);
+    int numd = tds[getTypIdx(xdata[xidx].type)].numdl;
+    printf("numd%d %d\n",numd, tds[4].numdl);
+    for (size_t i = 0; i < numd; i++)
+    {
+      int ntargs = xdata[xidx].tar[i].numtargs;
+      if(ntargs>0){
+        for (size_t j = 0; j < ntargs; j++)
+        {
+          int sr = xdata[xidx].tar[i].gets[j][0];
+          int da = xdata[xidx].tar[i].gets[j][1];
+          srs[sr].data[da]=darr[i];
+        }
+      }
+    }
+  }
+  
+  
 
+  // int xsr;
+  // if(strlen(idev)>2){
+  //   xsr =getXsr(sr, whichDev(idev));
+  // }else {xsr=sr;}
+  // int tdidx = getTdsIdx(xsr);
+  // int xdidx = getXdataIdx(xsr);
+  // xdata[xdidx][2] = sr; 
+  // for (int i=0;i<tds[tdidx].numdl;i++){
+  //   xdata[xdidx][i+3] = darr[i];
+  // }
+}
 
 // int getXsr(int osr, int xd){
 //   int xsr = -17;
@@ -350,36 +395,10 @@ void updCtrl(int sr, int x){
 //   return xsr;
 // }
 
-// int getTdsIdx(int xrs){
-//   int tdidx;
-//   for(int i=0;i<NUMTYP;i++){
-//     if(strcmp(tds[i].type, ports[xrs].type)==0){tdidx= i;}
-//   }
-//   return tdidx;
-// }
 
-// int getXdataIdx(int xsr){
-//   int xd=-1;
-//   for(int i=0;i<NUMXD;i++){
-//     if(xdata[i][0]==xsr){xd= i;}
-//   }
-//   return xd;
-// }
 
-// /*get sr and darr from ArduinoJson on ipayload*/
-// void setXdata(char* idev, int sr, int darr[]){
-//   printf("%s siz of idev %d \n",idev, (int)strlen(idev));
-//   int xsr;
-//   if(strlen(idev)>2){
-//     xsr =getXsr(sr, whichDev(idev));
-//   }else {xsr=sr;}
-//   int tdidx = getTdsIdx(xsr);
-//   int xdidx = getXdataIdx(xsr);
-//   xdata[xdidx][2] = sr; 
-//   for (int i=0;i<tds[tdidx].numdl;i++){
-//     xdata[xdidx][i+3] = darr[i];
-//   }
-// }
+
+
 
 // void printXdata(){
 //   for (int i=0;i<NUMXD;i++){

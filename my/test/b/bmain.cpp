@@ -11,7 +11,7 @@ char dipayload[100] = "{\"id\":0, \"darr\":[0, 54,67, 10, 1, 0]}";
 int id7 = 0;
 int id5 = 0;
 int darr5[1]={54};
-int darr7[6]={1, 67, 46, 10, 1, 1};
+int darr7[6]={1, 68, 46, 10, 1, 1};
 char c[20] = "CYURD006/srstate";//idev 0
 char d[20] = "CYURD018/srstate";//idev 1
 
@@ -27,7 +27,7 @@ int main()   // define the main functio
   // printf("DOREC %d \n", f.HAYsTATEcNG);
   bitShift(f.HASpROG, NUMSR, &doStuff);
   printSrs();
-  updSensors();
+  updInputs();
   printSrs();
   // printFlag(f.HAStIMR);
   // printFlag(f.HASpROG);
@@ -56,7 +56,11 @@ int main()   // define the main functio
   // printf("xsr = %d \n",xsr );
   // int numdl = tds[getTdsIdx(xsr)].numdl;
   // printf("numdl = %d \n",numdl );
-  // setXdata(d, 1, darr7);
+  setXdata(d, 0, darr7);
+  // printf("%d, %s\n",getXdataIdx(1,0),xdata[getXdataIdx(1,0)].type);
+  // printf("%d, %s\n",getTypIdx("se"),xdata[getXdataIdx(1,0)].type);
   // printXdata();
   // printf("%s \n", tds[0].type);
+  printf("%d xd",xdata[0].tar[1].numtargs);
+  printSrs();
 }
