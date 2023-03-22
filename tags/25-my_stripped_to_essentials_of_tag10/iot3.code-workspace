@@ -1,11 +1,11 @@
 {
 	"folders": [
 		{
-			"path": "../.."
+			"path": ".."
 		},
 		{
 			"name": "my",
-			"path": ".."
+			"path": "."
 		}
 	],
   "settings": {

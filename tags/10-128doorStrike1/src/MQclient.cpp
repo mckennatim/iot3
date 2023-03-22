@@ -4,8 +4,10 @@
 #include "CONFIG.h"
 
 
+char idev[17];
 char itopic[40];
 char ipayload[256];
+unsigned int ipaylen;
 bool NEW_MAIL=0;
 
 Console::Console(char* devid, PubSubClient& client ){
@@ -58,9 +60,9 @@ void MQclient::reconn(PubSubClient& client) {
 }
 
 void handleCallback(char* topic, byte* payload, unsigned int length){
+  strcpy(idev,topic);
   size_t b = 15;
-  Serial.print("Payload size is ");
-  Serial.println(length);
+  ipaylen = length;
   for (size_t i=0;i<strlen(topic);i++) {
     itopic[i] = topic[i];
     if (topic[i] == '/'){b = i;}

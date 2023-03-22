@@ -9,25 +9,11 @@
 
 class Reqs{
 public:
-  Reqs(char* devid, PubSubClient& client);
-  PubSubClient cclient;
+  Reqs(char* devid);
   char* cdevid;
-	void pubFlags();
-	void pubTimr();
-	void pubPrg(int ck);
-	void pubState(int hc, PubSubClient& client);
 	void processInc(); 
-	void deseriReq(); 
-	void deseriCmd(); 
-	iscsidx_t getTypeIdx(int srid);
-  int getPrgIdx(int srid);
-  void getXdata(char* xdevtpc, char* xpayload);
-	int getStoredReading(int srid);
 private:	
 	bool dog;
-	void creaJson(prg_t & p, char* astr);
-	void clpub(char topic[20], char payload[200]);
 };
-
 
 #endif

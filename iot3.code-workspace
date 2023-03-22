@@ -1,15 +1,24 @@
 {
 	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"name": "my",
-			"path": "my"
-		}
-	],
+    {
+      "path": "."
+    },
+    {
+      "name": "my",
+      "path": "my"
+    },
+    {
+      "name": "06-req_changes-passing_client_in_pubstate",
+      "path": "tags/06-req_changes-passing_client_in_pubstate"
+    },
+    {
+      "name": "10-128doorStrike1",
+      "path": "tags/10-128doorStrike1"
+    }
+  ],
   "settings": {
     "workbench.colorCustomizations": {
+    
       "statusBar.background": "#0b0477",
       "activityBar.background": "#0b0477",
       "titleBar.activeBackground": "#042c77"

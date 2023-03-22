@@ -1,7 +1,7 @@
 # READMElog
 
 ## log
-
+### 3/22/23 25-my_stripped_to_essentials_of_tag10
 ### 3/22/23 24-test-done
 ### 3/19/21 23-test-b-setXdata
 ### 3/18/23 22-test_bmain-button
