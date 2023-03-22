@@ -1,0 +1,38 @@
+--------------- CUT HERE FOR EXCEPTION DECODER ---------------
+
+Exception (28):
+epc1=0x40202fdc epc2=0x00000000 epc3=0x00000000 excvaddr=0x0e560002 depc=0x00000000
+
+>>>stack>>>
+
+ctx: cont
+sp: 3ffffd50 end: 3fffffc0 offset: 0190
+3ffffee0:  3ffe8e6d 3fffff40 00000001 40217405
+3ffffef0:  3ffef548 3fff148c 3fffff50 402041a8
+3fffff00:  00000002 0000006b 3fffff20 3ffef4e0  
+3fffff10:  3ffef548 3ffe8ba0 3ffef4e0 402042d2
+3fffff20:  3ffef548 3ffe8ed5 3fff13d4 3fff13d4
+3fffff30:  3fff144c 3fff149c 00000000 402111b0  
+3fffff40:  3fff148c 3fff144c 3ffe8e20 0000007d
+3fffff50:  3ffef96c 00000006 3ffef901 40211474
+3fffff60:  40210c60 3ffe8ba0 00000000 402037db  
+3fffff70:  00000005 0000000c 3ffef96c 40211428
+3fffff80:  3ffef6a8 000014d0 00000064 3ffefaac
+3fffff90:  3ffef3b0 00001535 3ffe85c8 402047c3
+3fffffa0:  3fffdad0 00000000 3ffefa98 40213618  
+3fffffb0:  feefeffe feefeffe 3ffe8904 40100dd9
+<<<stack<<<
+
+--------------- CUT HERE FOR EXCEPTION DECODER ---------------
+
+ ets Jan  8 2013,rst cause:2, boot mode:(3,6)
+
+load 0x4010f000, len 3460, room 16 
+tail 4
+chksum 0xcc
+load 0x3fff20b8, len 40, room 4
+tail 4
+chksum 0xc9
+csum 0xc9
+v0005e4e0
+~ld

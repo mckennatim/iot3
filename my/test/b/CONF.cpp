@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include <string.h>
-#include "bconf.h"
+#include "CONF.h"
 
 /*dev extern device variables*/  
 char devid[9]="CYURD128";
@@ -9,7 +9,7 @@ char pwd[24]="geniot";
 char mqtt_server[60]="sitebuilt.net";
 char mqtt_port[6]="1884";
 
-char xdevtpc[NUMXD][MAXDSTR] = 
+const char xdevtpc[NUMXD][MAXDSTR] = 
 {"CYURD006/srstate", "CYURD018/srstate"};
 
 const tds_t tds[NUMTYP] ={
@@ -33,21 +33,34 @@ srs_t srs[NUMSR] ={ //pow(2,sr) = HASpROG=0b0001011, HAStIMR =0b0001100,
   {6, -9, 4, {60, 15, 12, 8, 11, 2, 5, 12}}//array "currents" {of currents}
 };
 
-unsigned long stime[NUMSR] ;
+const cmd_t cmds[NUMSR] ={ /// {sr, dax, data{})
+  {0, 1, {3}},//difctrl "tank-panel" prg
+  {1, 3, {0, 2, 3}},//tstat "lr" prg
+  {2, 3, {2, 3}},//tstat "dr"
+  {3, 2, {0, 1}},//relay "door_strike" prg timr 32768 sec or ~9hrs
+  {4, 1, {2}},//hilimit "bbq" timr
+  {5, 0, {}},//array "readings" (of readings)
+  {6, 0, {}}//array "currents" {of currents}
+};
 
-char sensors[SENSTYPS][MAXSSTR] =
+/*prgs extern data structure initalization*/ 
+prgs_t prgs[NUMPRGS]={  
+  // prg:{sr,dax,aid,ev,prg[[]],hms} 
+  {0, 3, 255, 3, {{0,0,9},{9,15,13},{18,34,21}}, 1500},  
+  {1, 2, 255, 3, {{0,0,68},{10,20,69},{20,30,65}}, 1503},  
+  {3, 0, 255, 3, {{0,0,0},{7,12,1},{13,14,0}}, 1504}, 
+  {4, 2, 255, 3, {{0,0,130},{5,10,140},{20,0,150}}, 1505},   
+};
+
+unsigned long sTRTsWtIMR[NUMSR] ;
+unsigned long lONGpRESStIMR[NUMINP] ;
+unsigned long tIMElEFT[NUMSR] ;
+
+const char sensors[SENSTYPS][MAXSSTR] =
 {"butn", "switch", "1-wire", "dht", "i2c", "spi","ext"};
 
-/*
-{{D0}, "1-wire", 2, 
-  {
-    {2, {{0, 1}, {6,4}}},
-    {1, {{0, 1}}}
-  }
-}
-*/
 
-inp_t inp[NUMINP] = {
+const inp_t inp[NUMINP] = {
   {{D0}, "butn", 1, 
     { {1, {{2, 2}}} }, 
     {1, 10, 0, 500, 0} },
@@ -100,13 +113,12 @@ flags_t f {
   0,//aUTOMA
   0,//fORCErESET
   5,//cREMENT
-  0b0001100,//HAStIMR 1100000 64+32=96
-  0,//IStIMERoN
-  198,//HAYpROG 11000010 =128+64+4=198
+  0b0011010,//HAStIMR 1100000 64+32=96
+  0b0000000,//IStIMERoN
+  0b0011011,//HAYpROG 11000010 =128+64+4=198
   0b1111111,//HAYsTATEcNG
-  0,//CKaLARM
+  0b0011011,//CKaLARM
   0,//ISrELAYoN
-  {0,0,0,0,0,0,0},//tIMElEFT[BITS]
   0b00100010,//dOrEC
   0b0001011//HASpROG
 };

@@ -18,6 +18,9 @@
 #define MAXSSTR 8
 #define MAXDSTR 20
 #define MAXINPORTS 5
+#define NUMPRGS 4
+#define MAXEV 10
+#define NPRGDA 3
 
 
 /*END proj constants*/
@@ -30,7 +33,7 @@ extern char mqtt_port[6];
 
 /*external device/topic*/
 // struct xdevtpc_t {
-extern char xdevtpc[][MAXDSTR];
+extern const char xdevtpc[][MAXDSTR];
 
 /*type and data labels*/
 struct tds_t {
@@ -50,9 +53,34 @@ struct srs_t {
 };
 extern srs_t srs[];
 
-extern unsigned long stime[];
+/*cmds*/
+struct cmd_t {
+  int srs;
+  int nda;
+  int data[MAXD];
+};
+extern const cmd_t cmds[];
 
-extern char sensors[][MAXSSTR];
+typedef int AlarmID_t;
+
+/*START prg data structure declarations*/  
+struct prgs_t{
+  int sr;
+  int dax;
+  AlarmID_t aid;
+  int ev;
+  int prg[MAXEV][NPRGDA];//max 11 events [hr,min,max,min]  
+  int hms;
+};
+extern prgs_t prgs[];
+/*END prg data structure declarations*/  
+
+extern unsigned long sTRTsWtIMR[];
+extern unsigned long tIMElEFT[];
+extern unsigned long lONGpRESStIMR[] ;
+
+
+extern const char sensors[][MAXSSTR];
 
 struct targs_t{
   int numtargs;
@@ -72,11 +100,9 @@ struct inp_t {
   char type[MAXSSTR];
   int numreadings;
   targs_t tar[MAXSENSED];
-  action_t actions; //+1,+10,prev,stime,lp
+  action_t actions; //+1,+10,prev,sTRTsWtIMR,lp
 };
-extern inp_t inp[];
-
-
+extern const inp_t inp[];
 
 struct xdata_t {
   int dev;
@@ -85,11 +111,6 @@ struct xdata_t {
   targs_t tar[MAXSENSED];
 };
 extern xdata_t xdata[];
-
-struct progs_t {
-  int relay;
-  int aid; 
-};
 
 /*flags*/
 struct flags_t{
@@ -105,38 +126,10 @@ struct flags_t{
   int HAYsTATEcNG; //11111(31 force report) some state change int or ext
   int CKaLARM; //11111 assume alarm is set at start
   int ISrELAYoN;// = summary of relay states  
-  int tIMElEFT[NUMSR];// =[0,0,56,0,0] timeleft in timrs
   int dOrEC;
   int HASpROG;
 };
 extern flags_t f;
-/*
-// /*ports*/
-// struct ports_t {
-//   int sr;
-//   int in;
-//   int out;
-//   char type[8];
-//   int xd;
-//   char label[12];
-//   int rec;
-//   int isnew;
-// };
-// extern ports_t ports[] ;
-// /*END ports*/
-
-
-
-
-
-// /*external data*/
-// extern int xdata[][MAXD+3];
-// /*END external data*/
-
-
-
-
-
 
 /*predefined */
 #define D0 16

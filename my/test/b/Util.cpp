@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include <string.h>
-#include "bconf.h"
-#include "butil.h"
+#include "CONF.h"
+#include "Util.h"
 #include <stdlib.h> 
 #include <time.h>
 #include <math.h>
@@ -10,13 +10,6 @@ int getTypIdx(const char* type){
   int ret = -1;
   for (int i =0; i<NUMTYP;i++){
     if(strcmp(tds[i].type, type)==0){ret =i;}
-  }
-  return ret;
-}
-int getDnIdx(int typidx, const char* dname){
-  int ret;
-  for (int i =0; i<MAXD;i++){
-    if(strcmp(tds[typidx].dats[i], dname)==0){ret =i;}
   }
   return ret;
 }
@@ -29,37 +22,9 @@ int getXdataIdx(int dev, int sr){
   return xd;
 }
 
-
-//getStoredValue(0, "se", "reading")
-//getStoredValue(1, "di", "rdB")
-int getStoredValue(int sr, const char* type, const char* dname){
-  int typidx = getTypIdx(type);
-  int dnidx = getDnIdx(typidx, dname);
-
-  return dnidx;
-}
-
-bool isThisXdata(char* idev){
-  char dev[9];
-  devOfDevTpc(idev,dev);
-  bool ret = false;
-  if (strcmp(devid, dev)==1){ret = true;}
-  return ret; 
-}
-
-void devOfDevTpc(char* dt, char* d){
-  size_t i;
-  for (i=0;i<strlen(dt);i++){
-    d[i]=dt[i];
-    if(dt[i]=='/'){break;}
-  }
-  d[i]='\0';  
-}
-
 int whichDev(char* idev){
   int xd=-1;
   for(int i=0;i<NUMXD;i++){
-    // printf("%s, %s, %d \n", idev, xdevtpc[i],strcmp(idev, xdevtpc[i])==0);
     if(strcmp(idev, xdevtpc[i])==0){xd= i;}
   }
   return xd;
@@ -91,8 +56,6 @@ void doStuff(int i,int b){
 int getOldReading(int sr, int da){
   return srs[sr].data[da];
 }
-
-
 
 int readSenseI2c(int port, int inpidx){
   return rand()%(60-5 + 1) + 5;
@@ -129,12 +92,12 @@ int readButton(int port, int h){
     digitalWrite(port, !digitalRead(port));
   }
   int down =  digitalRead(port);
-  if (down & prev==0){
-    inp[h].actions.sttime = 100000;
+  if (down & prev==0){ //press button, start long press timer
+    lONGpRESStIMR[h] = 100000; //CNG
   } 
-  if (!down & prev ){
-    int now = 100000 + millis(1000,1);
-    int dif = now - inp[h].actions.sttime;
+  if (!down & prev ){ //release button, calc time pressed -> nval = lval|sval
+    int now = 100000 + millis(1000,1);//CNG
+    int dif = now - lONGpRESStIMR[h];
     printf("button dif = %d \n", dif);
     if(dif > lptime){
       retval = lval;
@@ -161,12 +124,12 @@ void setFlag(int sr, int *FLAG){
   *FLAG = *FLAG | pow2(sr);
 }
 void unsetFlag(int sr, int *FLAG){
-  // printf("sr=%d, pow2(sr)=%d FLAG=", sr, pow2(sr)); 
-  // printFlag(*FLAG);
   int mask = 1023 - pow2(sr);
   *FLAG = *FLAG & mask;
-  // printf("sr=%d, FLAG=", sr); 
-  // printFlag(*FLAG);
+}
+
+bool getFlag(int sr, int FLAG){
+  return (FLAG >> sr) & 0x1;
 }
 
 void printFlag(int FLAG){
@@ -185,25 +148,25 @@ void invokeInp(int h, int i, int (*readSense)(int port, int i)){
   for (int k=0;k<reads;k++){
     int nval = readSense(inp[h].port[0], h);//(max-min +1) + min
     int oval = getOldReading(inp[h].tar[k].gets[0][0], inp[h].tar[k].gets[0][1]);
-    // printf("h=%d, i=%d, oval is %d \n",h, i, oval);
     if(nval!=oval){
-      for(int m=0;m<inp[h].tar[k].numtargs;m++){
+      for(int m=0;m<inp[h].tar[k].numtargs;m++){//for all targets
         int sr = inp[h].tar[k].gets[m][0];
         /* for switch with tsec>0*/
-
         int tsec;
-        if(i == 1 & oval == 0 & nval ==1 & srs[sr].data[1]>0){//i=1=switch
-          tsec =srs[sr].data[1];
-          stime[sr] = 4445567; //millis() //CNG//
+        if(i == 1 & oval == 0 & nval ==1 & srs[sr].data[1]>0){//i=1=switch is on 
+          tsec =srs[sr].data[1]; 
+          sTRTsWtIMR[sr] = 4445567; //millis() //CNG//
         }
         if(i == 1 & oval == 1 & nval == 1 & srs[sr].data[1]>0){
-          unsigned long starttime = stime[sr];
-          unsigned long endtime = stime[sr]-rand()%((120*1000 - 0) + 1); //CNG// max tsec =32767
-          if(starttime-endtime>tsec*1000) nval=0;
-          stime[sr] = 0;
+          unsigned long starttime = sTRTsWtIMR[sr];
+          unsigned long endtime = sTRTsWtIMR[sr]-rand()%((120*1000 - 0) + 1); //CNG// max tsec =32767
+          if(starttime-endtime>tsec*1000) {
+            nval=0;
+            sTRTsWtIMR[sr] = 0;
+          }
         }
         /* end of switch with tsec>0*/
-        int da = inp[h].tar[k].gets[m][1];
+        int da = inp[h].tar[k].gets[m][1]; //target data
         /* for button short/long press*/
         if(nval == inp[h].actions.lval | nval == inp[h].actions.sval){
           // printf("invoke %d \n", srs[sr].data[da]);
@@ -211,12 +174,9 @@ void invokeInp(int h, int i, int (*readSense)(int port, int i)){
         }
         /* end of button short/long press*/
         srs[sr].data[da]=nval;
-        // printf("h=%d, i=%d, s=%d, nval is %d \n",h, i, sr, nval);
         setFlag(sr, &f.HAYsTATEcNG); 
       }
-      
     }
-    // printf("nval leaving =%d \n",nval);
   }  
 }
 
@@ -262,6 +222,21 @@ void printSrs(){
   }
 }
 
+void printPrgs(){
+  for(int i=0;i<NUMPRGS;i++){
+    printf("{%d, %d, %d, %d{", prgs[i].sr, prgs[i].dax, prgs[i].aid, prgs[i].ev); 
+    for(int j=0;j<prgs[i].ev; j++){
+      printf("{");
+      for(int k=0;k<NPRGDA; k++){
+        printf("%d, ", prgs[i].prg[j][k]);
+      }
+      printf("}, ");
+    }
+    printf("}}\n");
+  }
+}
+
+
 int digitalRead(int port){
   return rand() & 1;
 }
@@ -274,6 +249,9 @@ void pubState(int sr){
   printf("published State of sr=%d \n", sr);
 }
 
+void pubTimr(int sr){
+  printf("published Timr of sr=%d \n", sr);
+}
 
 void updCtrl(int sr, int x){
   int typidx = srs[sr].typidx;
@@ -294,6 +272,7 @@ void updCtrl(int sr, int x){
       if(onoff!=conoff) srs[sr].data[0] = onoff;
       if(digitalRead(srs[sr].port)!=onoff) digitalWrite(srs[sr].port, onoff);
       pubState(sr); 
+      if (onoff==1) setFlag(sr, &f.ISrELAYoN);
       unsetFlag(sr, &f.HAYsTATEcNG); 
       break;
     }   
@@ -309,6 +288,7 @@ void updCtrl(int sr, int x){
       if(conoff != onoff) srs[sr].data[0]=onoff;
       if(digitalRead(srs[sr].port)!=onoff) digitalWrite(srs[sr].port, onoff);
       pubState(sr); 
+      if (onoff==1) setFlag(sr, &f.ISrELAYoN);
       unsetFlag(sr, &f.HAYsTATEcNG); 
       break; 
     }
@@ -318,6 +298,7 @@ void updCtrl(int sr, int x){
       int tsec =  srs[sr].data[1];
       if(digitalRead(srs[sr].port)!=conoff) digitalWrite(srs[sr].port, conoff);
       pubState(sr); 
+      if (conoff==1) setFlag(sr, &f.ISrELAYoN);
       unsetFlag(sr, &f.HAYsTATEcNG); 
     } 
       break; 
@@ -332,8 +313,8 @@ void updCtrl(int sr, int x){
         if(digitalRead(srs[sr].port)!=onoff) digitalWrite(srs[sr].port, onoff);
       }
       pubState(sr); 
+      if (onoff==1) setFlag(sr, &f.ISrELAYoN);
       unsetFlag(sr, &f.HAYsTATEcNG); 
-
     }
       break; 
     case 4: //array
@@ -351,13 +332,10 @@ void updCtrl(int sr, int x){
 
 /*get sr and darr from ArduinoJson on ipayload*/
 void setXdata(char* idev, int sr, int darr[]){
-  printf("%s size of idev %d \n",idev, (int)strlen(idev));
   int didx = whichDev(idev);
   int xidx = getXdataIdx(didx ,sr);
   if(xidx>-1){
-    printf("xidx=%d, %s\n",xidx,xdata[0].type);
     int numd = tds[getTypIdx(xdata[xidx].type)].numdl;
-    printf("numd%d %d\n",numd, tds[4].numdl);
     for (size_t i = 0; i < numd; i++)
     {
       int ntargs = xdata[xidx].tar[i].numtargs;
@@ -371,42 +349,105 @@ void setXdata(char* idev, int sr, int darr[]){
       }
     }
   }
-  
-  
-
-  // int xsr;
-  // if(strlen(idev)>2){
-  //   xsr =getXsr(sr, whichDev(idev));
-  // }else {xsr=sr;}
-  // int tdidx = getTdsIdx(xsr);
-  // int xdidx = getXdataIdx(xsr);
-  // xdata[xdidx][2] = sr; 
-  // for (int i=0;i<tds[tdidx].numdl;i++){
-  //   xdata[xdidx][i+3] = darr[i];
-  // }
 }
 
-// int getXsr(int osr, int xd){
-//   int xsr = -17;
-//   for(int i=0;i<NUMSR;i++){
-//     // printf("%d == %d is %d && %d = %d  is %d\n", 10+ports[i].in, osr, 10+ports[i].in == osr , ports[i].xd, xd, ports[i].xd==xd);
-//     if(10+ports[i].in == osr && ports[i].xd==xd){xsr=i;}
-//   }
-//   return xsr;
-// }
+void findCurNxt(int idx, int &cur, int &nxt, int &tleft){
+  int ev = prgs[idx].ev;
+  int hr =hour();
+  int min = minute();
+  tleft = 0;
+  printf("time= %d:%d \n", hr, min);
+  for(int j=0; j<ev;j++){
+    if (hr == prgs[idx].prg[j][0]){
+      if (min < prgs[idx].prg[j][1]){
+        cur = j-1;
+        break;
+      }
+    }
+    if (hr < prgs[idx].prg[j][0]){
+      cur= j-1;
+      break;
+    }
+    cur =j;
+  }
+  nxt = cur+1;
+  if (nxt>=ev) nxt=0;  
+  if (nxt==0) tleft = (23-hr)*60+(59-min) +1;
+  else {
+    int nxthr = prgs[idx].prg[nxt][0];
+    int nxtmin = prgs[idx].prg[nxt][1];
+    if(nxtmin < min){//12:25 -> 14:05
+      nxtmin=nxtmin+60;
+      nxthr--;
+    }
+    tleft= (nxthr-hr)*60 + (nxtmin - min);
+  }
+}
 
+void ckAlarms(int sr, int b){
+  int idx = getPrgIdx(sr);
+  int dax = prgs[idx].dax;
+  /*set current program setting in srs*/
+  int cur, nxt, tleft; 
+  findCurNxt(idx, cur, nxt, tleft);
+  printf("prgidx=%d,cur:%d setting:%d, nxt:%d tleft=%d\n",idx, cur, prgs[idx].prg[cur][2],nxt,tleft);
+  srs[sr].data[dax] = prgs[idx].prg[cur][2];
+  updCtrl(sr, 0);  
+  int onoff= digitalRead(srs[sr].port);
+  if(onoff==1 & getFlag(sr, f.HAStIMR)) {
+    tIMElEFT[sr] = tleft*60;
+    setFlag(sr, &f.IStIMERoN);
+  }
+}
 
+int getPrgIdx(int sr){
+  int idx = -1;
+  for (size_t i = 0; i < NUMPRGS; i++)
+  {
+    if(prgs[i].sr==sr) idx = i;
+  }
+  return idx;
+}
 
+void updTimers(int sr, int b){
+  bool pub = false;
+  if(tIMElEFT[sr]>0){
+    tIMElEFT[sr] -= f.cREMENT;
+    if(tIMElEFT[sr]<0){
+      tIMElEFT[sr] = 0;
+      unsetFlag(sr, &f.IStIMERoN);
+    }
+    pub=true;
+  }
+  if(pub && f.cONNectd){
+    pubTimr(sr);
+  }
+}
 
+int hour(){
+  return rand()%(23);
+}
 
+int minute(){
+  return rand()%(59);
+}
 
-// void printXdata(){
-//   for (int i=0;i<NUMXD;i++){
-//     printf("{");
-//     for (int j=0;j<MAXD+3;j++){
-//       printf("%d, ",xdata[i][j]);
-//     }
-//     printf("}, \n");
-//   }
-// }
+void cmdMsg(int sr, int sra[]){
+  int dax = cmds[sr].nda; 
+  for(int i=0;i<dax;i++){ 
+    int idx = cmds[sr].data[i]; //srs data index for the cmd data
+    srs[sr].data[idx]= sra[i];
+  }
+  setFlag(sr, &f.HAYsTATEcNG);
+}
 
+void prgMsg(int sr, int ev, int pro[][3]){
+  int prgx = getPrgIdx(sr);
+  prgs[prgx].ev = ev;
+  for(int i=0;i<ev;i++){
+    for(int j=0;j<NPRGDA;j++){
+      prgs[prgx].prg[i][j]= pro[i][j];
+    }
+  }
+  setFlag(sr, &f.CKaLARM);
+}
