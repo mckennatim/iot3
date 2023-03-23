@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include <string.h>
-#include "CONFIG.h"
+#include "CONF.h"
 
 /*dev extern device variables*/  
 char devid[9]="CYURD128";
@@ -12,7 +12,7 @@ char mqtt_port[6]="1884";
 const char xdevtpc[NUMXD][MAXDSTR] = 
 {"CYURD006/srstate", "CYURD018/srstate"};
 
-const tds_t tds[NUMTYP] ={
+const tds_t tds[NUMTYP] ={//{type, numdl, dats{}}
   {"difctrl", 5, {"onoff", "rdA", "rdB", "dif", "difgt0"}},
   {"tstat", 4, {"onoff", "reading", "setting", "dif"}},
   {"relay", 2, {"onoff", "tsec"}},
@@ -70,37 +70,40 @@ const inp_t inp[NUMINP] = {
   {{D1}, "switch", 1,
     { {1, {{3, 0}}} }, 
     {200} },
-  {{D3}, "1-wire", 3, 
-    { {1, {{6, 6}}},//0,rdA 1,reading
-      {1, {{5, 0}}}, 
-      {4, {{5, 1}, {5, 2}, {6, 4}, {6, 5}}} }, 
-    {} },
   {{D2}, "1-wire", 3, 
-    { {2, {{2, 1}, {6, 1}}}, //0,rdA, 
-      {2, {{0, 1}, {1, 1}}}, 
-      {4, {{5, 4}, {5, 5}, {6, 2}, {6, 3}}} }, 
+    { {2, {{0, 1}, {1, 1}}},  
+      {1, {{5, 0}}}, 
+      {2, {{5, 1}, {5, 2}}} }, 
     {} },
-  {{D4}, "dht", 2, 
+  {{D3}, "dht", 2, 
+    { {1, {{5, 3}}}, 
+      {1, {{5, 4}}} }, 
+    {}  },                                               //
+  {{SCL, SDA}, "i2c", 8, 
     { {1, {{6, 0}}}, 
-      {1, {{6, 1}}} }, 
-    {}  }                                              
+      {1, {{6, 1}}}, 
+      {1, {{6, 2}}}, 
+      {1, {{6, 3}}}, 
+      {1, {{6, 4}}}, 
+      {1, {{6, 5}}}, 
+      {1, {{6, 6}}}  }, 
+    {}  }, // currents
+  {{SCK, SDO, SDI, CS}, "spi", 1, 
+    { {1, {{4, 1}}}  }, 
+    {}  }                                                     // thermo
 };
 
 xdata_t xdata[NUMXD] = {
   {1, 0, "cs", 
     { {0, {{}}},
-      {1, {{6, 7}}},//
+      {1, {{6, 7}}},//reading
       {0, {{}}},
       {0, {{}}}
     }},
   {0, 0, "se", 
-    { {1, {{0, 2}}} //rdB
+    { {1, {{0, 2}}} //reading
     }}
 };
-
-/*INCOMING const mqtt topics*/
-const char subTopics[NUMTOPICS][MAXSSTR] =
-  {"devtime", "cmd", "prg", "req", "set"};
 
 /*flags extern data structure*/
 flags_t f {
@@ -113,7 +116,7 @@ flags_t f {
   0b0011010,//HAStIMR 1100000 64+32=96
   0b0000000,//IStIMERoN
   0b0011011,//HAYpROG 11000010 =128+64+4=198
-  0b0000000,//HAYsTATEcNG
+  0b1111111,//HAYsTATEcNG
   0b0011011,//CKaLARM
   0,//ISrELAYoN
   0b00100010,//dOrEC

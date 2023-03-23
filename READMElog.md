@@ -1,6 +1,7 @@
 # READMElog
 
 ## log
+### 3/23/23 26-invokeInp-maybe fried board
 ### 3/22/23 25-my_stripped_to_essentials_of_tag10
 ### 3/22/23 24-test-done
 ### 3/19/21 23-test-b-setXdata

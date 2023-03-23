@@ -33,7 +33,6 @@ void setup() {
   getOnline();
   client.setServer(mqtt_server, atoi(mqtt_port));
   client.setCallback(handleCallback); //in Req.cpp
-  u_printSrs();
   delay(2000);
   
 }

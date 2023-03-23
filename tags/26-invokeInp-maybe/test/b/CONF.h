@@ -3,9 +3,6 @@
 
 #include<stdio.h>
 #include <string.h>
-#include <TimeLib.h>
-#include <TimeAlarms.h>
-#include <ESP8266WebServer.h>
 
 #define sizeOf(a) (sizeof(a) / sizeof(a[0]))
 /*project constants*/
@@ -14,7 +11,7 @@
 #define BITS pow(2,NUMSR)
 #define NUMTYP 10 //number of types
 #define MAXD 8 //max number of data in an sr
-#define MAXTARGETS 4  //max number of data in an sr
+#define MAXTARGETS 3  //max number of data in an sr
 #define MAXSENSED 8
 #define SENSTYPS 10
 #define NUMINP 7
@@ -24,9 +21,6 @@
 #define NUMPRGS 4
 #define MAXEV 10
 #define NPRGDA 3
-#define NUMTOPICS 5
-
-
 
 
 /*END proj constants*/
@@ -66,6 +60,8 @@ struct cmd_t {
   int data[MAXD];
 };
 extern const cmd_t cmds[];
+
+typedef int AlarmID_t;
 
 /*START prg data structure declarations*/  
 struct prgs_t{
@@ -116,9 +112,6 @@ struct xdata_t {
 };
 extern xdata_t xdata[];
 
-/*INCOMING topics*/
-extern const char subTopics[][MAXSSTR];
-
 /*flags*/
 struct flags_t{
   int cONNectd;
@@ -138,9 +131,19 @@ struct flags_t{
 };
 extern flags_t f;
 
-/*D1_mini typical port names*/
+/*predefined */
+#define D0 16
+#define D1 5
+#define D2 4
+#define D3 0
+#define D4 2
+#define D5 14
+#define D6 12
+#define D7 13
+#define D8 8
 #define RX 3
 #define TX 1
+#define A0 0
 #define A0 0
 #define SCL D1
 #define SDA D2
@@ -148,5 +151,19 @@ extern flags_t f;
 #define SDO D6
 #define SDI D7
 #define CS D8
+
+// /*ports*/
+// struct ports_t {
+//   int sr;
+//   int in;
+//   int out;
+//   char type[8];
+//   int xd;
+//   char label[12];
+//   int rec;
+//   int isnew;
+// };
+// extern ports_t ports[] ;
+// /*END ports*/
 
 #endif
