@@ -35,11 +35,11 @@ void MQclient::reconn(PubSubClient& client) {
   if (client.connect(cdevid, sowner, spwd)) {
     f.hayMQTT =1;
     Serial.println("connected");
-    for (int i=0;i<tpcsSub.numtopics;i++){
+    for (int i=0;i<NUMTOPICS;i++){
       char topic[25];
       strcpy(topic, cdevid);
       strcat(topic,"/"); 
-      strcat(topic,tpcsSub.scribedTo[i]);
+      strcat(topic,subTopics[i]);
       client.subscribe(topic);
       //Serial.println(topic);     
     }

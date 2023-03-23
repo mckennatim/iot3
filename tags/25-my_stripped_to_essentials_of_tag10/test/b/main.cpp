@@ -26,9 +26,6 @@ int main()   // define the main functio
 {  
   printf("Welcome to JavaTpoint \n"); 
   bitShift(f.HASpROG, NUMSR, &doStuff);
-  printSrs();
-  updInputs();
-  printSrs();
   printFlag(f.HAYsTATEcNG);
   scanFLAGand(f.HAYsTATEcNG, NUMSR, &updCtrl);
   printFlag(f.HAYsTATEcNG);
@@ -48,4 +45,8 @@ int main()   // define the main functio
   int pro[2][3] = {{0,0,11}, {11,33,14}};
   prgMsg(0, 2, pro);
   printPrgs();
+  printf("%d\n",u_getNda(1));
+  printSrs();
+  i_updInputs();
+  printSrs();
 }

@@ -8,6 +8,8 @@
 #include "CONFIG.h"
 #include "MQclient.h"//globals(extern) NEW_MAIL, itopic, ipayload + Console
 #include "Reqs.h"
+#include "Inp.h"
+#include "Util.h"
 
 const long every6hrs = 21600000;
 const long every5sec = 5000;
@@ -20,7 +22,6 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 Console console(devid, client);
 MQclient mq(devid, owner, pwd);
-Reqs req(devid);
 
 void initShit(){
 }
@@ -32,7 +33,9 @@ void setup() {
   getOnline();
   client.setServer(mqtt_server, atoi(mqtt_port));
   client.setCallback(handleCallback); //in Req.cpp
+  u_printSrs();
   delay(2000);
+  
 }
 
 void loop() {
@@ -51,18 +54,18 @@ void loop() {
     client.loop();
     if(NEW_MAIL){
         Serial.println("hay NEW_MAIL");
-        req.processInc();
+        q_processInc();
         NEW_MAIL=0;
     }
   }
   if (inow - lcksens > every2sec) {
-      lcksens = inow;
-      //readSensors();
-      if(f.HAYsTATEcNG>0){
-          // if(f.cONNectd) req.pubState(f.HAYsTATEcNG, client);
-          f.HAYsTATEcNG=0;
-      }
-      customLoop();
-      // diffCtrl();  
+    lcksens = inow;
+    i_updInputs();
+    if(f.HAYsTATEcNG>0){
+        if(f.cONNectd) {
+          q_pubState(client);
+        }
+        f.HAYsTATEcNG=0;
+    }
   }    
 } 

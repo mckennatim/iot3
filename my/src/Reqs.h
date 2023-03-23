@@ -5,15 +5,8 @@
 #include <ArduinoJson.h>
 #include "CONFIG.h"
  
-// void pubState2(int hc, PubSubClient& client);
+void q_processInc(); 
+void q_pubState(PubSubClient& client);
 
-class Reqs{
-public:
-  Reqs(char* devid);
-  char* cdevid;
-	void processInc(); 
-private:	
-	bool dog;
-};
 
 #endif

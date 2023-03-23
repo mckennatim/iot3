@@ -4,7 +4,6 @@
 #include "CONFIG.h"
 #include "Reqs.h"
 
-extern Reqs req;
 extern char ipayload[250];
 
 void Sched::deseriTime(){

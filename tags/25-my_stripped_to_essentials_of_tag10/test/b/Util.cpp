@@ -57,7 +57,7 @@ int getOldReading(int sr, int da){
   return srs[sr].data[da];
 }
 
-int readSenseI2c(int port, int inpidx){
+int readSenseI2c(const int *port, int ix){
   return rand()%(60-5 + 1) + 5;
 }
 
@@ -67,11 +67,11 @@ bool debounce(int port) {
   return (state == 0xff00);
 }
 
-int readSwitch(int port, int inpidx){
-  if (debounce(port)) {
-    digitalWrite(port, !digitalRead(port));
+int readSwitch(const int *port, int ix){
+  if (debounce(port[0])) {
+    digitalWrite(port[0], !digitalRead(port[0]));
   }
-  return digitalRead(port);
+  return digitalRead(port[0]);
 }
 
 unsigned long int millis(int max, int min){
@@ -79,7 +79,7 @@ unsigned long int millis(int max, int min){
   return rand()%(max-min + 1) + min;
 }
 
-int readButton(int port, int h){
+int readButton(const int *port, int h){
   srand(time(0));
   int prev = inp[h].actions.prev;
   int lptime = inp[h].actions.lptime;
@@ -88,10 +88,10 @@ int readButton(int port, int h){
   int sval = inp[h].actions.sval;
   int shlo[] = {0, sval, lval};
   int retval = 0;
-  if (debounce(port)) {
-    digitalWrite(port, !digitalRead(port));
+  if (debounce(port[0])) {
+    digitalWrite(port[0], !digitalRead(port[0]));
   }
-  int down =  digitalRead(port);
+  int down =  digitalRead(port[0]);
   if (down & prev==0){ //press button, start long press timer
     lONGpRESStIMR[h] = 100000; //CNG
   } 
@@ -109,7 +109,7 @@ int readButton(int port, int h){
   return retval;
 }
 
-int readSense(int port, int inpidx){
+int readSense(const int *port, int ix){
   return rand()%(60-5 + 1) + 5;
 }
 
@@ -142,22 +142,22 @@ void printFlag(int FLAG){
 }
 
 
-void invokeInp(int h, int i, int (*readSense)(int port, int i)){
-  int reads = inp[h].numreadings;
+void invokeInp(int ix, int sen, int (*readSense)(const int *port, int sen)){
+  int reads = inp[ix].numreadings;
   srand(time(0));
   for (int k=0;k<reads;k++){
-    int nval = readSense(inp[h].port[0], h);//(max-min +1) + min
-    int oval = getOldReading(inp[h].tar[k].gets[0][0], inp[h].tar[k].gets[0][1]);
+    int nval = readSense(inp[ix].port , sen);//(max-min +1) + min
+    int oval = getOldReading(inp[ix].tar[k].gets[0][0], inp[ix].tar[k].gets[0][1]);
     if(nval!=oval){
-      for(int m=0;m<inp[h].tar[k].numtargs;m++){//for all targets
-        int sr = inp[h].tar[k].gets[m][0];
+      for(int m=0;m<inp[ix].tar[k].numtargs;m++){//for all targets
+        int sr = inp[ix].tar[k].gets[m][0];
         /* for switch with tsec>0*/
         int tsec;
-        if(i == 1 & oval == 0 & nval ==1 & srs[sr].data[1]>0){//i=1=switch is on 
+        if(sen == 1 & oval == 0 & nval ==1 & srs[sr].data[1]>0){//i=1=switch is on 
           tsec =srs[sr].data[1]; 
           sTRTsWtIMR[sr] = 4445567; //millis() //CNG//
         }
-        if(i == 1 & oval == 1 & nval == 1 & srs[sr].data[1]>0){
+        if(sen == 1 & oval == 1 & nval == 1 & srs[sr].data[1]>0){        
           unsigned long starttime = sTRTsWtIMR[sr];
           unsigned long endtime = sTRTsWtIMR[sr]-rand()%((120*1000 - 0) + 1); //CNG// max tsec =32767
           if(starttime-endtime>tsec*1000) {
@@ -166,9 +166,9 @@ void invokeInp(int h, int i, int (*readSense)(int port, int i)){
           }
         }
         /* end of switch with tsec>0*/
-        int da = inp[h].tar[k].gets[m][1]; //target data
+        int da = inp[ix].tar[k].gets[m][1]; //target data
         /* for button short/long press*/
-        if(nval == inp[h].actions.lval | nval == inp[h].actions.sval){
+        if(nval == inp[ix].actions.lval | nval == inp[ix].actions.sval){
           // printf("invoke %d \n", srs[sr].data[da]);
           nval = oval + nval;
         }
@@ -180,28 +180,28 @@ void invokeInp(int h, int i, int (*readSense)(int port, int i)){
   }  
 }
 
-void updInputs(){
-  for(int h=0;h<NUMINP;h++){
-    for(int i=0;i<SENSTYPS;i++){
-      if(strcmp(sensors[i],inp[h].type)==0){
-        switch (i){
+void i_updInputs(){
+  for(int ix=0;ix<NUMINP;ix++){
+    for(int sen=0;sen<SENSTYPS;sen++){
+      if(strcmp(sensors[sen],inp[ix].type)==0){
+        switch (sen){
           case 0: //butn
-            invokeInp(h, i, &readButton);
+            invokeInp(ix, sen, &readButton);
             break;
-          case 1: //switch
-            invokeInp(h, i, &readSwitch);
+          case 1: //switcinp
+            invokeInp(ix, sen, &readSwitch);
             break;
           case 2: //1-wire
-            invokeInp(h, i, &readSenseI2c);
+            invokeInp(ix, sen, &readSenseI2c);
             break;
-          case 3: //dht
-            invokeInp(h, i, &readSenseI2c);
+          case 3: //xt
+            invokeInp(ix, sen, &readSenseI2c);
             break;
           case 4: //i2c
-            invokeInp(h, i, &readSenseI2c);
+            invokeInp(ix, sen, &readSenseI2c);
             break;
           case 5: //spi
-            invokeInp(h, i, &readSenseI2c);
+            invokeInp(ix, sen, &readSenseI2c);
             break;
           default:
             printf("never heard of it! \n");
@@ -450,4 +450,8 @@ void prgMsg(int sr, int ev, int pro[][3]){
     }
   }
   setFlag(sr, &f.CKaLARM);
+}
+int u_getNda(int sr){
+  int typidx =srs[sr].typidx;
+  return tds[typidx].numdl;
 }

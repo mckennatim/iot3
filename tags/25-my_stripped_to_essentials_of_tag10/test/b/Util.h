@@ -2,13 +2,13 @@
 #define butil_h
 
 /*inputs*/
-void updInputs();
-  void invokeInp(int h, int i, int (*readSense)(int port, int i));
+void i_updInputs();
+  void invokeInp(int h, int i, int (*readSense)(const int *port, int i));
   int getOldReading(int sr, int da);
-    int readSense(int port, int inpidx);
-    int readSenseI2c(int port, int inpidx);
-    int readSwitch(int port, int inpidx);
-    int readButton(int port, int inpidx);
+    int readSense(const int *port, int ix);
+    int readSenseI2c(const int *port, int ix);
+    int readSwitch(const int *port, int ix);
+    int readButton(const int *port, int ix);
       bool debounce(int port);
 void setXdata(char* idev, int sr, int darr[]);
   int whichDev(char* idev);
@@ -42,6 +42,8 @@ void printSrs();
 void printPrgs();
 void doStuff(int i,int b);
 void bitShift(int bnum, int LEN, void (*doStuff)(int, int));
+
+int u_getNda(int sr);
 
 /*mock*/
 void pubState(int sr);
