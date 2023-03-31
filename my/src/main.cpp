@@ -60,11 +60,10 @@ void loop() {
   if (inow - lcksens > every2sec) {
     lcksens = inow;
     i_updInputs();
-    if(f.HAYsTATEcNG>0){
-        if(f.cONNectd) {
-          q_pubState(client);
-        }
-        f.HAYsTATEcNG=0;
+    u_scanFLAGand(f.HAYsTATEcNG, NUMSR, &i_updCtrl);
+    if(f.cONNectd) {
+      q_pubState(client);
     }
+    f.HAYsTATEcNG=0;
   }    
 } 

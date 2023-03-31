@@ -1,6 +1,22 @@
 # READMElog
 
 ## log
+### 3/31/23 27-updCtrl-declare_sensor_arrays
+    void invokeInp(int ix, int sen, int (*readSense)(int ix, int re)){
+      int reads = inp[ix].numreadings;
+      srand(time(0));
+      for (int k=0;k<reads;k++){
+        int nval = readSense(ix , k);//(max-min +1) + min
+        int oval = getOldReading(inp[ix].tar[k].gets[0][0], inp[ix].tar[k].gets[0][1]);
+        if((nval!=-99) & (nval<600) & (abs(nval-oval)>1)){ 
+          // if conditions for saying something is changed
+
+    int readSenseI2c(int ix, int re){
+      return -99;// rand()%(60-5 + 1) + 5;
+    }          
+
+* [dht declaration](https://forum.arduino.cc/t/multiple-dht22-sensors/525773/2)
+* [DS18B20 declaraion](https://forum.arduino.cc/t/solved-problem-declaring-an-array-of-dallas-temperature-sensors/307213/17)
 ### 3/23/23 26-invokeInp-maybe fried board
 ### 3/22/23 25-my_stripped_to_essentials_of_tag10
 ### 3/22/23 24-test-done
