@@ -1,6 +1,8 @@
 # READMElog
 
 ## log
+### 4/5/23 28-ready_for_button_appdata
+draft modiification in conf\128demo2\appdata.js
 ### 3/31/23 27-updCtrl-declare_sensor_arrays
     void invokeInp(int ix, int sen, int (*readSense)(int ix, int re)){
       int reads = inp[ix].numreadings;

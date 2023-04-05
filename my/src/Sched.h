@@ -6,14 +6,8 @@
 #include <ArduinoJson.h>
 // void alarmRings();
 
-class Sched{
-public:
-	void deseriTime(); 
-	void actTime();
-private:
-  time_t unix;
-  const char* LLLL;
-  int zone;	
-};
+void s_ckAlarms(int sr, int b);
+
+void findCurNxt(int idx, int &cur, int &nxt, int &tleft);
 
 #endif

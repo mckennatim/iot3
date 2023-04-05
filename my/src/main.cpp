@@ -10,6 +10,7 @@
 #include "Reqs.h"
 #include "Inp.h"
 #include "Util.h"
+#include "Sched.h"
 
 const long every6hrs = 21600000;
 const long every5sec = 5000;
@@ -61,9 +62,12 @@ void loop() {
     lcksens = inow;
     i_updInputs();
     u_scanFLAGand(f.HAYsTATEcNG, NUMSR, &i_updCtrl);
+    u_scanFLAGand(f.CKaLARM, NUMSR, &s_ckAlarms);
     if(f.cONNectd) {
       q_pubState(client);
+      q_pubPrg(client);
     }
     f.HAYsTATEcNG=0;
+    f.CKaLARM=0;
   }    
 } 

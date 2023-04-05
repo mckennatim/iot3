@@ -7,6 +7,10 @@
  
 void q_processInc(); 
 void q_pubState(PubSubClient& client);
+void q_pubPrg(PubSubClient& client);
 
+void deseriTime();
+void deseriCmd();
+void deseriProg();
 
 #endif

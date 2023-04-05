@@ -7,12 +7,9 @@
 #include "Sched.h"
 #include "Util.h"
 
-Sched sched;
+// Sched sched;
 extern char itopic[40];
 extern char ipayload[250];
-
-
-
 
 
 void q_processInc(){
@@ -22,19 +19,18 @@ void q_processInc(){
         case 0:
           Serial.println("case 0 is what devtime?");
           printf("ipayload %s\n ", ipayload);
-          sched.deseriTime();
-          sched.actTime();
+          deseriTime();
           f.aUTOMA = 1;  
 				  f.CKaLARM = 1023; //1111111111
 				  f.HAYsTATEcNG =1023; //1111111111         
           break;
         case 1://in cmd
-          // deseriCmd();
+          deseriCmd();
           Serial.println(ipayload);
           break;   
         case 2://in prg
           Serial.println(ipayload);
-          // sched.deseriProg(ipayload);
+          deseriProg();
           break;         
         case 3://in req
           Serial.println(ipayload);
@@ -48,6 +44,54 @@ void q_processInc(){
     }
   }
 }
+
+void deseriTime(){
+  DynamicJsonDocument root(200);
+  deserializeJson(root, ipayload);
+  serializeJsonPretty(root, Serial);
+  time_t unix = root["unix"];
+  const char* LLLL = root["LLLL"];
+  int zone = root["zone"];
+  time_t datetime = unix + zone*60*60;
+  setTime(datetime);
+  setSyncInterval(4000000); 
+  printf("%d:%d %s\n", hour(), minute(), LLLL );  
+}
+
+void deseriCmd(){
+  Serial.println(ipayload);
+  DynamicJsonDocument rot(1000);
+  deserializeJson(rot, ipayload);  
+  int sr = rot["id"];
+  JsonArray sra = rot["sra"]; 
+  int dax = cmds[sr].nda; 
+  for(int i=0;i<dax;i++){ 
+    int idx = cmds[sr].data[i]; //srs data index for the cmd data
+    srs[sr].data[idx]= sra[i];
+  }
+  u_setFlag(sr, &f.HAYsTATEcNG);
+}
+
+
+
+void deseriProg(){
+  DynamicJsonDocument rot(1000);
+  deserializeJson(rot, ipayload);  
+  int id = rot["id"];
+  Serial.print("id = ");
+  Serial.println(id);
+  JsonArray events = rot["pro"];
+  int prgx = u_getPrgIdx(id);
+  int ev = events.size();
+  prgs[prgx].ev = ev;
+  for(int i=0;i<ev;i++){
+    JsonArray aprg = events[i];
+    for(int j=0;j<NPRGDA;j++){
+      prgs[prgx].prg[i][j]= aprg[j];
+    }
+  }
+  u_setFlag(id, &f.CKaLARM);
+}    
 
 void q_pubState(PubSubClient& client){
   int fl = f.HAYsTATEcNG;
@@ -71,3 +115,30 @@ void q_pubState(PubSubClient& client){
   }
 }
 
+void q_pubPrg(PubSubClient& client){
+  int fl = f.CKaLARM;
+  char topic[20];
+  strcpy(topic,devid);
+  strcat(topic,"/sched"); 
+  for(int i=0;i<NUMPRGS;i++){
+    if(fl & 1){//is LSB set
+      int ev = prgs[i].ev;
+      StaticJsonDocument<2000> root;
+      root["id"]= prgs[i].sr;
+      root["aid"] = prgs[i].aid;
+      root["ev"] = ev;
+      root["numdata"] = 1;
+      JsonArray pro = root.createNestedArray("pro");
+      for(int k=0;k<ev;k++){
+        JsonArray data = pro.createNestedArray();
+        for (int j=0;j<3;j++){
+          data.add(prgs[i].prg[k][j]);
+        }
+      }
+      char payload[200];
+      serializeJson(root, payload);
+      if (client.connected()) client.publish(topic, payload, true);
+    }
+    fl= fl >> 1; //move LSB to left
+  }
+}
