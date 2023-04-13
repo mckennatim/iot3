@@ -20,7 +20,7 @@ void s_ckAlarms(int sr, int b){
     srs[sr].data[dax] = prgs[idx].prg[cur][2];
     i_updCtrl(sr, 0);  
     int onoff= digitalRead(srs[sr].port);
-    if((onoff==1) & (u_getFlag(sr, f.HAStIMR))) {
+    if((onoff==1) & (u_getFlag(sr, f.HAYtIMR))) {
       tIMElEFT[sr] = tleft*60;
       u_setFlag(sr, &f.IStIMERoN);
     }

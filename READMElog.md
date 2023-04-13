@@ -1,6 +1,8 @@
 # READMElog
 
 ## log
+### 4/13/23 29-build_appBuild_redone
+redone for new data structures. Also changed xdata's structure again to accomodate multiple xdata sr's per xdevid and multiple xdidx for each sr
 ### 4/5/23 28-ready_for_button_appdata
 draft modiification in conf\128demo2\appdata.js
 ### 3/31/23 27-updCtrl-declare_sensor_arrays
