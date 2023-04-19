@@ -11,15 +11,16 @@
 
  
 /*project constants for CYURD128switch*/
-#define NUMXDEV 2 //# of x devices
-#define NUMXD 3 //# of xdata records
+#define NUMXDEV 0 //# of x devices
+#define NUMXD 0 //# of xdata records
 #define NUMSR 3 //number of sr's 
 #define NUMINP 2
 #define NUMPRGS 2
-#define MAXDT 2
+#define MAXDT 0
+#define SENSTYPS 7
+
  
 /*constant that could change */
-#define SENSTYPS 7//nuber of sensor types
 #define NUMTYP 8 //number of ctrl types
 
 /*constants that proabaly wont change*/
@@ -86,6 +87,7 @@ extern prgs_t prgs[];
 extern unsigned long sTRTsWtIMR[];
 extern unsigned long tIMElEFT[];
 extern unsigned long lONGpRESStIMR[] ;
+extern int bUTNpREV[] ;
 
 
 extern const char sensors[][MAXSSTR];
@@ -100,7 +102,6 @@ struct action_t {
   int lval;
   int prev;
   int lptime;
-  unsigned long int sttime;
 };
 
 struct inp_t {

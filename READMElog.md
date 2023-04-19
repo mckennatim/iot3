@@ -1,7 +1,21 @@
 # READMElog
 
 ## log
-### 4/13/23 29-build_appBuild_redone
+### 4/19/23 30-buttons-updInputs_redo 
+about to blow up updInputs(case sen...invokeInp) -> i_updInputs 
+
+To handle class intantiation like `ezButton button(D3);` using [preprocessor directives](https://www.cprogramming.com/reference/preprocessor/#:~:text=The%20C%20preprocessor%20modifies%20a,such%20as%20__FILE__.)
+
+    #ifdef ESP32
+      // Different ESP32 boards use different pins
+      const int LED_PIN = 2;
+    #else
+      const int LED_PIN = LED_BUILTIN;
+    #endif
+
+### 4/13/23 29-build_appBuild_redone 
+TODO 
+* determine switch, toggle, butn
 redone for new data structures. Also changed xdata's structure again to accomodate multiple xdata sr's per xdevid and multiple xdidx for each sr
 ### 4/5/23 28-ready_for_button_appdata
 draft modiification in conf\128demo2\appdata.js

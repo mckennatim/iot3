@@ -15,6 +15,8 @@
 const long every6hrs = 21600000;
 const long every5sec = 5000;
 const long every2sec = 2000;
+const long everyHalfsec = 500;
+const long every200msec = 200;
 
 signed long lckconn = -every6hrs;
 signed long lcksens = 0;
@@ -24,7 +26,15 @@ PubSubClient client(espClient);
 Console console(devid, client);
 MQclient mq(devid, owner, pwd);
 
+
+
 void initShit(){
+  for (int i=0;i<NUMSR;i++){
+    if (srs[i].port>=0) pinMode(srs[i].port, OUTPUT);
+  }
+  for (int i=0;i<NUMINP;i++){
+    if (inp[i].port[0]>=0) pinMode(srs[i].port, INPUT);
+  }
 }
 
 void setup() {
@@ -39,6 +49,7 @@ void setup() {
 }
 
 void loop() {
+  i_butnLoop();
   Alarm.delay(100); //needed so timealarms works
   unsigned long inow = millis();
   if(inow-lckconn >= every6hrs){
@@ -58,9 +69,9 @@ void loop() {
         NEW_MAIL=0;
     }
   }
-  if (inow - lcksens > every2sec) {
+  i_updInputs();
+  if (inow - lcksens > every200msec) {
     lcksens = inow;
-    i_updInputs();
     u_scanFLAGand(f.HAYsTATEcNG, NUMSR, &i_updCtrl);
     u_scanFLAGand(f.CKaLARM, NUMSR, &s_ckAlarms);
     if(f.cONNectd) {
