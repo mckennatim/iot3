@@ -1,0 +1,90 @@
+{
+  "id": 1,
+  "parentId": -1,
+  "label": "snippets",
+  "lastId": 13,
+  "children": [
+    {
+      "id": 2,
+      "parentId": 1,
+      "label": "my",
+      "folder": true,
+      "children": [
+        {
+          "id": 5,
+          "parentId": 2,
+          "label": "sr",
+          "folder": true,
+          "children": [
+            {
+              "id": 5,
+              "parentId": 5,
+              "label": "array",
+              "value": "    {\n      \"sr\": 2,\n      \"label\": \"currents\",\n      \"out\": \"D7\",\n      \"ctype\": \"array\",\n      \"init\": [14,12,56,45],\n      \"descr\": \"current readings\",\n      \"rec\": true,\n      \"timr\": true\n    }    \n",
+              "children": [],
+              "resolveSyntax": true
+            },
+            {
+              "id": 6,
+              "parentId": 5,
+              "label": "ctrl",
+              "value": "    {\n      \"sr\": 1,\n      \"label\": \"bbq\",\n      \"out\": \"D6\",\n      \"ctype\": \"ctrl\",\n      \"init\": [0,35,42],\n      \"prg\": [[0,0,68]],\n      \"descr\": \"bbq temp\",\n      \"rec\": true,\n      \"timr\": true\n    },\n",
+              "children": [],
+              "resolveSyntax": true
+            },
+            {
+              "id": 7,
+              "parentId": 5,
+              "label": "difctrl",
+              "value": "    {\n      \"sr\": 0,\n      \"label\": \"solar\",\n      \"out\": \"D8\",\n      \"ctype\": \"difctrl\",\n      \"init\": [0,67,45,9,1],\n      \"prg\": [[0,0,11], [9,15,10]],\n      \"descr\": \"solar dif ctrl\",\n      \"rec\": true,\n      \"timr\": true\n    },\n",
+              "children": []
+            },
+            {
+              "id": 8,
+              "parentId": 5,
+              "label": "tstat",
+              "value": "    {\n      \"sr\": 1,\n      \"label\": \"dr\",\n      \"out\": \"D6\",\n      \"ctype\": \"tstat\",\n      \"init\": [0,35,42,1],\n      \"prg\": [[0,0,68]],\n      \"descr\": \"dining room tstat\",\n      \"rec\": true,\n      \"timr\": true\n    },\n",
+              "children": []
+            },
+            {
+              "id": 9,
+              "parentId": 5,
+              "label": "relay",
+              "value": "      \"sr\": 2,\n      \"label\": \"sw1\",\n      \"out\": \"D7\",\n      \"ctype\": \"relay\",\n      \"init\": [0,120],\n      \"prg\": [[0,0,68]],\n      \"descr\": \"light switch\",\n      \"rec\": true,\n      \"timr\": true\n    },    \n",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "parentId": 2,
+          "label": "inp",
+          "folder": true,
+          "children": [
+            {
+              "id": 11,
+              "parentId": 10,
+              "label": "1-wire",
+              "value": "    {\n      \"ports\": [\"D2\"],\n      \"itype\": \"1-wire\",\n      \"sensors\": 3,\n      \"targets\": [\n        [[0,2]],\n        [[1,1],[3,1]],\n        [[2,1]]\n      ]\n    },\n",
+              "children": []
+            },
+            {
+              "id": 12,
+              "parentId": 10,
+              "label": "switch",
+              "value": "    {\n      \"ports\": [\"D1\"],\n      \"itype\": \"switch\",\n      \"sensors\": 1,\n      \"targets\": [\n        [[2,0]]\n      ],\n      \"actions\": [200]\n    }\n",
+              "children": []
+            },
+            {
+              "id": 13,
+              "parentId": 10,
+              "label": "dht",
+              "value": "    {\n      \"ports\": [\"D2\"],\n      \"itype\": \"dht\",\n      \"sensors\": 2,\n      \"targets\": [\n        [[1,1],[3,1]],\n        [[2,1]]\n      ]\n    },\n",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
