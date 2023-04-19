@@ -4,12 +4,19 @@
 #include "Reqs.h"
 #include <DallasTemperature.h>
 #include <DHT.h>
-#include <ezButton.h>
 
-ezButton button(D3);
-OneWire Wire[2] ={OneWire(inp[0].port[0]), OneWire(D5)}; 
-DallasTemperature DS18B20[2] = {DallasTemperature(&Wire[0]), DallasTemperature(&Wire[1])};
-boolean Active1Wire[2]= {1,0};
+#include <ezButton.h>
+ezButton button(BTNPRT);
+
+#ifdef WIR1PRT
+  OneWire Wire[2] ={OneWire(WIR0PRT), OneWire(WIRE1PRT)};
+  DallasTemperature DS18B20[1] = {DallasTemperature(&Wire[0]), DallasTemperature(&Wire[1])};
+#else 
+  #ifdef WIR0PRT
+    OneWire Wire[1] ={OneWire(WIR0PRT)};
+    DallasTemperature DS18B20[1] = {DallasTemperature(&Wire[0])};
+  #endif
+#endif 
 int readDs18b20(int ix, int re){
   int bus = inp[ix].actions.sval;
   int temp = (int)DS18B20[bus].getTempFByIndex(re);
@@ -45,56 +52,6 @@ int readSenseDht(int ix, int re){
 
 int readSenseI2c(int ix, int re){
   return -99;// rand()%(60-5 + 1) + 5;
-}
-
-int readToggle(int ix, int re){
-  int port = inp[ix].port[0];
-  return !digitalRead(port);
-}
-
-int readSwitch(int ix, int re){
-  int butnState = button.getState();
-  int bst = 0;
-  if(button.isPressed()){
-    bst=1;
-    Serial.println("The button is pressed");
-  }
-  if(button.isReleased()){
-    bst=2;
-    Serial.println("The button is Released");
-  }
-  printf("bst:%d,butnState=%d, pressed:%d, released:%d \n",bst, butnState, button.isPressed(), button.isReleased()) ;
-  return bst;
-  // int port = inp[ix].port[0];
-  // return digitalRead(port);
-}
-
-int readButton(int ix, int re){
-  int port = inp[ix].port[0];
-  int prev = bUTNpREV[ix];
-  unsigned long int lptime = inp[ix].actions.lptime;
-  // int shlo[] = [inp[ix].actions.lval;
-  int lval = inp[ix].actions.lval;
-  int sval = inp[ix].actions.sval;
-  int retval = 0;
-  if (debounce(port)) {
-    digitalWrite(port, !digitalRead(port));
-  }
-  int down =  digitalRead(port);
-  if (down & (prev==0)){ //press button, start long press timer
-    lONGpRESStIMR[ix] = millis(); //CNG
-    bUTNpREV[ix] = 1;
-  } 
-  if ((!down) & (prev)){ //release button, calc time pressed -> nval = lval|sval
-    unsigned long int now = millis();//CNG
-    unsigned long int dif = now - lONGpRESStIMR[ix];
-    bUTNpREV[ix] = 1;
-    printf("button dif = %ld \n", dif);
-    if(dif > lptime){
-      retval = lval;
-    }else retval = sval;
-  }
-  return retval;
 }
 
 void i_updInputs(){

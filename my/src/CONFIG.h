@@ -18,7 +18,8 @@
 #define NUMPRGS 2
 #define MAXDT 0
 #define SENSTYPS 7
-
+#define BTNPRT D3
+#define WIR0PRT D2 
  
 /*constant that could change */
 #define NUMTYP 8 //number of ctrl types
