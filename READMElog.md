@@ -1,6 +1,10 @@
 # READMElog
 
 ## log
+### 4/25/23 32-relay-delay_nomo_scanAnd
+
+
+
 ### 4/19/23 31-new_updInputs-not_preprocessor_dirs
 ### 4/19/23 30-buttons-updInputs_redo 
 about to blow up updInputs(case sen...invokeInp) -> i_updInputs 

@@ -7,6 +7,7 @@
 // void alarmRings();
 
 void s_ckAlarms(int sr, int b);
+void alarmRings();
 
 void findCurNxt(int idx, int &cur, int &nxt, int &tleft);
 

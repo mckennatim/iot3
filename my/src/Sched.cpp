@@ -18,7 +18,7 @@ void s_ckAlarms(int sr, int b){
     findCurNxt(idx, cur, nxt, tleft);
     printf("prgidx=%d,cur:%d setting:%d, nxt:%d tleft=%d\n",idx, cur, prgs[idx].prg[cur][2],nxt,tleft);
     srs[sr].data[dax] = prgs[idx].prg[cur][2];
-    i_updCtrl(sr, 0);  
+    i_updCtrl();  
     int onoff= digitalRead(srs[sr].port);
     if((onoff==1) & (u_getFlag(sr, f.HAYtIMR))) {
       tIMElEFT[sr] = tleft*60;
@@ -58,4 +58,11 @@ void findCurNxt(int idx, int &cur, int &nxt, int &tleft){
     }
     tleft= (nxthr-hr)*60 + (nxtmin - min);
   }
+}
+
+void alarmRings(){//alarm went off
+  Serial.println("RING RING RING");
+  // int sr = prgs.prg[0].sr; //for this sr
+  // int bit = pow(2,sr);
+  // f.CKaLARM=f.CKaLARM | bit; //so ck and reset next sched section
 }

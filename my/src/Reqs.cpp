@@ -22,7 +22,8 @@ void q_processInc(){
           deseriTime();
           f.aUTOMA = 1;  
 				  f.CKaLARM = 1023; //1111111111
-				  f.HAYsTATEcNG =1023; //1111111111         
+				  // f.HAYsTATEcNG =1023
+          ; //1111111111         
           break;
         case 1://in cmd
           deseriCmd();
@@ -94,12 +95,12 @@ void deseriProg(){
 }    
 
 void q_pubState(PubSubClient& client){
-  int fl = f.HAYsTATEcNG;
   char topic[20];
   strcpy(topic,devid);
   strcat(topic,"/srstate"); 
   for(int sr=0;sr<NUMSR;sr++){
-    if(fl & 1){
+    int sr2 = pow2(sr);
+    if((f.dOpUBLISH & sr2) ==sr2 ){
       StaticJsonDocument<500> root;
       root["id"]=sr;
       JsonArray darr = root.createNestedArray("darr"); 
@@ -110,8 +111,8 @@ void q_pubState(PubSubClient& client){
       serializeJson(root, payload);
       printf("%s\n", payload);
       if (client.connected()) client.publish(topic, payload, true);
+      u_unsetFlag(sr, &f.dOpUBLISH);
     }
-    fl= fl >> 1;
   }
 }
 

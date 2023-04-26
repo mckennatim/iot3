@@ -40,6 +40,7 @@ void initShit(){
 void setup() {
   Serial.begin(115200);
   EEPROM.begin(512);
+  WiFi.mode(WIFI_STA); // Force to station mode because if device was switched off while in access point mode it will start up next time in access point mode.
   initShit();
   getOnline();
   client.setServer(mqtt_server, atoi(mqtt_port));
@@ -72,13 +73,13 @@ void loop() {
   i_updInputs();
   if (inow - lcksens > every200msec) {
     lcksens = inow;
-    u_scanFLAGand(f.HAYsTATEcNG, NUMSR, &i_updCtrl);
+    i_updCtrl();
     u_scanFLAGand(f.CKaLARM, NUMSR, &s_ckAlarms);
+    i_updRelays();
     if(f.cONNectd) {
       q_pubState(client);
       q_pubPrg(client);
     }
-    f.HAYsTATEcNG=0;
     f.CKaLARM=0;
   }    
 } 

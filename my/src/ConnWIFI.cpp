@@ -8,7 +8,7 @@ void getOnline(){
   Serial.println("Attempting to getOnline()");
   WiFiManager wifiManager;
   /*to solve blocking problem if wifi is down add portalTimeout*/
-  wifiManager.setConfigPortalTimeout(120);
+  wifiManager.setConfigPortalTimeout(60);
   Serial.print("f.hayWIFI: ");
   Serial.println(f.hayWIFI);
   //wifiManager.resetSettings();
