@@ -101,6 +101,7 @@ void q_pubState(PubSubClient& client){
   for(int sr=0;sr<NUMSR;sr++){
     int sr2 = pow2(sr);
     if((f.dOpUBLISH & sr2) ==sr2 ){
+      printf("sr2=%d \n", sr2);
       StaticJsonDocument<500> root;
       root["id"]=sr;
       JsonArray darr = root.createNestedArray("darr"); 

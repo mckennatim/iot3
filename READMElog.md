@@ -1,9 +1,12 @@
 # READMElog
 
 ## log
+### 4/29/23 33-pinMode-simple_toggle
+initShit moved frmom main to CONFIG.cpp, pinmode does not work in a for loop
+
 ### 4/25/23 32-relay-delay_nomo_scanAnd
 
-
+the delay sr must be after the initial relay
 
 ### 4/19/23 31-new_updInputs-not_preprocessor_dirs
 ### 4/19/23 30-buttons-updInputs_redo 
