@@ -199,7 +199,7 @@ void i_updCtrl(){
               }
             }
           }else
-          {
+          { 
             if((srs[priosr].data[0]==0)&(srs[sr].data[4]==1))
             {
               srs[sr].data[4]= 0;
@@ -325,15 +325,18 @@ void i_updRelays(){
       int tsec = srs[sr].data[1];
       unsigned long tmsec = tsec*1000;
       unsigned long tnow = millis();
-      printf("%ld, ",(tnow - sTRTsWtIMR[sr]));
-      if((tnow - sTRTsWtIMR[sr]) > tmsec){
-        u_unsetFlag(sr, &f.ISrELAYoN);
-        srs[sr].data[0]=0;
-        u_setFlag(sr, &f.HAYsTATEcNG);
-        int nxtsr = srs[sr].data[2];
-        if(nxtsr>-1) {//if there is a delay 
-          u_setFlag(nxtsr, &f.HAYsTATEcNG);
-          printf("\n nxtsr=%d and HAYsTATEcNG=%d \n",nxtsr,f.HAYsTATEcNG );
+      if(srs[sr].data[0]==1)
+      {
+        printf("%ld, ",(tnow - sTRTsWtIMR[sr]));
+        if((tnow - sTRTsWtIMR[sr]) > tmsec){
+          u_unsetFlag(sr, &f.ISrELAYoN);
+          srs[sr].data[0]=0;
+          u_setFlag(sr, &f.HAYsTATEcNG);
+          int nxtsr = srs[sr].data[2];
+          if(nxtsr>-1) {//if there is a delay 
+            u_setFlag(nxtsr, &f.HAYsTATEcNG);
+            printf("\n nxtsr=%d and HAYsTATEcNG=%d \n",nxtsr,f.HAYsTATEcNG );
+          }
         }
       }
     }
