@@ -1,0 +1,216 @@
+src\Reqs.cpp: In member function 'int Reqs::getPrgIdx(int)':
+src\Reqs.cpp:342:24: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  342 |     if(srid==prgs.prg[i].sr){
+      |              ~~~~~~~~~~^
+In file included from src\Reqs.h:6,
+                 from src\Reqs.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~
+src\Reqs.cpp: In member function 'void Reqs::pubPrg(int)':
+src\Reqs.cpp:241:30: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  241 |     int bit =pow(2,prgs.prg[i].sr);
+      |                    ~~~~~~~~~~^
+In file included from src\Reqs.h:6,
+                 from src\Reqs.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~
+src\Reqs.cpp:246:80: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  246 |     printf("pubPrg prgs.prg[i].sr: %d, (bit & hayprg)==bit): %d \n", prgs.prg[i].sr, (bit & hayprg)==bit);
+      |                                                                      ~~~~~~~~~~^
+In file included from src\Reqs.h:6,
+                 from src\Reqs.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~
+src\Reqs.cpp:248:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  248 |       prg_t p = prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Reqs.h:6,
+                 from src\Reqs.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~
+src\Sched.cpp: In function 'void alarmRings()':
+src\Sched.cpp:285:22: warning: array subscript 0 is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  285 |   int sr = prgs.prg[0].sr; //for this sr
+      |            ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~
+src\Sched.cpp: In member function 'void Sched::ckAlarms()':
+src\Sched.cpp:168:23: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  168 |     int sr =prgs.prg[i].sr;
+      |             ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~
+src\Sched.cpp:173:16: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                ^~~~~~~~~~~~
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp:173:27: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  173 |     prg_t *p = &prgs.prg[i];
+      |                 ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\Sched.cpp: In member function 'void Sched::deseriProg(char*)':
+src\Sched.cpp:132:22: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  132 |     if(id==prgs.prg[i].sr){
+      |            ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~
+src\Sched.cpp:134:26: warning: array subscript i is outside array bounds of 'prg_t [0]' [-Warray-bounds]
+  134 |       copyProg(prgs.prg[i], events);
+      |                ~~~~~~~~~~^
+In file included from src\Sched.h:5,
+                 from src\Sched.cpp:1:
+src\CONFIG.h:124:9: note: while referencing 'prgs_t::prg'
+  124 |   prg_t prg[0];/*MODIFY*/
+      |         ^~~
+src\CONFIG.h:126:15: note: defined here 'prgs'
+  126 | extern prgs_t prgs;
+      |               ^~~~S

@@ -2,45 +2,34 @@
 #include<stdio.h>
 #include <string.h>
 #include "CONFIG.h"
-
-void initShit(){
-  pinMode(srs[0].port,OUTPUT);
-  pinMode(srs[1].port,OUTPUT);
-  pinMode(srs[2].port,OUTPUT);
-  pinMode(srs[3].port,OUTPUT);
-  pinMode(inp[0].port[0],INPUT);
-}
  
 /*dev device variables*/  
-char devid[9]="CYURD128";
+char devid[9]="CYURD127";
 char owner[254]="tim@sitebuilt.net";
 char pwd[24]="geniot";
 char mqtt_server[60]="sitebuilt.net";
 char mqtt_port[6]="1884";
-
-/*relay typidx=2{"onoff", "tsec","nxtsr", "priosr", "prionoff"}*/  
+  
 srs_t srs[NUMSR] ={//{sr, port, typidx, data[]}   
-  {0, D0, 2, {0,15, 1, -1, -1}}, //relay sw1 
-  {1, D6, 2, {0,15, 2, 0, 0}}, //delayed relay
-  {2, D7, 2, {0,15, 3, 1, 0}}, //delayed relay
-  {3, D8, 2, {0,15, -1, 2, 0}}, //delayed relay
+  {0, D1, 5, {1,}}, //power power 
+  {1, D6, 2, {0, 120, 2,}}, //relay zone1 
+  {2, D7, 3, {0, 120, 1, 0,}}, //delay zone2 
 };
  
 const cmd_t cmds[NUMSR] ={//{sr,nda,data{})
-  {0, 2, {0, 1}}, //relay sw1
-  {1, 3, {0, 1}}, //delay sw2
-  {2, 2, {0, 1}}, //delay sw3
-  {3, 2, {0, 1}}, //delay sw4
+  {0, 1, {0}}, //power power
+  {1, 2, {0, 1}}, //relay zone1
+  {2, 2, {0, 1}}, //delay zone2
 };
   
 prgs_t prgs[NUMPRGS]={//{sr, dax, aid, ev, prg[[h,m,set]], hms} 
-//  {0, 3, 255, 1, {{0,0,68}}},
-//  {1, 3, 255, 1, {{0,0,68}}},
+ {1, 1, 255, 1, {{0,0,68}}},
+ {2, 1, 255, 1, {{0,0,68}}},
 };
  
 inp_t inp[NUMINP] = {
-  {{D3,}, "toggle", 1, 
-    { {1, {{0, 0}}}, },
+  {{D5,}, "toggle", 1, 
+    { {1, {{1, 0}, }}, },
     {200,}, },
 };
  
@@ -53,12 +42,12 @@ const xdata_t xdata[NUMXD] =
 };
  
 const char sensors[SENSTYPS][MAXSSTR] = 
-{"butn", "switch", "1-wire", "dht", "i2c", "spi", "toggle",};
+{"butn", "switch", "1-wire", "dht", "i2c", "spi", "toggle", };
  
 /*flags extern data structure*/
 flags_t f {
   0b000,//HAYtIMR 1100000 64+32=96
-  0b011,//HAYpROG 11000010 =128+64+4=198
+  0b110,//HAYpROG 11000010 =128+64+4=198
   0b000,//dOrEC 
   0,//cONNectd
   0,//hayWIFI
@@ -77,15 +66,15 @@ flags_t f {
 const tds_t tds[NUMTYP] ={
   {"difctrl", 5, {"onoff", "rdA", "rdB", "dif", "difgt0"}},
   {"tstat", 4, {"onoff", "reading", "setting", "dif"}},
-  {"relay", 2, {"onoff", "tsec","nxtsr", "priosr", "prionoff"}},
-  {"ctrl", 3, {"bell", "reading", "setting"}},
+  {"relay", 2, {"onoff", "tsec","sr"}},
+  {"delay", 2, {"onoff", "tsec", "sr","prior"}},
   {"array", 8, {"a0", "a1", "a2", "a3", "a4", "a5", "a6", "a7"}},
   {"se", 1, {"reading"}},
   {"cs", 4, {"onoff", "reading", "hi", "lo"}},
-  {"re", 1, {"onoff"}},
+  {"re", 1, {"onoff"}}
 };
 
-unsigned long sTRTsWtIMR[NUMSR] ={0,0,0,0,};
+unsigned long sTRTsWtIMR[NUMSR] ;
 unsigned long lONGpRESStIMR[NUMINP] ;
 int bUTNpREV[NUMINP] ;
 unsigned long tIMElEFT[NUMSR] ;

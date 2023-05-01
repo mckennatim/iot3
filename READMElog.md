@@ -1,9 +1,12 @@
 # READMElog
 
 ## log
+### 4/30/23 34-cascading_relays
+gets kicked off `if(srs[sr].data[0]==1)` on button toggle. `if(tsec>0)` is called then again and in the event that a prior timer ends and it used to be running.
 ### 4/29/23 33-pinMode-simple_toggle
-initShit moved frmom main to CONFIG.cpp, pinmode does not work in a for loop
+initShit moved frmom main to CONFIG.cpp, pinmode does not work in a for loops
 
+simple timed relay works too
 ### 4/25/23 32-relay-delay_nomo_scanAnd
 
 the delay sr must be after the initial relay
