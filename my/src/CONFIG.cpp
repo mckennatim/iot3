@@ -12,7 +12,7 @@ void initShit(){
 }
  
 /*dev device variables*/  
-char devid[9]="CYURD128";
+char devid[9]="CYURD127";
 char owner[254]="tim@sitebuilt.net";
 char pwd[24]="geniot";
 char mqtt_server[60]="sitebuilt.net";

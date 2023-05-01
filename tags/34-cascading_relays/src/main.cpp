@@ -26,22 +26,6 @@ PubSubClient client(espClient);
 Console console(devid, client);
 MQclient mq(devid, owner, pwd);
 
-
-
-// void initShit(){
-//   for (int i=0;i<NUMSR;i++){
-//     if (srs[i].port>=0) {
-//       pinMode(srs[i].port, OUTPUT);
-//       printf("set port:%d = %d\n",srs[i].port,OUTPUT);
-//     }
-//   }
-//   for (int j=0;j<NUMINP;j++){
-//     if (inp[j].port[0]>=0) pinMode(srs[j].port, INPUT);
-//   }
-//   pinMode(srs[0].port,OUTPUT);
-//   printf("set port:%d = %d\n",srs[0].port,OUTPUT);
-// }
-
 void setup() {
   Serial.begin(115200);
   EEPROM.begin(512);
@@ -51,7 +35,6 @@ void setup() {
   client.setServer(mqtt_server, atoi(mqtt_port));
   client.setCallback(handleCallback); //in Req.cpp
   delay(2000);
-  
 }
 
 void loop() {

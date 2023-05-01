@@ -108,14 +108,6 @@ void i_updInputs(){
               // bst=2;
               Serial.println("The button is Released");
             }
-            // if(bst==1){
-            //   for(int m=0;m<inp[ix].tar[0].numtargs;m++){
-            //     int sr = inp[ix].tar[0].gets[m][0];
-            //     int da = inp[ix].tar[0].gets[m][1]; //sr data index
-            //     srs[sr].data[da] = !srs[sr].data[da];
-            //     u_setFlag(sr, &f.HAYsTATEcNG);
-            //   }
-            // }
             break;
           }  
           default:
@@ -182,11 +174,9 @@ void i_updCtrl(){
         }
         case 2: //relay
         {
-          // printf("updating ctrl, onoff=%d port=%d\n",srs[sr].data[0],digitalRead(srs[sr].port));
           int tsec =  srs[sr].data[1];
           int nxtsr =  srs[sr].data[2];
           int priosr =  srs[sr].data[3];
-          // int prionoff = srs[sr].data[4];
           if(srs[sr].data[0]==1)
           {
             if(tsec>0)
@@ -221,78 +211,8 @@ void i_updCtrl(){
             u_setFlag(sr, &f.dOpUBLISH);
           }
           u_unsetFlag(sr , &f.HAYsTATEcNG);
-
-
-          // /*just a relay (maybe timed)*/
-          // if((nxtsr==-1)&(priosr==-1))
-          // { 
-          //   if((tsec>0)&(srs[sr].data[0]==1))
-          //   {/*a timed relay*/
-          //     sTRTsWtIMR[sr]= millis(); 
-          //     u_setFlag(sr,&f.ISrELAYoN);
-          //   }
-          //   if(digitalRead(srs[sr].port)!=srs[sr].data[0]) 
-          //   {
-          //     digitalWrite(srs[sr].port, srs[sr].data[0]);
-          //     u_setFlag(sr, &f.dOpUBLISH);
-          //   }
-          // }
-          // if((priosr ==-1)&(nxtsr>0)&(prionoff==-1))
-          // { /*the sr that is an original start of a delay sequence
-          // so just */
-          //   if((tsec>0)&(srs[sr].data[0]==1))
-          //   {/*a timed relay*/
-          //     sTRTsWtIMR[sr]= millis(); 
-          //     u_setFlag(sr,&f.ISrELAYoN);
-          //     srs[nxtsr].data[4]=1;
-          //   }
-          //   if(digitalRead(srs[sr].port)!=srs[sr].data[0]) 
-          //   {
-          //     digitalWrite(srs[sr].port, srs[sr].data[0]);
-          //     // printf("aft updating ctrl, onoff=%d port=%d\n",srs[sr].data[0],digitalRead(srs[sr].port));
-          //     u_setFlag(sr, &f.dOpUBLISH);
-          //   }
-          // }
-          // if((priosr >-1))
-          // {/*for projects with delay action relays*/
-          //   if ((srs[priosr].data[0]==0) & (prionoff==1))
-          //   { /*NXTSR the sr that is a subsequent part of a delay sequence and you are here becase updRelays() has set HaySt on the nxtsr in line ie this sr  Check if the prior one is off. If the prior used to be on(prionoff = srs[sr].data[4]=1) and is now off(srs[priosr].data[0]==0) it is time to start the timer for this one  */ 
-          //     srs[sr].data[4] =0; //now prionoff=0
-          //     srs[sr].data[0] =1; //this sr goes on
-          //     digitalWrite(srs[sr].port, 1);
-          //     sTRTsWtIMR[sr]= millis(); 
-          //     u_setFlag(sr,&f.ISrELAYoN);
-          //     if(nxtsr>-1)
-          //     {/*if the delay is to continue on down to the nxtsr*/
-          //       u_setFlag(nxtsr, &f.HAYsTATEcNG);
-          //     }
-          //   }
-          //   if(digitalRead(srs[sr].port)!=srs[sr].data[0]) 
-          //   { /*in any event, output needs to be updated*/
-          //     digitalWrite(srs[sr].port, srs[sr].data[0]);
-          //   }
-          // }         
-          // u_unsetFlag(sr , &f.HAYsTATEcNG);
-          
-          // int onoff = srs[sr].data[0];
-          // int ponoff = srs[priosr].data[0];
-          // // printf("in delay3, rsr=%d, ronoff=%d, onoff=%d \n", rsr,ronoff,onoff);
-          // if(digitalRead(srs[sr].port)!=onoff) {
-          //   digitalWrite(srs[sr].port, onoff);
-          //   printf("in case 2: sr=%d, priosr[3]=%d, prionoff[4] = %d \n",sr, priosr, prionoff);
-          //   u_setFlag(sr, &f.dOpUBLISH);
-          // }
-          // if ((ponoff==0) & (prionoff==1)){
-          //   srs[sr].data[4] =0;
-          //   srs[sr].data[0] =1;
-          //   digitalWrite(srs[sr].port, 1);
-          //   sTRTsWtIMR[sr]= millis(); 
-          //   u_setFlag(sr,&f.ISrELAYoN);
-          //   u_setFlag(sr, &f.dOpUBLISH);
-          // }
-          // u_unsetFlag(priosr , &f.HAYsTATEcNG);
-        }
           break; 
+        }
         case 3: //ctrl
         {
           int conoff =  srs[sr].data[0];
@@ -326,14 +246,15 @@ void i_updRelays(){
       unsigned long tmsec = tsec*1000;
       unsigned long tnow = millis();
       if(srs[sr].data[0]==1)
-      {
+      { /*if srs[sr].data[0]==0 (button toggled off during first relay 
+      of cascade) it will end the whole cascade, else reset*/
         printf("%ld, ",(tnow - sTRTsWtIMR[sr]));
         if((tnow - sTRTsWtIMR[sr]) > tmsec){
           u_unsetFlag(sr, &f.ISrELAYoN);
           srs[sr].data[0]=0;
           u_setFlag(sr, &f.HAYsTATEcNG);
           int nxtsr = srs[sr].data[2];
-          if(nxtsr>-1) {//if there is a delay 
+          if(nxtsr>-1) {
             u_setFlag(nxtsr, &f.HAYsTATEcNG);
             printf("\n nxtsr=%d and HAYsTATEcNG=%d \n",nxtsr,f.HAYsTATEcNG );
           }
