@@ -30,7 +30,7 @@ void setup() {
   Serial.begin(115200);
   EEPROM.begin(512);
   WiFi.mode(WIFI_STA); // Force to station mode because if device was switched off while in access point mode it will start up next time in access point mode.
-  initShit();
+  c_initShit();
   getOnline();
   client.setServer(mqtt_server, atoi(mqtt_port));
   client.setCallback(handleCallback); //in Req.cpp

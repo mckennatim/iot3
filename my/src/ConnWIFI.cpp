@@ -11,7 +11,7 @@ void getOnline(){
   wifiManager.setConfigPortalTimeout(60);
   Serial.print("f.hayWIFI: ");
   Serial.println(f.hayWIFI);
-  wifiManager.resetSettings();
+  // wifiManager.resetSettings();
   if (!wifiManager.autoConnect("connectEspAP")) {
     //this code runs on portal timout and drops through and out of autoconnect
     Serial.println("failed to connect and hit timeout");

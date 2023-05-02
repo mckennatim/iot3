@@ -1,6 +1,7 @@
 # READMElog
 
 ## log
+### 5/2/23 35-edgewataer-MVP
 ### 4/30/23 34-cascading_relays
 gets kicked off `if(srs[sr].data[0]==1)` on button toggle. `if(tsec>0)` is called then again and in the event that a prior timer ends and it used to be running.
 ### 4/29/23 33-pinMode-simple_toggle
