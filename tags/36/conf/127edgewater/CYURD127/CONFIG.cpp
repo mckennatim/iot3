@@ -10,7 +10,7 @@ char pwd[24]="geniot";
 char mqtt_server[60]="sitebuilt.net";
 char mqtt_port[6]="1884";
  
-void c_initShit(){
+void initShit(){
   pinMode(srs[0].port, OUTPUT);
   pinMode(srs[1].port, OUTPUT);
   pinMode(srs[2].port, OUTPUT);
@@ -18,13 +18,13 @@ void c_initShit(){
   pinMode(srs[4].port, OUTPUT);
   pinMode(inp[0].port[0], INPUT);
 }
-
+ 
 srs_t srs[NUMSR] ={//{sr, port, typidx, data[]}   
-  {0, D0, 2, {0, 2400, 1, -1, -1,}}, //relay zone1 
-  {1, D6, 2, {0, 2400, 2, 0, 0,}}, //relay zone2 
-  {2, D7, 2, {0, 2400, 3, 1, 0,}}, //relay zone3 
-  {3, D8, 2, {0, 2400, -1, 2, 0,}}, //relay zone4 
-  {4, D1, 2, {0, 2400, -1, -1, -1,}}, //relay zone5 
+  {0, D0, 2, {0, 15, 1, -1, -1,}}, //relay zone1 
+  {1, D6, 2, {0, 15, 2, 0, 0,}}, //relay zone2 
+  {2, D7, 2, {0, 15, 3, 1, 0,}}, //relay zone3 
+  {3, D8, 2, {0, 15, -1, 2, 0,}}, //relay zone4 
+  {4, D1, 2, {0, 15, -1, -1, -1,}}, //relay zone5 
 };
  
 const cmd_t cmds[NUMSR] ={//{sr,nda,data{})
