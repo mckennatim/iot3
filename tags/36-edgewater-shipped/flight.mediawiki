@@ -1,0 +1,14 @@
+  KHWEIX
+ 
+  Alaska 306 19D,19E
+  Alaska 306Distance: 2,487 mi | Duration: 6h ours24minutes
+  Boston (BOS) Thu, Mar 23 5:00 pm	
+  Seattle (SEA) Thu, Mar 23 8:24 pm
+
+
+  Alaska 306 23B,23C
+  Alaska 306Distance: 2,487 mi | Duration: 5h ours18minutes
+  Seattle (SEA) Wed, Mar 29 7:35 am	
+  Boston (BOS) Wed, Mar 29 3:53 pm\
+
+  Price for 2 passengers $595.60
