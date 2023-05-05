@@ -1,6 +1,7 @@
 # READMElog
 
 ## log
+### 5/4/23 37-appBuild-sql-appinit-initShit
 ### 5/4/23 36-edgewater-shipped
 ### 5/2/23 35-edgewataer-MVP
 ### 4/30/23 34-cascading_relays

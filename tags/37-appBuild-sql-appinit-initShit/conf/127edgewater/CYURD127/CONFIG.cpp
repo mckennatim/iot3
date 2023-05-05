@@ -36,7 +36,6 @@ const cmd_t cmds[NUMSR] ={//{sr,nda,data{})
 };
   
 prgs_t prgs[NUMPRGS]={//{sr, dax, aid, ev, prg[[h,m,set]], hms} 
- {4, 1, 255, 1, {{0,0,0}}},
 };
  
 inp_t inp[NUMINP] = {
@@ -47,10 +46,20 @@ inp_t inp[NUMINP] = {
  
 const char xdevtpc[NUMXDEV][MAXDSTR] = 
 {
-};
+"CYURD006/srstate", "CYURD018/srstate", };
  
 const xdata_t xdata[NUMXD] = 
 {
+  {0, 0, 1,//dev,sr,nd 
+    { //xdidx, {numtargs {{sr, tdidx}}}
+      {0, {1, {{2, 1}}}}, 
+    },
+  },
+  {0, 1, 1,//dev,sr,nd 
+    { //xdidx, {numtargs {{sr, tdidx}}}
+      {0, {1, {{2, 1}}}}, 
+    },
+  },
 };
  
 const char sensors[SENSTYPS][MAXSSTR] = 
@@ -69,8 +78,8 @@ const tds_t tds[NUMTYP] ={
  
 /*flags extern data structure*/
 flags_t f {
-  0b00000,//HAYtIMR 1100000 64+32=96
-  0b11111,//HAYpROG 11000010 =128+64+4=198
+  0b00010,//HAYtIMR 1100000 64+32=96
+  0b00100,//HAYpROG 11000010 =128+64+4=198
   0b00000,//dOrEC 
   0,//cONNectd
   0,//hayWIFI

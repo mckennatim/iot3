@@ -6,7 +6,8 @@ import {D0,D1,D2,D3,D4,D5,D6,D7,D8,RX,TX,SCL,SCLK,MISO,MOSI,CS}from '../../build
 
 
 const {devid, owner,pwd, mqtt_server,mqtt_port} = devinfo
-const {appid, locid, user, descr, board} = apploc
+const {appid, addrinfo, user, descr, board} = apploc
+const{locid,lat,lon,tzone}=addrinfo
 const ctrtypk = Object.keys(ctrltypes)
 
 const devstr =
@@ -19,7 +20,7 @@ char mqtt_server[60]="${mqtt_server}";
 char mqtt_port[6]="${mqtt_port}";
 `
 
-const {srs,inputs, xdata} = cfgdata
+const {srs, inputs, xdata} = cfgdata
 
 const NUMSR = srs.length;
 const NUMINP = inputs.length
@@ -31,10 +32,12 @@ const SENSTYPS = senstypes.length
 
 
 let NUMXD =0
-xdevs.map(x=>{
-  NUMXD +=xdata[x].length
+xdevs.map((xsrs,i)=>{
+  xdata[xsrs].map(xsr=>{
+    if(xsr.dt.length>0) NUMXD +=1
+  })
 })
-console.log('NUMXD: ', NUMXD);
+
 
 
 
@@ -163,19 +166,21 @@ const xdata_t xdata[NUMXD] =
     // xdastr +=`{`
     xdata[x].map((y)=>{
       if(y.dt.length>MAXDT) MAXDT=y.dt.length
-      xdastr += `  {${i}, ${y.sr}, ${y.dt.length},//dev,sr,nd \n    { //xdidx, {numtargs {{sr, tdidx}}}\n`
-      y.dt.map((z)=>{
-        xdastr += `      {${z.xdidx}, {${z.targets.length}, {`
-        z.targets.map(a=>{
-          xdastr +=`{`
-          a.map(b=>{
-            xdastr += `${b}, `
+      if(y.dt.length>0){
+        xdastr += `  {${i}, ${y.sr}, ${y.dt.length},//dev,sr,nd \n    { //xdidx, {numtargs {{sr, tdidx}}}\n`
+        y.dt.map((z)=>{
+          xdastr += `      {${z.xdidx}, {${z.targets.length}, {`
+          z.targets.map(a=>{
+            xdastr +=`{`
+            a.map(b=>{
+              xdastr += `${b}, `
+            })
+            xdastr =xdastr.slice(0,-2)+`}}}}, \n`
           })
-          xdastr =xdastr.slice(0,-2)+`}}}}, \n`
+          // xdastr +=` },\n`
         })
-        // xdastr +=` },\n`
-      })
-      xdastr +=`    },\n  },\n`
+        xdastr +=`    },\n  },\n`
+      }
     })
     // xdastr+=`};\n`
   })
@@ -303,3 +308,166 @@ const zfilt = srs.filter(f=>{
 console.log('zfilt: ', zfilt);  
 
 
+/*sql*/
+
+const sql = fs.createWriteStream(`${appid}.sql`);
+
+
+
+const sq = `SELECT * FROM \`devs\` ORDER BY \`devs\`$a{devi}\` DESC;`
+const de =`
+DELETE FROM devs WHERE devs.devid = '${devinfo.devid}';
+`
+
+const insdev = `
+
+REPLACE INTO \`devs\` (\`devid\`, \`owner\`, \`devpwd\`, \`locid\`, \`description\`) VALUES ( 
+  '${devid}', 
+  '${devinfo.owner}',
+  '${devinfo.pwd}',
+  '${apploc.addrinfo.locid}',
+  '${apploc.descr}'
+);
+`
+console.log('insdev: ', insdev);  
+
+
+
+const mkaldev = ()=>{
+  let aplodevs = `
+{
+  "${devid}": [
+`
+  srs.map((s,i)=>{
+    aplodevs += `    {"sr": ${s.sr}, "label": "${s.label}"}${i+1==NUMSR?' ':','}\n`
+  })
+  aplodevs +=`  ],\n}${NUMXDEV==0?' ':','}\n`
+
+  xdevs.map((xsrs,i)=>{
+    console.log(xdevs[i]);
+    aplodevs += `{\n  "${xdevs[i]}": [\n`  
+    xdata[xsrs].map((xsr,j)=>{
+      aplodevs += `    {"sr": ${xsr.sr}, "label": "${xsr.label}"}${j+1==xdata[xsrs].length?' ':','}\n`
+    })
+    aplodevs +=`  ]\n}${i+1==NUMXDEV?' ':','}\n`
+  })
+  return aplodevs
+}
+console.log('NUMXD,NUMDEV ', NUMXD,NUMXDEV);
+console.log(mkaldev());
+
+const mkalz = ()=>{
+  let zstr = `
+[
+`  
+  srs.map((s,i)=>{
+    zstr += `    {"id": ${s.label}, "label": "${s.descr}", "img": "${s.label}.png"},\n`
+  })
+  xdevs.map((xsrs,i)=>{
+    xdata[xsrs].map((s,j)=>{
+      zstr += `    {"id": ${s.label}, "label": "${s.descr}", "img": "${s.label}.png"},\n`
+    })
+  })
+  zstr = zstr.slice(0,-2)+'\n]\n'
+  return zstr
+}
+
+console.log(mkalz());
+
+const al =`
+REPLACE INTO \`app_loc\` (\`appid\`, \`locid\`, \`devs\`, \`zones\`) VALUES (
+  '${appid}',
+  '${locid}',
+  '${mkaldev()}', 
+  '${mkalz()}'
+);
+`
+
+const mkAddUsr=()=>{
+
+  let alu =
+`
+REPLACE INTO \`app_loc_user\` (\`appid\`, \`userid\`, \`locid\`, \`role\`,\`auth\`) VALUES (
+  '${appid}',
+  '${devinfo.owner}',
+  '${locid}',
+  'admin',
+  1
+); 
+`
+
+  user.map(u=>{
+  alu +=  
+`
+REPLACE INTO \`app_loc_user\` (\`appid\`, \`userid\`, \`locid\`, \`role\`,\`auth\`) VALUES (
+  '${appid}',
+  '${u}',
+  '${locid}',
+  'user',
+  1
+); 
+    `
+  })
+  return alu
+}
+
+console.log('al: ', al);  
+
+console.log('locid: ', locid);
+console.log('alu: ', mkAddUsr());
+sql.write(insdev)
+sql.write(al)
+sql.write(mkAddUsr())
+const util = `
+/*
+These are SQL commands utlity commands
+*/
+
+SELECT * FROM \`devs\` ORDER BY \`id\` DESC LIMIT 3;
+SELECT * FROM \`app_loc_user\` ORDER BY \`id\` DESC LIMIT 3;
+SELECT * FROM \`app_loc\` ORDER BY \`id\` DESC LIMIT 3;
+
+`
+console.log('util: ', util);  
+sql.write(util)
+sql.end()
+
+/*app intiState --------------------------------------------------------*/
+const appd = fs.createWriteStream(`appInit.js`);
+
+const MKinist=()=>{
+  let zstr = 
+`/*  
+temp_out: darr:[]
+tstat: {pro:[[0,0,65,63]], timeleft:0, darr:[reading,onoff,66,64]},
+tv: {pro:[[0,0,hi,lo]], darr:[reading,onoff,hi,lo]},
+pond: {pro:[[0,0,0],[19,15,1]], timeleft:0, darr:[0,0,0]},
+//solar: darr:[sra_rdg, srb_rdg, difon, difoff,maxa, maxb onoff]
+*/
+const initialState = {//pro must start at 0,0
+`
+  
+  srs.map((s,i)=>{
+    let pro = ``
+    let timr = ``
+    if(s.prg) pro+=`, pro: [[${s.prg}]]`
+    if(s.timr) timr+=`, timeleft: 0`
+    zstr += `    ${s.label}: {darr: [${s.init}]${pro} ${timr}},\n`
+  })
+  xdevs.map((xsrs,i)=>{
+    xdata[xsrs].map((s,j)=>{
+      zstr += `    ${s.label}: {darr: [0]},\n`
+    })
+  })
+  zstr = zstr.slice(0,-2)+'\n}\n\n'
+  zstr+=`const appid = "${appid}" \n\n`
+  zstr+=`export {initialState, appid}\n`
+  return zstr
+}
+
+
+
+console.log('MKinist(): ', MKinist());
+appd.write(MKinist())
+appd.end()
+/*app intiState --------------------------------------------------------*/

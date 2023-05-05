@@ -9,7 +9,7 @@ const devinfo={
 const apploc={
   "appid": "edgewater",
   "address": "12 Parley Vale, Jamaica Plain, MA 02130",
-  "user": "mckenna.tim@gmail.com",
+  "user": ["mckenna.tim@gmail.com", "noahmckenna@gmail.com"],
   "descr": "use toggle button to start sequentially timed relays controlling irrigation",
   "board": "long",
   "addrinfo": {
@@ -29,7 +29,6 @@ const cfgdata={
       "out": "D0",
       "ctype": "relay",
       "init": [0,15, 1, -1, -1],//[onoff,tsec,nxtsr,priosr,prionoff]
-      "prg": [[0,0,0]],//include only if nxtsr !=-1
       "descr": "irrigation zone 1",
       "rec": false,
       "timr": false
@@ -40,10 +39,9 @@ const cfgdata={
       "out": "D6",
       "ctype": "relay",
       "init": [0,15,2,0,0],//[onoff,tsec,nxtsr,priosr,prionoff]
-      "prg": [[0,0,0]],
       "descr": "irrigation zone 2",
       "rec": false,
-      "timr": false
+      "timr": true
     },    
     {
       "sr": 2,
@@ -62,7 +60,6 @@ const cfgdata={
       "out": "D8",
       "ctype": "relay",
       "init": [0,15,-1,2,0],//[onoff,tsec,nxtsr,priosr,prionoff]
-      "prg": [[0,0,0]],
       "descr": "irrigation zone 4",
       "rec": false,
       "timr": false
@@ -73,7 +70,6 @@ const cfgdata={
       "out": "D1",
       "ctype": "relay",
       "init": [0,15,-1,-1,-1],//[onoff,tsec,nxtsr,priosr,prionoff]
-      "prg": [[0,0,0]],
       "descr": "special zone",
       "rec": false,
       "timr": false
@@ -90,7 +86,43 @@ const cfgdata={
        ],
        "actions": [200]//not yet used
      }, ],
-  "xdata": {}
+  "xdata": {  
+    "CYURD006":
+    [
+      {
+        "sr": 0, 
+        "label": "temp_out",
+        "descr": "outside temperature",
+        "dt":[
+          { 
+            "xdidx": 0,
+            "targets": [[2,1]]
+          }
+        ]
+      },
+      {
+        "sr": 1, 
+        "label": "temp_attic",
+        "descr": "attic temperature",
+        "dt":[
+          { 
+            "xdidx": 0,
+            "targets": [[2,1]]
+          }
+        ]
+      }
+    ],
+    "CYURD018":
+    [
+      {
+        "sr": 0, 
+        "label": "gh_hum",
+        "descr": "greenhouse humidity",
+        "dt":[
+        ]
+      }
+    ],
+  }
 }
 
 const senstypes=[

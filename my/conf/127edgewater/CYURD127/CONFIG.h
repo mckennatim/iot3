@@ -13,12 +13,12 @@ void initShit();
 
  
 /*project constants for CYURD127edgewater*/
-#define NUMXDEV 0 //# of x devices
-#define NUMXD 0 //# of xdata records
+#define NUMXDEV 2 //# of x devices
+#define NUMXD 2 //# of xdata records
 #define NUMSR 5 //number of sr's 
 #define NUMINP 1
-#define NUMPRGS 1
-#define MAXDT 0
+#define NUMPRGS 0
+#define MAXDT 1
 #define SENSTYPS 7
 #define NUMTYP 8
 
