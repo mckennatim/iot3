@@ -450,7 +450,7 @@ const initialState = {//pro must start at 0,0
   srs.map((s,i)=>{
     let pro = ``
     let timr = ``
-    if(s.prg) pro+=`, pro: [[${s.prg}]]`
+    if(s.prg && s.init[3]==-1 && s.init[2]==-1) pro+=`, pro: [[${s.prg}]]`
     if(s.timr) timr+=`, timeleft: 0`
     zstr += `    ${s.label}: {darr: [${s.init}]${pro} ${timr}},\n`
   })
