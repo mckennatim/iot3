@@ -1,4 +1,4 @@
-## getting connected
+## getting connected dog
 `ConnWIFI.getOnline()` is first called in `setup()`. It starts the `WIFImanager`. If the WIFImanager doesn't succeed in connecting to its saved credentials it starts `connectEspAP` on 192.168.4.1. If that doesn't complete in 120 seconds then the flag `haywifi=0` and the program goes on with its default schedule.
 
 
