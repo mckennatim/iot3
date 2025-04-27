@@ -460,10 +460,8 @@ const initialState = {//pro must start at 0,0
     })
   })
   zstr = zstr.slice(0,-2)+'\n}\n\n'
-  zstr+=`const ctrltypes = \n${JSON.stringify(ctrltypes, null, 2)}  \n\n`
   zstr+=`const appid = "${appid}" \n\n`
-  zstr+=`const dev1 = "${devid}" \n\n`
-  zstr+=`export {initialState, appid, ctrltypes, dev1}\n`
+  zstr+=`export {initialState, appid}\n`
   return zstr
 }
 
