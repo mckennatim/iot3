@@ -6,6 +6,7 @@
 #include "ConnWIFI.h" //getOnline() readConfig()devid owner pwd
 #include "Sched.h"
 #include "Util.h"
+#include "storage.h"
 
 // Sched sched;
 extern char itopic[40];
@@ -71,6 +72,14 @@ void deseriCmd(){
     int idx = cmds[sr].data[i]; //srs data index for the cmd data
     srs[sr].data[idx]= sra[i];
   }
+  char nstr[10];
+  snprintf(nstr, sizeof(nstr), "re%d", sr); // "re23"
+  Serial.print("nstr = ");
+  Serial.println(nstr);  
+  setStored(nstr, srs[sr].data[1]);
+  Serial.print("nstr = ");
+  Serial.println(nstr); 
+
   u_setFlag(sr, &f.HAYsTATEcNG);
 }
 
