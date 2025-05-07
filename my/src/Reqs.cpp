@@ -34,8 +34,9 @@ void q_processInc(){
           deseriProg();
           break;         
         case 3://in req
+          Serial.println("DOGFOOD");
           Serial.println(ipayload);
-          // deseriReq();
+          deseriReq();
           break;          
         default: 
         	Serial.print(i);         
@@ -73,6 +74,15 @@ void deseriCmd(){
   u_setFlag(sr, &f.HAYsTATEcNG);
 }
 
+void deseriReq(){
+  Serial.println(ipayload);
+  DynamicJsonDocument rot(1000);
+  deserializeJson(rot, ipayload);  
+  int sr = rot["id"];
+  Serial.print("id = ");
+  Serial.println(sr);
+  //q_pubState(client);
+}
 
 
 void deseriProg(){
@@ -100,6 +110,7 @@ void q_pubState(PubSubClient& client){
   strcat(topic,"/srstate"); 
   for(int sr=0;sr<NUMSR;sr++){
     int sr2 = pow2(sr);
+    u_setFlag(sr, &f.dOpUBLISH);
     if((f.dOpUBLISH & sr2) ==sr2 ){
       printf("sr2=%d \n", sr2);
       StaticJsonDocument<500> root;

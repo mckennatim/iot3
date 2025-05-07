@@ -12,5 +12,5 @@ void q_pubPrg(PubSubClient& client);
 void deseriTime();
 void deseriCmd();
 void deseriProg();
-
+void deseriReq();
 #endif

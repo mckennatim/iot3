@@ -55,6 +55,8 @@ void loop() {
     if(NEW_MAIL){
         Serial.println("hay NEW_MAIL");
         q_processInc();
+        q_pubState(client);
+        q_pubPrg(client);
         NEW_MAIL=0;
     }
   }
@@ -64,10 +66,10 @@ void loop() {
     i_updCtrl();
     u_scanFLAGand(f.CKaLARM, NUMSR, &s_ckAlarms);
     i_updRelays();
-    if(f.cONNectd) {
-      q_pubState(client);
-      q_pubPrg(client);
-    }
+    // if(f.cONNectd) {
+    //   q_pubState(client);
+    //   q_pubPrg(client);
+    // }
     f.CKaLARM=0;
   }    
 } 

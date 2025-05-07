@@ -1,0 +1,10 @@
+{
+  "files.associations": {
+    "config.h": "c",
+    "util.h": "c",
+    "array": "cpp",
+    "string": "cpp",
+    "string_view": "cpp",
+    "ranges": "cpp"
+  }
+}
