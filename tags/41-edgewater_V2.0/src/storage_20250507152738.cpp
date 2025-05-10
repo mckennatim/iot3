@@ -1,0 +1,9 @@
+// This project uses the Preferences library for ESP32/ESP8266 to store configuration data in non-volatile memory.
+// store.cpp
+#include "config_store.h"
+
+Preferences prefs;  // Actual global instance
+
+void initPrefs() {
+  prefs.begin("my-app", false);  // false = read/write mode
+}

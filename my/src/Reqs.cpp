@@ -74,12 +74,8 @@ void deseriCmd(){
   }
   char nstr[10];
   snprintf(nstr, sizeof(nstr), "re%d", sr); // "re23"
-  Serial.print("nstr = ");
-  Serial.println(nstr);  
   setStored(nstr, srs[sr].data[1]);
-  Serial.print("nstr = ");
-  Serial.println(nstr); 
-
+  u_setFlag(sr, &f.dOpUBLISH);
   u_setFlag(sr, &f.HAYsTATEcNG);
 }
 
@@ -90,7 +86,8 @@ void deseriReq(){
   int sr = rot["id"];
   Serial.print("id = ");
   Serial.println(sr);
-  //q_pubState(client);
+  u_setFlag(sr, &f.dOpUBLISH);
+  u_setFlag(sr, &f.HAYsTATEcNG);
 }
 
 
@@ -119,7 +116,7 @@ void q_pubState(PubSubClient& client){
   strcat(topic,"/srstate"); 
   for(int sr=0;sr<NUMSR;sr++){
     int sr2 = pow2(sr);
-    u_setFlag(sr, &f.dOpUBLISH);
+    // u_setFlag(sr, &f.dOpUBLISH);
     if((f.dOpUBLISH & sr2) ==sr2 ){
       printf("sr2=%d \n", sr2);
       StaticJsonDocument<500> root;

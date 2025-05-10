@@ -56,12 +56,6 @@ void setup() {
   srs[3].data[1] = getStored("re3", 1403);
   Serial.println(srs[0].data[1]);
 
-  int sr =45;
-  char nstr[10];
-  snprintf(nstr, sizeof(nstr), "re%d", sr); // "re23"
-  Serial.print("nstr = ");
-  Serial.println(nstr); 
-  Serial.println("Starting down...");
 }
 
 void loop() {
@@ -93,10 +87,10 @@ void loop() {
     i_updCtrl();
     u_scanFLAGand(f.CKaLARM, NUMSR, &s_ckAlarms);
     i_updRelays();
-    // if(f.cONNectd) {
-    //   q_pubState(client);
-    //   q_pubPrg(client);
-    // }
+    if(f.cONNectd) {
+      q_pubState(client);
+      q_pubPrg(client);
+    }
     f.CKaLARM=0;
   }    
 } 
